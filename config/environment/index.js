@@ -12,7 +12,7 @@ var all = {
   root: path.normalize(__dirname + '/../../..'),
 
   // Server port
-  port: process.env.PORT || 9000,
+  port: process.env.PORT || 8000,
 
   // Server IP
   ip: process.env.IP || '0.0.0.0',
@@ -38,7 +38,7 @@ var all = {
   },
 
   facebook: {
-    clientID: process.env.FACEBOOK_ID || 'id',
+    clientID: process.env.FACEBOOK_ID || '618672994918034',
     clientSecret: process.env.FACEBOOK_SECRET || 'secret',
     callbackURL: (process.env.DOMAIN || '') + '/auth/facebook/callback'
   },
@@ -50,8 +50,8 @@ var all = {
   },
 
   google: {
-    clientID: process.env.GOOGLE_ID || 'id',
-    clientSecret: process.env.GOOGLE_SECRET || 'secret',
+    clientID: process.env.GOOGLE_ID || '846494928917-uj5odicj3fe7jn0in4a6lko0v0diuic2.apps.googleusercontent.com',
+    clientSecret: process.env.GOOGLE_SECRET || 'AIzaSyA4NIAP4k3TA0kpo6POxWcS_2-Rpj_JaoE',
     callbackURL: (process.env.DOMAIN || '') + '/auth/google/callback'
   }
 };

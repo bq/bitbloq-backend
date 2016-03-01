@@ -15,7 +15,7 @@ module.exports = function (app) {
     // router.use('/api/projects', require('./api/project/'));
     // router.use('/api/images', require('./api/image/'));
     router.use('/api/users', require('./api/user'));
-    router.use('/auth', require('./components/auth'));
+    router.use('/api/auth', require('./components/auth'));
     
     // Laura's Jade Views
     // router.use('/local/project', require('./local/crud'));
