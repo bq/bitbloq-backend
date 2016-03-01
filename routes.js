@@ -6,23 +6,24 @@
 
 var errors = require('./components/errors');
 var path = require('path');
+var express = require('express');
+var router = express.Router();
 
-module.exports = function(app) {
+module.exports = function (app) {
 
-  // Insert routes below
-  // app.use('/api/images', require('./api/image'));
-  // app.use('/api/projects', require('./api/project'));
-  app.use('/api/users', require('./api/user'));
+    // Insert routes below
+    // router.use('/api/projects', require('./api/project/'));
+    // router.use('/api/images', require('./api/image/'));
+    router.use('/api/users', require('./api/user'));
+    router.use('/auth', require('./components/auth'));
+    
+    // Laura's Jade Views
+    // router.use('/local/project', require('./local/crud'));
+    // router.use('/local/api/project', require('./local/api'));
 
-  app.use('/auth', require('./components/auth'));
-
-  // All undefined asset or api routes should return a 404
-  app.route('/:url(api|auth|components|app|bower_components|assets)/*')
-    .get(errors[404]);
-
-  // All other routes should redirect to the index.html
-  // app.route('/*')
-  //   .get(function(req, res) {
-  //     res.sendFile(path.resolve(app.get('appPath') + '/index.html'));
-  //   });
+    // Set a prefix for all calls
+    app.use('/bitbloq/v1', router);
+    
+    // All undefined asset or api routes should return a 404
+    app.route('/:url(api|auth|components|app|bower_components|assets)/*').get(errors[404]);
 };

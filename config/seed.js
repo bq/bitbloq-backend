@@ -6,9 +6,9 @@
 'use strict';
 var User = require('../api/user/user.model');
 
-User.find({}).removeAsync()
+return User.find({}).removeAsync()
   .then(function() {
-    User.createAsync({
+    return User.createAsync({
         provider: 'local',
         name: 'Test User',
         email: 'test@example.com',
