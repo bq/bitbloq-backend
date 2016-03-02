@@ -1,1 +1,10 @@
 node_modules/
+dist/
+.tmp/
+*.log
+*~
+
+# Editor File Ignore
+*.sublime-project
+*.sublime-workspace
+.idea/
