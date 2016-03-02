@@ -1,3 +1,4 @@
+/* global process */
 /**
  * Main application file
  */

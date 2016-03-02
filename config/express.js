@@ -39,7 +39,7 @@ module.exports = function(app) {
     resave: false,
     store: new mongoStore({
       mongooseConnection: mongoose.connection,
-      db: 'angularpress'
+      db: 'bitbloq-dev'
     })
   }));
 
@@ -47,33 +47,29 @@ module.exports = function(app) {
    * Lusca - express server security
    * https://github.com/krakenjs/lusca
    */
-  if ('test' !== env) {
-    app.use(lusca({
-      csrf: {
-        angular: true
-      },
-      xframe: 'SAMEORIGIN',
-      hsts: {
-        maxAge: 31536000, //1 year, in seconds
-        includeSubDomains: true,
-        preload: true
-      },
-      xssProtection: true
-    }));
-  }
+//   if ('test' !== env) {
+//     app.use(lusca({
+//       csrf: {
+//         angular: true
+//       },
+//       xframe: 'SAMEORIGIN',
+//       hsts: {
+//         maxAge: 31536000, //1 year, in seconds
+//         includeSubDomains: true,
+//         preload: true
+//       },
+//       xssProtection: true
+//     }));
+//   }
 
-  app.set('appPath', path.join(config.root, 'client'));
 
   if ('production' === env) {
-    app.use(express.static(app.get('appPath')));
     app.use(morgan('dev'));
   }
 
   if ('development' === env) {}
 
   if ('development' === env || 'test' === env) {
-    app.use(express.static(path.join(config.root, '.tmp')));
-    app.use(express.static(app.get('appPath')));
     app.use(morgan('dev'));
     app.use(errorHandler()); // Error handler - has to be last
   }

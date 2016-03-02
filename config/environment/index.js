@@ -1,3 +1,5 @@
+/* global __dirname */
+/* global process */
 'use strict';
 
 var path = require('path');
@@ -22,7 +24,7 @@ var all = {
 
   // Secret for session, you will want to change this and make it an environment variable
   secrets: {
-    session: 'gsn-secret'
+    session: 'bitbloq-secret'
   },
 
   // List of user roles
