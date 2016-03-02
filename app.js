@@ -5,10 +5,10 @@
 
 'use strict';
 
-var express = require('express');
-var mongoose = require('mongoose');
-var config = require('./config/environment');
-var http = require('http');
+var express = require('express'),
+  mongoose = require('mongoose'),
+  config = require('./config/environment'),
+  http = require('http');
 
 
 // Connect to MongoDB
@@ -24,11 +24,19 @@ if (config.seedDB) {
 }
 
 // Setup server
-var app = express();
-var server = http.createServer(app);
+var app = express(),
+  server = http.createServer(app);
 
 require('./config/express')(app);
 require('./routes')(app);
+
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", req.headers.origin);
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
 
 // Start server
 function startServer() {
