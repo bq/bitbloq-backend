@@ -38,10 +38,9 @@ exports.getAll = function(req, res) {
 */
 exports.create = function(req, res) {
   var newProject = new Project(req.body);
-  //todo change creatorId
-  newProject.creatorId = '56961015e4b09421cc06e45c';
-  newProject.saveAsync()
-    .catch(validationError(res));
+  newProject.saveAsync().then(function (project) {
+    return res.json(project);
+  }).catch(validationError(res));
 };
 
 /**
@@ -72,6 +71,8 @@ exports.destroy = function(req, res) {
     })
     .catch(handleError(res));
 };
+
+
 
 
 /**
