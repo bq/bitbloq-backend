@@ -18,34 +18,19 @@ function handleError(res, statusCode) {
   };
 }
 
-
 /**
- * Get list of project
+ * Creates a new project
  */
-exports.getAll = function(req, res) {
-  Project.find({})
-    .then(function(projects) {
-      res.status(200).json(projects);
-    })
-    .catch(function(){
-      handleError(res)
-    });
-};
-
-
-/**
-* Creates a new project
-*/
 exports.create = function(req, res) {
   var newProject = new Project(req.body);
-  newProject.saveAsync().then(function (project) {
-    return res.json(project);
+  newProject.saveAsync().then(function(project) {
+    return res.json(project.id);
   }).catch(validationError(res));
 };
 
 /**
-* Get a single project
-*/
+ * Get a single project
+ */
 exports.show = function(req, res, next) {
   var projectId = req.params.id;
   Project.findById(projectId)
@@ -62,8 +47,41 @@ exports.show = function(req, res, next) {
 
 
 /**
-* Deletes a Project
-*/
+ * Get public project list
+ */
+exports.getAll = function(req, res) {
+  Project.find({
+    '_acl.ALL.permission': 'READ'
+  })
+    .then(function(projects) {
+      res.status(200).json(projects);
+    })
+    .catch(function() {
+      handleError(res)
+    });
+};
+
+
+/**
+ * Get my info
+ */
+exports.me = function(req, res, next) {
+  var userId = req.user._id,
+    query = {};
+  query['_acl.user:' + userId + '.permission'] = 'ADMIN';
+  Project.find(query)
+    .then(function(projects) {
+      res.status(200).json(projects);
+    })
+    .catch(function() {
+      handleError(res)
+    });
+};
+
+
+/**
+ * Deletes a Project
+ */
 exports.destroy = function(req, res) {
   Project.findByIdAndRemoveAsync(req.params.id)
     .then(function() {
@@ -71,8 +89,6 @@ exports.destroy = function(req, res) {
     })
     .catch(handleError(res));
 };
-
-
 
 
 /**
