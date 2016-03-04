@@ -1,3 +1,4 @@
+/* global Buffer */
 'use strict';
 
 var crypto = require('crypto');
@@ -15,8 +16,7 @@ var UserSchema = new Schema({
         type: String,
         default: 'user'
     },
-    googleProfile: String,
-    facebookProfile: String,
+    social: Array,
     password: String,
     provider: String,
     salt: String
@@ -35,6 +35,18 @@ UserSchema
             'role': this.role
         };
     });
+    
+// Information for the owner
+UserSchema
+    .virtual('owner')
+    .get(function () {
+        return {
+            'name': this.name,
+            'username': this.username,
+            'role': this.role,
+            'social': this.social
+        };
+    });    
 
 // Non-sensitive info we'll be putting in the token
 UserSchema
@@ -88,13 +100,12 @@ UserSchema
 UserSchema
     .path('username')
     .validate(function (value, respond) {
-        var self = this;
         return this.constructor.findOneAsync({
             username: value
         }).then(function (user) {
             if (user) {
                 return respond(false);
-            }            
+            }
             return respond(true);
         }).catch(function (err) {
             throw err;

@@ -19,58 +19,66 @@ var connectMongo = require('connect-mongo');
 var mongoose = require('mongoose');
 var mongoStore = connectMongo(session);
 
-module.exports = function(app) {
-  var env = app.get('env');
+module.exports = function (app) {
+    var env = app.get('env');
 
-  app.use(compression());
-  app.use(bodyParser.urlencoded({
-    extended: false
-  }));
-  app.use(bodyParser.json());
-  app.use(cookieParser());
-  app.use(passport.initialize());
+    app.use(compression());
+    app.use(bodyParser.urlencoded({
+        extended: false
+    }));
+    app.use(bodyParser.json());
+    app.use(cookieParser());
+    app.use(passport.initialize());
 
-  // Persist sessions with mongoStore / sequelizeStore
-  // We need to enable sessions for passport-twitter because it's an
-  // oauth 1.0 strategy, and Lusca depends on sessions
-  app.use(session({
-    secret: config.secrets.session,
-    saveUninitialized: true,
-    resave: false,
-    store: new mongoStore({
-      mongooseConnection: mongoose.connection,
-      db: 'bitbloq-dev'
-    })
-  }));
-
-  /**
-   * Lusca - express server security
-   * https://github.com/krakenjs/lusca
-   */
-//   if ('test' !== env) {
-//     app.use(lusca({
-//       csrf: {
-//         angular: true
-//       },
-//       xframe: 'SAMEORIGIN',
-//       hsts: {
-//         maxAge: 31536000, //1 year, in seconds
-//         includeSubDomains: true,
-//         preload: true
-//       },
-//       xssProtection: true
-//     }));
-//   }
+    // Persist sessions with mongoStore / sequelizeStore
+    // We need to enable sessions for passport-twitter because it's an
+    // oauth 1.0 strategy, and Lusca depends on sessions
+    app.use(session({
+        secret: config.secrets.session,
+        saveUninitialized: true,
+        resave: false,
+        store: new mongoStore({
+            mongooseConnection: mongoose.connection,
+            db: 'bitbloq-dev'
+        })
+    }));
+  
+    // Allow CORS
+    app.use(function (req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-Response-Time, X-PINGOTHER, X-CSRF-Token,Authorization");
+        next();
+    });
 
 
-  if ('production' === env) {
-    app.use(morgan('dev'));
-  }
+    /**
+     * Lusca - express server security
+     * https://github.com/krakenjs/lusca
+     */
+    //   if ('test' !== env) {
+    //     app.use(lusca({
+    //       csrf: {
+    //         angular: true
+    //       },
+    //       xframe: 'SAMEORIGIN',
+    //       hsts: {
+    //         maxAge: 31536000, //1 year, in seconds
+    //         includeSubDomains: true,
+    //         preload: true
+    //       },
+    //       xssProtection: true
+    //     }));
+    //   }
 
-  if ('development' === env) {}
 
-  if ('development' === env || 'test' === env) {
-    app.use(morgan('dev'));
-    app.use(errorHandler()); // Error handler - has to be last
-  }
+    if ('production' === env) {
+        app.use(morgan('dev'));
+    }
+
+    if ('development' === env) { }
+
+    if ('development' === env || 'test' === env) {
+        app.use(morgan('dev'));
+        app.use(errorHandler()); // Error handler - has to be last
+    }
 };

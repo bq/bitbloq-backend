@@ -10,7 +10,6 @@ var express = require('express'),
   config = require('./config/environment'),
   http = require('http');
 
-
 // Connect to MongoDB
 mongoose.connect(config.mongo.uri, config.mongo.options);
 mongoose.connection.on('error', function(err) {

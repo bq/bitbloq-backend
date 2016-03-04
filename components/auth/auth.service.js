@@ -66,7 +66,7 @@ function signToken(id, role) {
     _id: id,
     role: role
   }, config.secrets.session, {
-    expiresInMinutes: 60 * 5
+    expiresIn: 60 * 240 
   });
 }
 
@@ -82,7 +82,15 @@ function setTokenCookie(req, res) {
   res.redirect('/');
 }
 
+/**
+ * Send token to user email
+ */
+function sendTokenByEmail(user) {
+// @TODO:  SEND TOKEN BY EMAIL
+// var token = signToken(user._id, user.role);
+}
 exports.isAuthenticated = isAuthenticated;
 exports.hasRole = hasRole;
 exports.signToken = signToken;
 exports.setTokenCookie = setTokenCookie;
+exports.sendTokenByEmail = sendTokenByEmail;

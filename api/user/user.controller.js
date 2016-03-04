@@ -3,6 +3,7 @@
 var User = require('./user.model');
 var config = require('../../config/environment');
 var jwt = require('jsonwebtoken');
+var auth = require('../../components/auth/auth.service');
 
 function validationError(res, statusCode) {
     statusCode = statusCode || 422;
@@ -23,11 +24,23 @@ function handleError(res, statusCode) {
  * restriction: 'admin'
  */
 exports.index = function (req, res) {
-    User.findAsync({}, '-salt -password')
+    console.log('index');
+    var limit = req.query.limit || 0;
+    var skip = req.query.skip || 0;
+    var sortKey = req.query.sortKey || '_id';
+    var sortParam = req.query.sortParam || 'asc';
+    var query = req.query.queryParams || {};
+    var sort = {};
+
+    sort[sortKey] = sortParam;
+
+    User.find(query, '-salt -password')
+        .skip(skip)
+        .limit(limit)
+        .sort(sort)
         .then(function (users) {
-            res.status(200).json(users);
-        })
-        .catch(handleError(res));
+            res.status(200).send(users);
+        }).catch(handleError(res));
 };
 
 /**
@@ -38,16 +51,20 @@ exports.create = function (req, res) {
     console.log(newUser);
     newUser.provider = 'local';
     newUser.role = 'user';
-    return newUser.saveAsync().then(function (user) {
+    newUser.saveAsync().then(function (user) {
+        console.log('ESTOY EN EL THEN')
         var token = jwt.sign({
             _id: user._id
         }, config.secrets.session, {
-                expiresInMinutes: 60 * 5
+                expiresIn: 60 * 240
             });
-        return res.json({
+        res.json({
             token: token
         });
-    }).catch(validationError(res));
+    }, function (err) {
+       return res.status(422).json(err);
+    });
+
 };
 
 /**
@@ -60,9 +77,9 @@ exports.usernameExists = function (req, res) {
         if (err) {
             return handleError(err);
         } else if (user) {
-            res.sendStatus(204);
+            return res.status(200).set({ 'exists': true }).send();
         } else {
-            res.status(200).set({ 'exists': false }).send();
+            return res.status(204).set({ 'exists': false }).send();
         }
     });
 };
@@ -71,6 +88,7 @@ exports.usernameExists = function (req, res) {
  * Get a single user
  */
 exports.show = function (req, res, next) {
+    console.log('Show single')
     var userId = req.params.id;
 
     User.findByIdAsync(userId)
@@ -121,9 +139,33 @@ exports.changePassword = function (req, res) {
 };
 
 /**
+ * Reset a users password
+ */
+exports.resetPassword = function (req, res) {
+    console.log('reset')
+    var email = req.params.email;
+    var query = User.where({ email: email });
+
+    query.findOne(function (err, user) {
+        if (err) {
+            handleError(err);
+        } else if (user) {
+            auth.sendTokenByEmail(user).then(function () {
+                res.sendStatus(200);
+            }, function (err) {
+                handleError(err);
+            });
+        } else {
+            handleError(err);
+        }
+    });
+};
+
+/**
  * Get my info
  */
 exports.me = function (req, res, next) {
+    console.log('me')
     var userId = req.user._id;
 
     User.findOneAsync({
@@ -133,7 +175,7 @@ exports.me = function (req, res, next) {
             if (!user) {
                 return res.status(401).end();
             }
-            res.json(user);
+            res.json(user.owner);
         })
         .catch(function (err) {
             return next(err);
@@ -144,6 +186,7 @@ exports.me = function (req, res, next) {
  * Update my user
  */
 exports.updateMe = function (req, res) {
+    console.log('update me')
     var userId = req.user._id;
     User.findByIdAndUpdateAsync(userId, req.params.user).then(function (user) {
         res.sendStatus(200);
@@ -151,6 +194,25 @@ exports.updateMe = function (req, res) {
         handleError(err);
     });
 };
+
+/**
+ * Return a user id
+ */
+exports.getUserId = function (req, res) {
+    console.log('user id')
+    var email = req.params.email;
+    var query = User.where({ email: email });
+
+    query.findOne(function (err, user) {
+        if (err) {
+            handleError(err);
+        } else if (user) {
+            res.status(200).send(user._id);
+        } else {
+            handleError(err);
+        }
+    });
+}
 
 /**
  * Authentication callback
