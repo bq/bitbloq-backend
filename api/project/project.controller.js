@@ -18,6 +18,14 @@ function handleError(res, statusCode) {
   };
 }
 
+function updateProject(projectId, dataProject){
+  Project.findByIdAndUpdateAsync(projectId, dataProject).then(function () {
+    res.sendStatus(200);
+  }, function (err) {
+    handleError(err);
+  });
+}
+
 /**
  * Creates a new project
  */
@@ -76,6 +84,44 @@ exports.me = function(req, res, next) {
     .catch(function() {
       handleError(res)
     });
+};
+
+
+/**
+ * Update my project
+ */
+exports.update = function (req, res) {
+  var projectId = req.params.id;
+  updateProject(projectId, req.body.project);
+};
+
+
+/**
+ * Publish my project
+ */
+exports.publish = function (req, res) {
+  var projectId = req.params.id;
+  Project.findByIdAsync(projectId).then(function (project) {
+    project.setPublic();
+    updateProject(projectId, project);
+  }, function (err) {
+    handleError(err);
+  });
+};
+
+
+
+/**
+ * Privatize my project
+ */
+exports.private = function (req, res) {
+  var projectId = req.params.id;
+  Project.findByIdAsync(projectId).then(function (project) {
+    project.setPrivate();
+    updateProject(projectId, project);
+  }, function (err) {
+    handleError(err);
+  });
 };
 
 

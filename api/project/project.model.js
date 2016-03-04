@@ -16,11 +16,13 @@ var ProjectSchema = new mongoose.Schema({
 var thereIsAdmin = function(project) {
   var admin = false;
   if (project._acl) {
-    project._acl.forEach(function(item) {
-      if (item.permission === 'ADMIN') {
+    var aux = project._acl;
+    for (var item in project._acl){
+      if (project._acl[item].permission === 'ADMIN') {
         admin = true;
       }
-    });
+    }
+
   }
   return admin;
 };
@@ -61,9 +63,6 @@ ProjectSchema.methods = {
    * @api public
    */
   setPublic: function() {
-    if (!thereIsAdmin(this)) {
-      setUserAdmin(this, this.creatorId);
-    }
     this._acl.ALL = {
       "permission": "READ",
       "properties": {
