@@ -1,6 +1,7 @@
 'use strict';
 
 var User = require('./user.model'),
+    UserFunctions = require('./user.functions'),
     config = require('../../config/environment'),
     jwt = require('jsonwebtoken'),
     auth = require('../../components/auth/auth.service');
@@ -88,7 +89,7 @@ exports.usernameExists = function(req, res) {
  */
 exports.show = function(req, res, next) {
     var userId = req.params.id;
-    exports.getUserProfile(userId).then(function(userProfile) {
+    UserFunctions.getUserProfile(userId).then(function(userProfile) {
         res.json(userProfile);
     }).catch(function(err) {
         if (err) {
