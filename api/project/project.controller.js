@@ -44,32 +44,43 @@ exports.show = function(req, res, next) {
  * Get public project list
  */
 exports.getAll = function(req, res) {
-    Project.find({
-        '_acl.ALL.permission': 'READ'
-    }).then(function(projects) {
-        var projectResult = [];
-
-        Promise.map(projects, function(item) {
-            var project = JSON.parse(JSON.stringify(item));
-            var deferred = Promise.defer();
-            UserFunctions.getUserProfile(project.creatorId).then(function(user) {
-                project.creatorUsername = user.username;
-                projectResult.push(project);
-                deferred.resolve();
-            }).catch(function() {
-                projectResult.push(project);
-                deferred.resolve();
-            });
-            return deferred.promise;
-        }).then(function() {
-            return res.status(200).json(projectResult);
-        }).catch(function(err) {
+    console.log(req.query);
+    if (req.query && req.query.count === '*') {
+        Project.count({
+            '_acl.ALL.permission': 'READ'
+        }).then(function(counter) {
+            return res.status(200).json({'count': counter});
+        }).catch(function() {
             return utils.handleError(res)
         });
+    } else {
+        Project.find({
+            '_acl.ALL.permission': 'READ'
+        }).then(function(projects) {
+            var projectResult = [];
 
-    }).catch(function() {
-        return utils.handleError(res)
-    });
+            Promise.map(projects, function(item) {
+                var project = JSON.parse(JSON.stringify(item));
+                var deferred = Promise.defer();
+                UserFunctions.getUserProfile(project.creatorId).then(function(user) {
+                    project.creatorUsername = user.username;
+                    projectResult.push(project);
+                    deferred.resolve();
+                }).catch(function() {
+                    projectResult.push(project);
+                    deferred.resolve();
+                });
+                return deferred.promise;
+            }).then(function() {
+                return res.status(200).json(projectResult);
+            }).catch(function(err) {
+                return utils.handleError(res)
+            });
+
+        }).catch(function() {
+            return utils.handleError(res)
+        });
+    }
 };
 
 
