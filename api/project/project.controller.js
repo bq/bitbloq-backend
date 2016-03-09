@@ -1,8 +1,7 @@
 'use strict';
 
 var Project = require('./project.model'),
-    UserController = require('./../user/user.controller'),
-    config = require('../../config/environment'),
+    UserFunctions = require('./../user/user.functions'),
     Promise = require('bluebird');
 
 function validationError(res, statusCode) {
@@ -66,7 +65,7 @@ exports.getAll = function(req, res) {
         Promise.map(projects, function(item) {
             var project = JSON.parse(JSON.stringify(item));
             var deferred = Promise.defer();
-            UserController.getUserProfile(project.creatorId).then(function(user) {
+            UserFunctions.getUserProfile(project.creatorId).then(function(user) {
                 project.creatorUsername = user.username;
                 projectResult.push(project);
                 deferred.resolve();

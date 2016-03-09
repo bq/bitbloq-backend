@@ -3,8 +3,7 @@
 var User = require('./user.model'),
     config = require('../../config/environment'),
     jwt = require('jsonwebtoken'),
-    auth = require('../../components/auth/auth.service'),
-    Promise = require('bluebird');
+    auth = require('../../components/auth/auth.service');
 
 function validationError(res, statusCode) {
     statusCode = statusCode || 422;
