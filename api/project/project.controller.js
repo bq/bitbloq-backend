@@ -1,28 +1,15 @@
 'use strict';
 
 var Project = require('./project.model'),
-    UserFunctions = require('./../user/user.functions'),
+    UserFunctions = require('../user/user.functions'),
+    utils = require('../utils'),
     Promise = require('bluebird');
-
-function validationError(res, statusCode) {
-    statusCode = statusCode || 422;
-    return function(err) {
-        res.status(statusCode).json(err);
-    };
-}
-
-function handleError(res, statusCode) {
-    statusCode = statusCode || 500;
-    return function(err) {
-        res.status(statusCode).send(err);
-    };
-}
 
 function updateProject(projectId, dataProject) {
     Project.findByIdAndUpdateAsync(projectId, dataProject).then(function() {
         res.sendStatus(200);
     }, function(err) {
-        handleError(err);
+        utils.handleError(err);
     });
 }
 /**
@@ -32,7 +19,7 @@ exports.create = function(req, res) {
     var newProject = new Project(req.body);
     newProject.saveAsync().then(function(project) {
         return res.json(project.id);
-    }).catch(validationError(res));
+    }).catch(utils.validationError(res));
 };
 
 /**
@@ -77,11 +64,11 @@ exports.getAll = function(req, res) {
         }).then(function() {
             return res.status(200).json(projectResult);
         }).catch(function(err) {
-            return handleError(res)
+            return utils.handleError(res)
         });
 
     }).catch(function() {
-        return handleError(res)
+        return utils.handleError(res)
     });
 };
 
@@ -98,7 +85,7 @@ exports.me = function(req, res, next) {
             res.status(200).json(projects);
         })
         .catch(function() {
-            handleError(res)
+            utils.handleError(res)
         });
 };
 
@@ -121,7 +108,7 @@ exports.publish = function(req, res) {
         project.setPublic();
         updateProject(projectId, project);
     }, function(err) {
-        handleError(err);
+        utils.handleError(err);
     });
 };
 
@@ -135,7 +122,7 @@ exports.private = function(req, res) {
         project.setPrivate();
         updateProject(projectId, project);
     }, function(err) {
-        handleError(err);
+        utils.handleError(err);
     });
 };
 
@@ -148,7 +135,7 @@ exports.destroy = function(req, res) {
         .then(function() {
             res.status(204).end();
         })
-        .catch(handleError(res));
+        .catch(utils.handleError(res));
 };
 
 

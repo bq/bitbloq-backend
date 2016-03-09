@@ -2,23 +2,11 @@
 
 var User = require('./user.model'),
     UserFunctions = require('./user.functions'),
+    utils = require('../utils'),
     config = require('../../config/environment'),
     jwt = require('jsonwebtoken'),
     auth = require('../../components/auth/auth.service');
 
-function validationError(res, statusCode) {
-    statusCode = statusCode || 422;
-    return function(err) {
-        res.status(statusCode).json(err);
-    };
-}
-
-function handleError(res, statusCode) {
-    statusCode = statusCode || 500;
-    return function(err) {
-        res.status(statusCode).send(err);
-    };
-}
 
 /**
  * Get list of users
@@ -40,7 +28,7 @@ exports.index = function(req, res) {
         .sort(sort)
         .then(function(users) {
             res.status(200).send(users);
-        }).catch(handleError(res));
+        }).catch(utils.handleError(res));
 };
 
 /**
@@ -75,7 +63,7 @@ exports.usernameExists = function(req, res) {
     });
     query.findOne(function(err, user) {
         if (err) {
-            return handleError(err);
+            return utils.handleError(err);
         } else if (user) {
             return res.status(200).set({
                 'exists': true
@@ -106,25 +94,6 @@ exports.show = function(req, res, next) {
 
 
 /**
- * Get a single profile user (Promise Function)
- */
-exports.getUserProfile = function(userId) {
-    var deferred = Promise.defer();
-    User.findByIdAsync(userId).then(function(user) {
-            if (!user) {
-                deferred.reject();
-            } else {
-                deferred.resolve(user.profile);
-            }
-        })
-        .catch(function(err) {
-            deferred.reject(err);
-        });
-    return deferred.promise;
-};
-
-
-/**
  * Deletes a user
  * restriction: 'admin'
  */
@@ -133,7 +102,7 @@ exports.destroy = function(req, res) {
         .then(function() {
             res.status(204).end();
         })
-        .catch(handleError(res));
+        .catch(utils.handleError(res));
 };
 
 /**
@@ -152,7 +121,7 @@ exports.changePassword = function(req, res) {
                     .then(function() {
                         res.status(204).end();
                     })
-                    .catch(validationError(res));
+                    .catch(utils.validationError(res));
             } else {
                 return res.status(403).end();
             }
@@ -170,15 +139,15 @@ exports.resetPassword = function(req, res) {
 
     query.findOne(function(err, user) {
         if (err) {
-            handleError(err);
+            utils.handleError(err);
         } else if (user) {
             auth.sendTokenByEmail(user).then(function() {
                 res.sendStatus(200);
             }, function(err) {
-                handleError(err);
+                utils.handleError(err);
             });
         } else {
-            handleError(err);
+            utils.handleError(err);
         }
     });
 };
@@ -217,10 +186,10 @@ exports.updateMe = function(req, res) {
     delete userToUpdate.role;
 
     User.findByIdAndUpdate(userId, userToUpdate, {
-        new: true,
+        new: true
     }, function(err, user) {
         if (err) {
-            handleError(err);
+            utils.handleError(err);
         }
         res.status(200).json(user.owner);
     });
@@ -242,13 +211,13 @@ exports.updateMyProperties = function(req, res) {
             'cookiePolicyAccepted': userProperties.cookiePolicyAccepted,
             'hasBeenAskedIfTeacher': userProperties.hasBeenAskedIfTeacher
         }
-    }
+    };
 
     User.findByIdAndUpdate(userId, userToUpdate, {
-        new: true,
+        new: true
     }, function(err, user) {
         if (err) {
-            handleError(err);
+            utils.handleError(err);
         }
         res.status(200).json(user.owner);
     });
@@ -264,18 +233,18 @@ exports.getUserId = function(req, res) {
 
     query.findOne(function(err, user) {
         if (err) {
-            handleError(err);
+            utils.handleError(err);
         } else if (user) {
             res.status(200).send(user._id);
         } else {
-            handleError(err);
+            utils.handleError(err);
         }
     });
-}
+};
 
 /**
  * Authentication callback
  */
 exports.authCallback = function(req, res) {
     res.redirect('/');
-}
+};
