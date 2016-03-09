@@ -29,8 +29,8 @@ var app = express(),
 require('./config/express')(app);
 require('./routes')(app);
 
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", req.headers.origin);
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type');
   res.setHeader('Access-Control-Allow-Credentials', true);

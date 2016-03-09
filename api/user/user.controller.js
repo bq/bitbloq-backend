@@ -25,7 +25,6 @@ function handleError(res, statusCode) {
  * restriction: 'admin'
  */
 exports.index = function(req, res) {
-    console.log('index');
     var limit = req.query.limit || 0;
     var skip = req.query.skip || 0;
     var sortKey = req.query.sortKey || '_id';
@@ -49,7 +48,6 @@ exports.index = function(req, res) {
  */
 exports.create = function(req, res) {
     var newUser = new User(req.body);
-    console.log(newUser);
     newUser.provider = 'local';
     newUser.role = 'user';
     newUser.saveAsync().then(function(user) {
@@ -72,14 +70,20 @@ exports.create = function(req, res) {
  */
 exports.usernameExists = function(req, res) {
     var username = req.params.username;
-    var query = User.where({username: username});
+    var query = User.where({
+        username: username
+    });
     query.findOne(function(err, user) {
         if (err) {
             return handleError(err);
         } else if (user) {
-            return res.status(200).set({'exists': true}).send();
+            return res.status(200).set({
+                'exists': true
+            }).send();
         } else {
-            return res.status(204).set({'exists': false}).send();
+            return res.status(204).set({
+                'exists': false
+            }).send();
         }
     });
 };
@@ -107,12 +111,12 @@ exports.show = function(req, res, next) {
 exports.getUserProfile = function(userId) {
     var deferred = Promise.defer();
     User.findByIdAsync(userId).then(function(user) {
-        if (!user) {
-            deferred.reject();
-        } else {
-            deferred.resolve(user.profile);
-        }
-    })
+            if (!user) {
+                deferred.reject();
+            } else {
+                deferred.resolve(user.profile);
+            }
+        })
         .catch(function(err) {
             deferred.reject(err);
         });
@@ -159,9 +163,10 @@ exports.changePassword = function(req, res) {
  * Reset a users password
  */
 exports.resetPassword = function(req, res) {
-    console.log('reset');
     var email = req.params.email;
-    var query = User.where({email: email});
+    var query = User.where({
+        email: email
+    });
 
     query.findOne(function(err, user) {
         if (err) {
@@ -182,15 +187,14 @@ exports.resetPassword = function(req, res) {
  * Get my info
  */
 exports.me = function(req, res, next) {
-    console.log('me');
     var userId = req.user._id;
 
     User.findOneAsync({
-        _id: userId
-    }, '-salt -password')
+            _id: userId
+        }, '-salt -password')
         .then(function(user) { // don't ever give out the password or salt
             if (!user) {
-                return res.status(401).end();
+                res.status(401).end();
             }
             res.json(user.owner);
         })
@@ -203,22 +207,60 @@ exports.me = function(req, res, next) {
  * Update my user
  */
 exports.updateMe = function(req, res) {
-    console.log('update me');
-    var userId = req.user._id;
-    User.findByIdAndUpdateAsync(userId, req.params.user).then(function(user) {
-        res.sendStatus(200);
-    }, function(err) {
-        handleError(err);
+    var userToUpdate = req.body,
+        userId = req.user._id;
+    // Prevent updating sensitive information
+    delete userToUpdate._id;
+    delete userToUpdate.salt;
+    delete userToUpdate.password;
+    delete userToUpdate.social;
+    delete userToUpdate.role;
+
+    User.findByIdAndUpdate(userId, userToUpdate, {
+        new: true,
+    }, function(err, user) {
+        if (err) {
+            handleError(err);
+        }
+        res.status(200).json(user.owner);
     });
 };
 
 /**
+ * Update my user properties
+ */
+exports.updateMyProperties = function(req, res) {
+
+    var userProperties = req.body.properties,
+        userId = req.user._id;
+
+    // Prevent updating sensitive information
+    var userToUpdate = {
+        'properties': {
+            'newsletter': userProperties.newsletter,
+            'language': userProperties.language,
+            'cookiePolicyAccepted': userProperties.cookiePolicyAccepted,
+            'hasBeenAskedIfTeacher': userProperties.hasBeenAskedIfTeacher
+        }
+    }
+
+    User.findByIdAndUpdate(userId, userToUpdate, {
+        new: true,
+    }, function(err, user) {
+        if (err) {
+            handleError(err);
+        }
+        res.status(200).json(user.owner);
+    });
+};
+/**
  * Return a user id
  */
 exports.getUserId = function(req, res) {
-    console.log('user id');
     var email = req.params.email;
-    var query = User.where({email: email});
+    var query = User.where({
+        email: email
+    });
 
     query.findOne(function(err, user) {
         if (err) {
@@ -229,10 +271,11 @@ exports.getUserId = function(req, res) {
             handleError(err);
         }
     });
-};
+}
+
 /**
  * Authentication callback
  */
 exports.authCallback = function(req, res) {
     res.redirect('/');
-};
+}
