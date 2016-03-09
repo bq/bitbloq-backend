@@ -11,7 +11,6 @@ router.get('/me', controller.me);
 router.get('/:id', controller.show);
 
 router.post('/', controller.create);
-
 router.put('/:id/private', controller.private);
 router.put('/:id/publish', controller.publish);
 //router.put('/:id/share', controller.share);

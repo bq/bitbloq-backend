@@ -31,11 +31,11 @@ UserSchema
     .virtual('profile')
     .get(function () {
         return {
-            'username': this.name,
+            'username': this.username,
             'role': this.role
         };
     });
-    
+
 // Information for the owner
 UserSchema
     .virtual('owner')
@@ -46,7 +46,7 @@ UserSchema
             'role': this.role,
             'social': this.social
         };
-    });    
+    });
 
 // Non-sensitive info we'll be putting in the token
 UserSchema
