@@ -39,7 +39,7 @@ UserSchema
   .virtual('profile')
   .get(function() {
     return {
-      'username': this.name,
+      'username': this.username,
       'avatar': this.properties.avatar,
       'role': this.role
     };

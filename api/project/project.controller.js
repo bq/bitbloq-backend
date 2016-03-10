@@ -5,17 +5,28 @@ var Project = require('./project.model'),
     utils = require('../utils'),
     Promise = require('bluebird');
 
-function updateProject(projectId, dataProject) {
+function updateProject(projectId, dataProject, res) {
     Project.findByIdAndUpdateAsync(projectId, dataProject).then(function() {
-        res.sendStatus(200);
+        if(res){
+            res.sendStatus(200);
+        }
     }, function(err) {
         utils.handleError(err);
     });
 }
+
+function clearProject(project){
+    delete project._id;
+    delete project.timesViewed;
+    delete project.timesAdded;
+    delete project._acl;
+    return project;
+}
 /**
- * Creates a new project
+ * Create a new project
  */
 exports.create = function(req, res) {
+    var projectObject = clearProject(req.body);
     var newProject = new Project(req.body);
     newProject.saveAsync().then(function(project) {
         return res.json(project.id);
@@ -32,7 +43,15 @@ exports.show = function(req, res, next) {
             if (!project) {
                 return res.status(404).end();
             }
-            res.json(project);
+            if(req.query && req.query.profile){
+                res.json(project.profile);
+            } else {
+                //if(no eres el user ni estas en el acl){
+                project.addView();
+                updateProject(projectId, project);
+                //}
+                res.status(200).json(project);
+            }
         })
         .catch(function(err) {
             return next(err);
@@ -44,7 +63,6 @@ exports.show = function(req, res, next) {
  * Get public project list
  */
 exports.getAll = function(req, res) {
-    console.log(req.query);
     if (req.query && req.query.count === '*') {
         Project.count({
             '_acl.ALL.permission': 'READ'
@@ -106,7 +124,8 @@ exports.me = function(req, res, next) {
  */
 exports.update = function(req, res) {
     var projectId = req.params.id;
-    updateProject(projectId, req.body.project);
+    var projectObject = clearProject(req.body);
+    updateProject(projectId, projectObject, res);
 };
 
 
@@ -117,7 +136,7 @@ exports.publish = function(req, res) {
     var projectId = req.params.id;
     Project.findByIdAsync(projectId).then(function(project) {
         project.setPublic();
-        updateProject(projectId, project);
+        updateProject(projectId, project, res);
     }, function(err) {
         utils.handleError(err);
     });
@@ -131,7 +150,7 @@ exports.private = function(req, res) {
     var projectId = req.params.id;
     Project.findByIdAsync(projectId).then(function(project) {
         project.setPrivate();
-        updateProject(projectId, project);
+        updateProject(projectId, project, res);
     }, function(err) {
         utils.handleError(err);
     });
