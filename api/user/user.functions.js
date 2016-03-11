@@ -9,17 +9,17 @@ var User = require('./user.model'),
  * @return {Promise} userProfile
  */
 exports.getUserProfile = function(userId) {
-    var deferred = Promise.defer();
-    User.findByIdAsync(userId).then(function(user) {
-        if (!user) {
-            deferred.reject();
-        } else {
-            deferred.resolve(user.profile);
-        }
-    }).catch(function(err) {
-        deferred.reject(err);
+    return new Promise(function(resolve, reject) {
+        User.findByIdAsync(userId).then(function(user) {
+            if (!user) {
+                reject();
+            } else {
+                resolve(user.profile);
+            }
+        }).catch(function(err) {
+            reject(err);
+        });
     });
-    return deferred.promise;
 };
 
 /**
@@ -28,19 +28,19 @@ exports.getUserProfile = function(userId) {
  * @return {Promise} userId
  */
 exports.getUserId = function(email) {
-    var deferred = Promise.defer();
-    var query = User.where({
-        email: email
-    });
+    return new Promise(function(resolve, reject) {
+        var query = User.where({
+            email: email
+        });
 
-    query.findOne(function(err, user) {
-        if (err) {
-            deferred.reject(err);
-        } else if (user) {
-            deferred.resolve(user._id);
-        } else {
-            deferred.reject(err);
-        }
+        query.findOne(function(err, user) {
+            if (err) {
+                reject(err);
+            } else if (user) {
+                resolve(user._id);
+            } else {
+                reject(err);
+            }
+        });
     });
-    return deferred.promise;
 };

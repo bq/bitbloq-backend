@@ -7,13 +7,13 @@ var Project = require('./project.model'),
 
 function updateProject(projectId, dataProject, res) {
     Project.findByIdAndUpdateAsync(projectId, dataProject).then(function() {
-        if(res){
+        if (res) {
             res.sendStatus(200);
         }
     }).catch(utils.validationError(res));
 }
 
-function clearProject(project){
+function clearProject(project) {
     delete project._id;
     delete project.timesViewed;
     delete project.timesAdded;
@@ -41,7 +41,7 @@ exports.show = function(req, res, next) {
             if (!project) {
                 return res.status(404).end();
             }
-            if(req.query && req.query.profile){
+            if (req.query && req.query.profile) {
                 res.json(project.profile);
             } else {
                 //if(no eres el user ni estas en el acl){
@@ -75,16 +75,16 @@ exports.getAll = function(req, res) {
 
             Promise.map(projects, function(item) {
                 var project = JSON.parse(JSON.stringify(item));
-                var deferred = Promise.defer();
-                UserFunctions.getUserProfile(project.creatorId).then(function(user) {
-                    project.creatorUsername = user.username;
-                    projectResult.push(project);
-                    deferred.resolve();
-                }).catch(function() {
-                    projectResult.push(project);
-                    deferred.resolve();
+                return new Promise(function(resolve, reject) {
+                    UserFunctions.getUserProfile(project.creatorId).then(function(user) {
+                        project.creatorUsername = user.username;
+                        projectResult.push(project);
+                        resolve();
+                    }).catch(function() {
+                        projectResult.push(project);
+                        resolve();
+                    });
                 });
-                return deferred.promise;
             }).then(function() {
                 return res.status(200).json(projectResult);
             }).catch(utils.handleError(res));
@@ -151,17 +151,17 @@ exports.share = function(req, res) {
     var emails = req.body.emails;
     var noUsers = [];
     Project.findByIdAsync(projectId).then(function(project) {
-        Promise.map(emails, function(email){
-            var deferred = Promise.defer();
-            UserFunctions.getUserId(email).then(function(userId){
-                project.share({id: userId, email: email});
-                deferred.resolve();
-            }).catch(function(){
-                noUsers.push(email);
-                deferred.resolve();
+        Promise.map(emails, function(email) {
+            return new Promise(function(resolve, reject) {
+                UserFunctions.getUserId(email).then(function(userId) {
+                    project.share({id: userId, email: email});
+                    resolve();
+                }).catch(function() {
+                    noUsers.push(email);
+                    resolve();
+                });
             });
-            return deferred.promise;
-        }).then(function(){
+        }).then(function() {
             updateProject(projectId, project);
             res.status(200).json({noUsers: noUsers})
         }).catch(utils.handleError(res));
