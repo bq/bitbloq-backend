@@ -20,6 +20,37 @@ function clearProject(project) {
     delete project._acl;
     return project;
 }
+
+
+function getCountPublic(res) {
+    Project.count({
+        '_acl.ALL.permission': 'READ'
+    }).then(function(counter) {
+        res.status(200).json({'count': counter});
+    }).catch(utils.handleError(res));
+}
+
+
+function completeProjects(projects, res) {
+    var projectResult = [];
+    Promise.map(projects, function(item) {
+        var project = JSON.parse(JSON.stringify(item));
+        return new Promise(function(resolve, reject) {
+            UserFunctions.getUserProfile(project.creatorId).then(function(user) {
+                project.creatorUsername = user.username;
+                projectResult.push(project);
+                resolve();
+            }).catch(function() {
+                projectResult.push(project);
+                resolve();
+            });
+        });
+    }).then(function() {
+        res.status(200).json(projectResult);
+    }).catch(utils.handleError(res));
+}
+
+
 /**
  * Create a new project
  */
@@ -56,39 +87,35 @@ exports.show = function(req, res, next) {
         });
 };
 
+function getSearch(query, res) {
+    query = JSON.parse(query);
+    query = utils.extend(query, {'_acl.ALL.permission': 'READ'});
+
+    Project.find(query).then(function(projects) {
+        completeProjects(projects, res)
+    }).catch(utils.handleError(res));
+}
+
+function checkQuery(query, res) {
+    if (query.count === '*') {
+        getCountPublic(res);
+    } else if (query.query) {
+        getSearch(query.query, res);
+    }
+}
+
 
 /**
  * Get public project list
  */
 exports.getAll = function(req, res) {
-    if (req.query && req.query.count === '*') {
-        Project.count({
-            '_acl.ALL.permission': 'READ'
-        }).then(function(counter) {
-            return res.status(200).json({'count': counter});
-        }).catch(utils.handleError(res));
+    if (req.query && !utils.isEmpty(req.query)) {
+        checkQuery(req.query, res);
     } else {
         Project.find({
             '_acl.ALL.permission': 'READ'
         }).then(function(projects) {
-            var projectResult = [];
-
-            Promise.map(projects, function(item) {
-                var project = JSON.parse(JSON.stringify(item));
-                return new Promise(function(resolve, reject) {
-                    UserFunctions.getUserProfile(project.creatorId).then(function(user) {
-                        project.creatorUsername = user.username;
-                        projectResult.push(project);
-                        resolve();
-                    }).catch(function() {
-                        projectResult.push(project);
-                        resolve();
-                    });
-                });
-            }).then(function() {
-                return res.status(200).json(projectResult);
-            }).catch(utils.handleError(res));
-
+            completeProjects(projects, res)
         }).catch(utils.handleError(res));
     }
 };
