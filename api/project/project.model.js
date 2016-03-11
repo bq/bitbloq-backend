@@ -19,14 +19,14 @@ var ProjectSchema = new mongoose.Schema({
         connections: Array,
         robot: Array
     },
-    "software" : {
-        "vars" : Object,
-        "setup" : Object,
-        "loop" : Object
+    software : {
+        vars : {},
+        setup : {},
+        loop : {}
     },
     hardwareTags: Array,
     userTags: Array,
-    _acl: Object
+    _acl: {}
 });
 
 /**
@@ -68,6 +68,13 @@ ProjectSchema
  * Private functions
  */
 
+
+/**
+ * thereIsAdmin - check if there is an admin
+ * @param {Object} project
+ * @api private
+ * @return {Boolean}
+ */
 var thereIsAdmin = function(project) {
     var admin = false;
     if (project._acl) {
@@ -83,6 +90,12 @@ var thereIsAdmin = function(project) {
 };
 
 
+/**
+ * setUserAdmin - set an user admin
+ * @param {Object} project
+ * @param {String} userId
+ * @api private
+ */
 var setUserAdmin = function(project, userId) {
     project._acl = project._acl || {};
     project._acl['user:' + userId] = {
@@ -90,6 +103,7 @@ var setUserAdmin = function(project, userId) {
         properties: {}
     };
 };
+
 
 /**
  * Methods
@@ -104,9 +118,9 @@ ProjectSchema.methods = {
      */
     setPublic: function() {
         this._acl.ALL = {
-            "permission": "READ",
-            "properties": {
-                "date": new Date()
+            permission: 'READ',
+            properties: {
+                date: new Date()
             }
         }
     },
@@ -133,6 +147,25 @@ ProjectSchema.methods = {
         } else {
             this.timesViewed = 0;
         }
+    },
+
+    /**
+     * share - project is shared with users
+     *
+     * @param {Object} user
+     ** @param {String} user.id
+     ** @param {String} user.email
+     * @api public
+     */
+    share: function(user) {
+        this._acl = this._acl || {};
+        this._acl['user:' + user.id] = {
+            permission: 'READ',
+            properties: {
+                email: user.email,
+                date: new Date()
+            }
+        };
     }
 };
 

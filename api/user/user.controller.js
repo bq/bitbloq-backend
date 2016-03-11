@@ -227,19 +227,9 @@ exports.updateMyProperties = function(req, res) {
  */
 exports.getUserId = function(req, res) {
     var email = req.params.email;
-    var query = User.where({
-        email: email
-    });
-
-    query.findOne(function(err, user) {
-        if (err) {
-            utils.handleError(err);
-        } else if (user) {
-            res.status(200).send(user._id);
-        } else {
-            utils.handleError(err);
-        }
-    });
+    UserFunctions.getUserId(req.params.email).then(function(userId){
+        res.status(200).send(userId);
+    }).catch(utils.handleError(res));
 };
 
 /**

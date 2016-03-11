@@ -10,9 +10,7 @@ function updateProject(projectId, dataProject, res) {
         if(res){
             res.sendStatus(200);
         }
-    }, function(err) {
-        utils.handleError(err);
-    });
+    }).catch(utils.validationError(res));
 }
 
 function clearProject(project){
@@ -68,9 +66,7 @@ exports.getAll = function(req, res) {
             '_acl.ALL.permission': 'READ'
         }).then(function(counter) {
             return res.status(200).json({'count': counter});
-        }).catch(function() {
-            return utils.handleError(res)
-        });
+        }).catch(utils.handleError(res));
     } else {
         Project.find({
             '_acl.ALL.permission': 'READ'
@@ -91,13 +87,9 @@ exports.getAll = function(req, res) {
                 return deferred.promise;
             }).then(function() {
                 return res.status(200).json(projectResult);
-            }).catch(function(err) {
-                return utils.handleError(res)
-            });
+            }).catch(utils.handleError(res));
 
-        }).catch(function() {
-            return utils.handleError(res)
-        });
+        }).catch(utils.handleError(res));
     }
 };
 
@@ -113,9 +105,7 @@ exports.me = function(req, res, next) {
         .then(function(projects) {
             res.status(200).json(projects);
         })
-        .catch(function() {
-            utils.handleError(res)
-        });
+        .catch(utils.handleError(res));
 };
 
 
@@ -137,9 +127,7 @@ exports.publish = function(req, res) {
     Project.findByIdAsync(projectId).then(function(project) {
         project.setPublic();
         updateProject(projectId, project, res);
-    }, function(err) {
-        utils.handleError(err);
-    });
+    }, utils.handleError(res));
 };
 
 
@@ -151,9 +139,33 @@ exports.private = function(req, res) {
     Project.findByIdAsync(projectId).then(function(project) {
         project.setPrivate();
         updateProject(projectId, project, res);
-    }, function(err) {
-        utils.handleError(err);
-    });
+    }, utils.handleError(res));
+};
+
+
+/**
+ * Share my project with other users
+ */
+exports.share = function(req, res) {
+    var projectId = req.params.id;
+    var emails = req.body.emails;
+    var noUsers = [];
+    Project.findByIdAsync(projectId).then(function(project) {
+        Promise.map(emails, function(email){
+            var deferred = Promise.defer();
+            UserFunctions.getUserId(email).then(function(userId){
+                project.share({id: userId, email: email});
+                deferred.resolve();
+            }).catch(function(){
+                noUsers.push(email);
+                deferred.resolve();
+            });
+            return deferred.promise;
+        }).then(function(){
+            updateProject(projectId, project);
+            res.status(200).json({noUsers: noUsers})
+        }).catch(utils.handleError(res));
+    }).catch(utils.handleError(res));
 };
 
 
