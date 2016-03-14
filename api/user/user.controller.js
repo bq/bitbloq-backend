@@ -54,6 +54,82 @@ exports.create = function(req, res) {
 };
 
 /**
+ * Social login
+ */
+exports.socialLogin = function(req, res) {
+    var provider = req.body.provider;
+    var token = req.body.accessToken;
+    console.log('provider:', provider);
+    console.log('provider:', token);
+    switch (provider) {
+        case 'google':
+            UserFunctions.getGoogleSocialProfile(token).then(function(response) {
+                response = JSON.parse(response);
+                var query = User.where({
+                    $or: [{
+                        email: response.email
+                    }, {
+                        facebookEmail: response.email
+                    }, {
+                        googleEmail: response.email
+                    }]
+                });
+
+                query.findOne(query, function(err, user) {
+                    if (err) {
+                        console.log('error: ', err);
+                        res.status(404).send(err);
+                    }
+                    if (user) {
+                        var token = jwt.sign({
+                            _id: user._id
+                        }, config.secrets.session, {
+                            expiresIn: 60 * 240
+                        });
+                        res.status(200).json({
+                            token: token,
+                            user: user.owner
+                        });
+                    } else {
+                        var userData = {
+                            firstName: response.given_name,
+                            lastName: response.family_name,
+                            email: response.email,
+                            googleEmail: response.email,
+                            properties: {
+                                avatar: response.picture
+                            }
+                        };
+                        var newUser = new User(userData);
+                        newUser.role = 'user';
+                        newUser.saveAsync().then(function(user) {
+                            var token = jwt.sign({
+                                _id: user._id
+                            }, config.secrets.session, {
+                                expiresIn: 60 * 240
+                            });
+                            res.json({
+                                token: token,
+                                user: user.owner
+                            });
+                        }, function(err) {
+                            return res.status(422).json(err);
+                        });
+                    }
+                });
+
+            }).catch(utils.handleError(res));
+            break;
+        case 'facebook':
+            UserFunctions.getFacebookSocialProfile(token);
+            break;
+        default:
+            throw 'Error: not a provider';
+
+    }
+};
+
+/**
  * Returns if a user exists
  */
 exports.usernameExists = function(req, res) {
@@ -176,22 +252,32 @@ exports.me = function(req, res, next) {
  * Update my user
  */
 exports.updateMe = function(req, res) {
-    var userToUpdate = req.body,
+    var reqUser = req.body,
         userId = req.user._id;
-    // Prevent updating sensitive information
-    delete userToUpdate._id;
-    delete userToUpdate.salt;
-    delete userToUpdate.password;
-    delete userToUpdate.social;
-    delete userToUpdate.role;
 
-    User.findByIdAndUpdate(userId, userToUpdate, {
-        new: true
-    }, function(err, user) {
-        if (err) {
-            utils.handleError(err);
+    User.findByIdAsync(userId).then(function(userToUpdate) {
+        if (userToUpdate) {
+            userToUpdate.username = reqUser.username || userToUpdate.username || '';
+            userToUpdate.firstName = reqUser.firstName || userToUpdate.firstName || '';
+            userToUpdate.lastName = reqUser.lastName || userToUpdate.lastName || '';
+            userToUpdate.email = userToUpdate.email || '';
+            userToUpdate.googleEmail = reqUser.googleEmail || userToUpdate.email || '';
+            userToUpdate.facebookEmail = reqUser.facebookEmail || userToUpdate.facebookEmail || '';
+            userToUpdate.role = 'user';
+            userToUpdate.properties.avatar = reqUser.properties.avatar || userToUpdate.properties.avatar || '';
+            userToUpdate.properties.language = reqUser.properties.language || userToUpdate.properties.language || 'es-ES';
+            userToUpdate.properties.newsletter = reqUser.properties.newsletter || userToUpdate.properties.newsletter || '';
+            userToUpdate.properties.cookiePolicyAccepted = reqUser.properties.cookiePolicyAccepted || userToUpdate.properties.cookiePolicyAccepted || '';
+            userToUpdate.properties.hasBeenAskedIfTeacher = reqUser.properties.hasBeenAskedIfTeacher || userToUpdate.properties.hasBeenAskedIfTeacher || '';
+
+            User.updateAsync({
+                _id: userId
+            }, userToUpdate).then(function() {
+                res.status(200).end();
+            });
+        } else {
+            res.sendStatus(204);
         }
-        res.status(200).json(user.owner);
     });
 };
 
@@ -226,8 +312,7 @@ exports.updateMyProperties = function(req, res) {
  * Return a user id
  */
 exports.getUserId = function(req, res) {
-    var email = req.params.email;
-    UserFunctions.getUserId(req.params.email).then(function(userId){
+    UserFunctions.getUserId(req.params.email).then(function(userId) {
         res.status(200).send(userId);
     }).catch(utils.handleError(res));
 };

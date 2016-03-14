@@ -1,5 +1,5 @@
 'use strict';
-
+var request = require('request-promise');
 var User = require('./user.model'),
     Promise = require('bluebird');
 
@@ -43,4 +43,18 @@ exports.getUserId = function(email) {
             }
         });
     });
+};
+
+/**
+ * Get google user data with token
+ */
+exports.getGoogleSocialProfile = function(token) {
+    return request('https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=' + token);
+};
+
+/**
+ * Get facebook user data with token
+ */
+exports.getFacebookSocialProfile = function(token) {
+    return request('https://graph.facebook.com/me?access_token=' + token);
 };

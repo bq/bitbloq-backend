@@ -17,5 +17,6 @@ router.head('/:username', controller.usernameExists);
 router.put('/:id/password', auth.isAuthenticated(), controller.changePassword);
 router.get('/:id', controller.show);
 router.post('/', controller.create);
+router.post('/social', controller.socialLogin);
 
 module.exports = router;
