@@ -57,16 +57,13 @@ function getSearch(res, params) {
     var query = params.query? JSON.parse(params.query) : {};
     query = utils.extend(query, {'_acl.ALL.permission': 'READ'});
     var page = params.page || 0;
-    console.log(query);
-    console.log(page);
     Project.find(query).limit(perPage)
         .skip(perPage * page)
         .sort({
             name: 'asc'
         }).exec(function(err, projects) {
-            console.log('THEN');
             if (err) {
-                utils.handleError(res, err)
+                utils.handleError(res, null, err)
             }
             completeProjects(res, projects)
         });
@@ -114,7 +111,6 @@ exports.show = function(req, res, next) {
  * Get public project list
  */
 exports.getAll = function(req, res) {
-    console.log(req.query);
     if (req.query && !utils.isEmpty(req.query)) {
         if (req.query.count === '*') {
             getCountPublic(res, req.query);
