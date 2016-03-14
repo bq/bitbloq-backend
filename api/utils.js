@@ -1,17 +1,25 @@
 'use strict';
 
-exports.validationError = function(res, statusCode) {
+exports.validationError = function(res, statusCode, error) {
     statusCode = statusCode || 422;
-    return function(err) {
-        res.status(statusCode).json(err);
-    };
+    if(error){
+        res.status(statusCode).send(error);
+    } else {
+        return function(err) {
+            res.status(statusCode).send(err);
+        };
+    }
 };
 
-exports.handleError = function(res, statusCode) {
+exports.handleError = function(res, statusCode, error) {
     statusCode = statusCode || 500;
-    return function(err) {
-        res.status(statusCode).send(err);
-    };
+    if(error){
+        res.status(statusCode).send(error);
+    } else {
+        return function(err) {
+            res.status(statusCode).send(err);
+        };
+    }
 };
 
 

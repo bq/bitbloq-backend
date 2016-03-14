@@ -5,6 +5,8 @@ var Project = require('./project.model'),
     utils = require('../utils'),
     Promise = require('bluebird');
 
+var perPage = 2;
+
 function updateProject(projectId, dataProject, res) {
     Project.findByIdAndUpdateAsync(projectId, dataProject).then(function() {
         if (res) {
@@ -22,16 +24,16 @@ function clearProject(project) {
 }
 
 
-function getCountPublic(res) {
-    Project.count({
-        '_acl.ALL.permission': 'READ'
-    }).then(function(counter) {
+function getCountPublic(res, params) {
+    var query = params.query ? JSON.parse(params.query) : {};
+    query = utils.extend(query, {'_acl.ALL.permission': 'READ'});
+    Project.count(query).then(function(counter) {
         res.status(200).json({'count': counter});
     }).catch(utils.handleError(res));
 }
 
 
-function completeProjects(projects, res) {
+function completeProjects(res, projects) {
     var projectResult = [];
     Promise.map(projects, function(item) {
         var project = JSON.parse(JSON.stringify(item));
@@ -48,6 +50,26 @@ function completeProjects(projects, res) {
     }).then(function() {
         res.status(200).json(projectResult);
     }).catch(utils.handleError(res));
+}
+
+
+function getSearch(res, params) {
+    var query = params.query? JSON.parse(params.query) : {};
+    query = utils.extend(query, {'_acl.ALL.permission': 'READ'});
+    var page = params.page || 0;
+    console.log(query);
+    console.log(page);
+    Project.find(query).limit(perPage)
+        .skip(perPage * page)
+        .sort({
+            name: 'asc'
+        }).exec(function(err, projects) {
+            console.log('THEN');
+            if (err) {
+                utils.handleError(res, err)
+            }
+            completeProjects(res, projects)
+        });
 }
 
 
@@ -87,36 +109,22 @@ exports.show = function(req, res, next) {
         });
 };
 
-function getSearch(query, res) {
-    query = JSON.parse(query);
-    query = utils.extend(query, {'_acl.ALL.permission': 'READ'});
-
-    Project.find(query).then(function(projects) {
-        completeProjects(projects, res)
-    }).catch(utils.handleError(res));
-}
-
-function checkQuery(query, res) {
-    if (query.count === '*') {
-        getCountPublic(res);
-    } else if (query.query) {
-        getSearch(query.query, res);
-    }
-}
-
 
 /**
  * Get public project list
  */
 exports.getAll = function(req, res) {
+    console.log(req.query);
     if (req.query && !utils.isEmpty(req.query)) {
-        checkQuery(req.query, res);
+        if (req.query.count === '*') {
+            getCountPublic(res, req.query);
+        } else if (req.query.query) {
+            getSearch(res, req.query);
+        } else {
+            getSearch(res, req.query);
+        }
     } else {
-        Project.find({
-            '_acl.ALL.permission': 'READ'
-        }).then(function(projects) {
-            completeProjects(projects, res)
-        }).catch(utils.handleError(res));
+        getSearch(res);
     }
 };
 
