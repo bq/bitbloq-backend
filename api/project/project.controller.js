@@ -5,7 +5,7 @@ var Project = require('./project.model'),
     utils = require('../utils'),
     Promise = require('bluebird');
 
-var perPage = 2;
+var perPage = 20;
 
 function updateProject(projectId, dataProject, res) {
     Project.findByIdAndUpdateAsync(projectId, dataProject).then(function() {
@@ -76,7 +76,8 @@ function getSearch(res, params) {
  */
 exports.create = function(req, res) {
     var projectObject = clearProject(req.body);
-    var newProject = new Project(req.body);
+    projectObject.creatorId = req.user._id;
+    var newProject = new Project(projectObject);
     newProject.saveAsync().then(function(project) {
         return res.json(project.id);
     }).catch(utils.validationError(res));
@@ -137,12 +138,27 @@ exports.getAll = function(req, res) {
 
 
 /**
- * Get my info
+ * Get my projects
  */
-exports.me = function(req, res, next) {
+exports.me = function(req, res) {
     var userId = req.user._id,
         query = {};
     query['_acl.user:' + userId + '.permission'] = 'ADMIN';
+    Project.find(query)
+        .then(function(projects) {
+            res.status(200).json(projects);
+        })
+        .catch(utils.handleError(res));
+};
+
+
+/**
+ * Get project shared with me
+ */
+exports.sharedWithMe = function(req, res) {
+    var userId = req.user._id,
+        query = {};
+    query['_acl.user:' + userId + '.permission'] = 'READ';
     Project.find(query)
         .then(function(projects) {
             res.status(200).json(projects);

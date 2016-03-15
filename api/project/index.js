@@ -7,16 +7,17 @@ var auth = require('../../components/auth/auth.service');
 var router = express.Router();
 
 router.get('/', controller.getAll);
-router.get('/me', controller.me);
+router.get('/me', auth.isAuthenticated(), controller.me);
+router.get('/shared', auth.isAuthenticated(), controller.sharedWithMe);
 router.get('/:id', controller.show);
 
 router.post('/', controller.create);
 
-router.put('/:id/private', controller.private);
-router.put('/:id/publish', controller.publish);
-router.put('/:id/share', controller.share);
-router.put('/:id', controller.update);
+router.put('/:id/private', auth.isAuthenticated(), controller.private);
+router.put('/:id/publish', auth.isAuthenticated(), controller.publish);
+router.put('/:id/share', auth.isAuthenticated(), controller.share);
+router.put('/:id', auth.isAuthenticated(), controller.update);
 
-router.delete('/:id', controller.destroy);
+router.delete('/:id', auth.isAuthenticated(), controller.destroy);
 
 module.exports = router;
