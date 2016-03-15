@@ -57,7 +57,8 @@ function getSearch(res, params) {
     var query = params.query? JSON.parse(params.query) : {};
     query = utils.extend(query, {'_acl.ALL.permission': 'READ'});
     var page = params.page || 0;
-    Project.find(query).limit(perPage)
+    Project.find(query)
+        .limit(perPage)
         .skip(perPage * page)
         .sort({
             name: 'asc'
@@ -85,20 +86,36 @@ exports.create = function(req, res) {
  * Get a single project
  */
 exports.show = function(req, res, next) {
+   // console.log(req.user);
+   // console.log(req.user._id);
+
     var projectId = req.params.id;
     Project.findById(projectId)
         .then(function(project) {
             if (!project) {
                 return res.status(404).end();
             }
-            if (req.query && req.query.profile) {
-                res.json(project.profile);
+            if(project._acl.ALL && project._acl.ALL.permission==='READ'){
+                //it is public
+                console.log('ITS PUBLIC');
+                if (req.query && req.query.profile) {
+                    res.json(project.profile);
+                } else {
+                    project.addView();
+                    updateProject(projectId, project);
+                    res.status(200).json(project);
+                }
+            } else if(req.user && project._acl[req.user._id] && (project._acl[req.user._id].permission==='READ' || project._acl[req.user._id].permission==='ADMIN')){
+                //it is a shared project
+                if (req.query && req.query.profile) {
+                    res.json(project.profile);
+                } else {
+                    res.status(200).json(project);
+                }
             } else {
-                //if(no eres el user ni estas en el acl){
-                project.addView();
-                updateProject(projectId, project);
-                //}
-                res.status(200).json(project);
+                //it is a private project
+                //utils.handleError(res, 403, {'error':'forbidden','errorDescription':'This project is forbidden to show with current user'});
+                res.sendStatus(403).end();
             }
         })
         .catch(function(err) {
@@ -111,6 +128,7 @@ exports.show = function(req, res, next) {
  * Get public project list
  */
 exports.getAll = function(req, res) {
+    //console.log(req.user);
     if (req.query && !utils.isEmpty(req.query)) {
         if (req.query.count === '*') {
             getCountPublic(res, req.query);
