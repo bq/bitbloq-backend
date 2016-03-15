@@ -86,9 +86,6 @@ exports.create = function(req, res) {
  * Get a single project
  */
 exports.show = function(req, res, next) {
-   // console.log(req.user);
-   // console.log(req.user._id);
-
     var projectId = req.params.id;
     Project.findById(projectId)
         .then(function(project) {
@@ -97,7 +94,6 @@ exports.show = function(req, res, next) {
             }
             if(project._acl.ALL && project._acl.ALL.permission==='READ'){
                 //it is public
-                console.log('ITS PUBLIC');
                 if (req.query && req.query.profile) {
                     res.json(project.profile);
                 } else {
@@ -114,13 +110,10 @@ exports.show = function(req, res, next) {
                 }
             } else {
                 //it is a private project
-                //utils.handleError(res, 403, {'error':'forbidden','errorDescription':'This project is forbidden to show with current user'});
-                res.sendStatus(403).end();
+                res.status(401).send({'error':'unauthorized','errorDescription':'This project is unauthorized to show with current user'});
             }
         })
-        .catch(function(err) {
-            return next(err);
-        });
+        .catch(utils.handleError(res, 404));
 };
 
 
