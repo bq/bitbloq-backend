@@ -18,9 +18,6 @@ module.exports = function (app) {
     router.use('/project', require('./api/project'));
     router.use('/api/auth', require('./components/auth'));
 
-    // Laura's Jade Views
-    // router.use('/local/project', require('./local/crud'));
-    // router.use('/local/api/project', require('./local/api'));
 
     // Set a prefix for all calls
     app.use('/bitbloq/v1', router);
