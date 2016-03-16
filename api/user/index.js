@@ -15,6 +15,7 @@ router.put('/me', auth.isAuthenticated(), controller.updateMe);
 router.put('/me/properties', auth.isAuthenticated(), controller.updateMyProperties);
 router.head('/:username', controller.usernameExists);
 router.put('/:id/password', auth.isAuthenticated(), controller.changePassword);
+router.put('/:id/social', auth.isAuthenticated(), controller.turnToLocal);
 router.get('/:id', controller.show);
 router.post('/', controller.create);
 router.post('/social', controller.socialLogin);

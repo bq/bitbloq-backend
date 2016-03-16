@@ -6,12 +6,25 @@ var mongoose = require('bluebird').promisifyAll(require('mongoose'));
 var Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
-    firstName: String,
-    lastName: String,
-    username: String,
+    firstName: {
+        type: String,
+        lowercase: true,
+        trim: true
+    },
+    lastName: {
+        type: String,
+        lowercase: true,
+        trim: true
+    },
+    username: {
+        type: String,
+        lowercase: true,
+        trim: true
+    },
     email: {
         type: String,
-        lowercase: true
+        lowercase: true,
+        trim: true
     },
     googleEmail: '',
     facebookEmail: '',
@@ -56,15 +69,16 @@ UserSchema
             'username': this.username,
             'email': this.email,
             'role': this.role,
-            'social': this.social,
             'googleEmail': this.googleEmail,
             'facebookEmail': this.facebookEmail,
             'properties': {
+                'avatar': this.properties.avatar,
                 'newsletter': this.properties.newsletter,
                 'language': this.properties.language,
                 'cookiePolicyAccepted': this.properties.cookiePolicyAccepted,
                 'hasBeenAskedIfTeacher': this.properties.hasBeenAskedIfTeacher
-            }
+            },
+            'provider': this.provider
         };
     });
 
@@ -101,9 +115,16 @@ UserSchema
     .path('email')
     .validate(function(value, respond) {
         var self = this;
-        return this.constructor.findOneAsync({
-            email: value
-        }).then(function(user) {
+        var query = this.constructor.where({
+            $or: [{
+                email: value
+            }, {
+                facebookEmail: value
+            }, {
+                googleEmail: value
+            }]
+        });
+        return this.constructor.findOneAsync(query).then(function(user) {
             if (user) {
                 if (self.id === user.id) {
                     return respond(true);
@@ -120,10 +141,14 @@ UserSchema
 UserSchema
     .path('username')
     .validate(function(value, respond) {
+        var self = this;
         return this.constructor.findOneAsync({
             username: value
         }).then(function(user) {
             if (user) {
+                if (self.id === user.id) {
+                    return respond(true);
+                }
                 return respond(false);
             }
             return respond(true);
@@ -180,6 +205,7 @@ UserSchema.methods = {
      * @return {Boolean}
      * @api public
      */
+
     authenticate: function(password, callback) {
         if (!callback) {
             return this.password === this.encryptPassword(password);

@@ -58,3 +58,7 @@ exports.getGoogleSocialProfile = function(token) {
 exports.getFacebookSocialProfile = function(token) {
     return request('https://graph.facebook.com/me?access_token=' + token);
 };
+
+exports.getFacebookAvatar = function(userId) {
+    return request('http://graph.facebook.com/v2.5/' + userId + '/picture?redirect=false');
+};
