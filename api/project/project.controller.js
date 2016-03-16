@@ -89,7 +89,6 @@ exports.create = function(req, res) {
  */
 exports.show = function(req, res, next) {
     var projectId = req.params.id;
-    console.log(req.user);
     Project.findById(projectId)
         .then(function(project) {
             if (!project) {

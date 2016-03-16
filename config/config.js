@@ -28,11 +28,11 @@ var getConfig = module.exports = function() {
 
         // This is the id of your project in the Google Developers Console.
         gcloud: {
-            projectId: process.env.GCLOUD_PROJECT || 'bitbloq-backend'
+            projectId: process.env.GCLOUD_PROJECT || 'projectId'
         },
 
         // Typically you will create a bucket with the same name as your project ID.
-        cloudStorageBucket: process.env.CLOUD_BUCKET || 'bitbloq-backend',
+        cloudStorageBucket: process.env.CLOUD_BUCKET || 'cloudStorageBucket',
 
         mysql: {
             user: process.env.MYSQL_USER || 'your-mysql-user',
@@ -48,8 +48,8 @@ var getConfig = module.exports = function() {
         // The client ID and secret can be obtained by generating a new web
         // application client ID on Google Developers Console.
         oauth2: {
-            clientId: process.env.OAUTH_CLIENT_ID || '996461800534-sgvaf990c7ds74lc5hu8l4h944sk7n68.apps.googleusercontent.com',
-            clientSecret: process.env.OAUTH_CLIENT_SECRET || 'xCNzVuSnqv5MBtlxoQnd6_NP',
+            clientId: process.env.OAUTH_CLIENT_ID || 'clientId',
+            clientSecret: process.env.OAUTH_CLIENT_SECRET || 'clientSecret',
             redirectUrl: process.env.OAUTH2_CALLBACK || 'http://localhost:8080/oauth2callback',
             scopes: ['email', 'profile']
         }
