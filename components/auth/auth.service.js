@@ -10,17 +10,27 @@ var validateJwt = expressJwt({
 });
 
 /**
+ * Normalize token is query has access token property
+ */
+function normalizeToken(req, res, next) {
+    // allow access_token to be passed through query parameter as well
+    if (req.query && req.query.hasOwnProperty('access_token')) {
+        req.headers.authorization = 'Bearer ' + req.query.access_token;
+    }
+    next();
+}
+
+
+/**
  * Attaches the user object to the request if authenticated
  * Otherwise returns 403
  */
 function isAuthenticated() {
     return compose()
-        // Validate jwt
+        // normalize access token
+        .use(normalizeToken)
+        // Validate jwt if available
         .use(function(req, res, next) {
-            // allow access_token to be passed through query parameter as well
-            if (req.query && req.query.hasOwnProperty('access_token')) {
-                req.headers.authorization = 'Bearer ' + req.query.access_token;
-            }
             validateJwt(req, res, next);
         })
         // Attach user to request
@@ -82,6 +92,44 @@ function setTokenCookie(req, res) {
     res.redirect('/');
 }
 
+
+/**
+ * Attaches the user object to the request if authenticated
+ * Otherwise returns 403
+ */
+function getUser() {
+    return compose()
+        // normalize access token
+        .use(normalizeToken)
+        // Validate jwt if available
+        .use(function(req, res, next) {
+            if (req.headers.authorization) {
+                validateJwt(req, res, next);
+            } else {
+                next();
+            }
+
+        })
+        // Attach user to request
+        .use(function(req, res, next) {
+            if (req.user) {
+                User.findByIdAsync(req.user._id)
+                    .then(function(user) {
+                        if (!user) {
+                            return res.status(401).end();
+                        }
+                        req.user = user;
+                        next();
+                    })
+                    .catch(function(err) {
+                        return next();
+                    });
+            } else {
+                next();
+            }
+        });
+}
+
 /**
  * Send token to user email
  */
@@ -94,3 +142,4 @@ exports.hasRole = hasRole;
 exports.signToken = signToken;
 exports.setTokenCookie = setTokenCookie;
 exports.sendTokenByEmail = sendTokenByEmail;
+exports.getUser = getUser;

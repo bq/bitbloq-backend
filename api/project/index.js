@@ -9,7 +9,7 @@ var router = express.Router();
 router.get('/', controller.getAll);
 router.get('/me', auth.isAuthenticated(), controller.me);
 router.get('/shared', auth.isAuthenticated(), controller.sharedWithMe);
-router.get('/:id', controller.show);
+router.get('/:id', auth.getUser(), controller.show);
 
 router.post('/', controller.create);
 

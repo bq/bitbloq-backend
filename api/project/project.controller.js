@@ -4,6 +4,7 @@ var Project = require('./project.model'),
     UserFunctions = require('../user/user.functions'),
     utils = require('../utils'),
     Promise = require('bluebird');
+var auth = require('../../components/auth/auth.service');
 
 var perPage = 20;
 
@@ -54,7 +55,7 @@ function completeProjects(res, projects) {
 
 
 function getSearch(res, params) {
-    var query = params.query? JSON.parse(params.query) : {};
+    var query = params.query ? JSON.parse(params.query) : {};
     query = utils.extend(query, {'_acl.ALL.permission': 'READ'});
     var page = params.page || 0;
     Project.find(query)
@@ -88,12 +89,14 @@ exports.create = function(req, res) {
  */
 exports.show = function(req, res, next) {
     var projectId = req.params.id;
+    console.log(req.user);
     Project.findById(projectId)
         .then(function(project) {
             if (!project) {
                 return res.status(404).end();
             }
-            if(project._acl.ALL && project._acl.ALL.permission==='READ'){
+
+            if (project._acl.ALL && project._acl.ALL.permission === 'READ') {
                 //it is public
                 if (req.query && req.query.profile) {
                     res.json(project.profile);
@@ -102,7 +105,7 @@ exports.show = function(req, res, next) {
                     updateProject(projectId, project);
                     res.status(200).json(project);
                 }
-            } else if(req.user && project._acl[req.user._id] && (project._acl[req.user._id].permission==='READ' || project._acl[req.user._id].permission==='ADMIN')){
+            } else if (req.user && project._acl['user:' + req.user._id] && (project._acl['user:' + req.user._id].permission === 'READ' || project._acl['user:' + req.user._id].permission === 'ADMIN')) {
                 //it is a shared project
                 if (req.query && req.query.profile) {
                     res.json(project.profile);
@@ -111,7 +114,10 @@ exports.show = function(req, res, next) {
                 }
             } else {
                 //it is a private project
-                res.status(401).send({'error':'unauthorized','errorDescription':'This project is unauthorized to show with current user'});
+                res.status(401).send({
+                    'error': 'unauthorized',
+                    'errorDescription': 'This project is unauthorized to show with current user'
+                });
             }
         })
         .catch(utils.handleError(res, 404));
@@ -122,7 +128,6 @@ exports.show = function(req, res, next) {
  * Get public project list
  */
 exports.getAll = function(req, res) {
-    //console.log(req.user);
     if (req.query && !utils.isEmpty(req.query)) {
         if (req.query.count === '*') {
             getCountPublic(res, req.query);
@@ -142,10 +147,16 @@ exports.getAll = function(req, res) {
  */
 exports.me = function(req, res) {
     var userId = req.user._id,
-        query = {};
+        query = {},
+        page = req.query.page || 0,
+        pageSize = req.query.pageSize || perPage;
     query['_acl.user:' + userId + '.permission'] = 'ADMIN';
     Project.find(query)
-        .then(function(projects) {
+        .limit(pageSize)
+        .skip(pageSize * page)
+        .sort({
+            name: 'asc'
+        }).then(function(projects) {
             res.status(200).json(projects);
         })
         .catch(utils.handleError(res));
@@ -157,10 +168,16 @@ exports.me = function(req, res) {
  */
 exports.sharedWithMe = function(req, res) {
     var userId = req.user._id,
-        query = {};
+        query = {},
+        page = req.query.page || 0,
+        pageSize = req.query.pageSize || perPage;
     query['_acl.user:' + userId + '.permission'] = 'READ';
     Project.find(query)
-        .then(function(projects) {
+        .limit(pageSize)
+        .skip(pageSize * page)
+        .sort({
+            name: 'asc'
+        }).then(function(projects) {
             res.status(200).json(projects);
         })
         .catch(utils.handleError(res));
