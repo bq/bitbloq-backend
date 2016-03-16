@@ -11,7 +11,7 @@ router.get('/me', auth.isAuthenticated(), controller.me);
 router.get('/shared', auth.isAuthenticated(), controller.sharedWithMe);
 router.get('/:id', auth.getUser(), controller.show);
 
-router.post('/', controller.create);
+router.post('/', auth.isAuthenticated(), controller.create);
 
 router.put('/:id/private', auth.isAuthenticated(), controller.private);
 router.put('/:id/publish', auth.isAuthenticated(), controller.publish);

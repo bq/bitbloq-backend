@@ -64,6 +64,7 @@ UserSchema
     .virtual('owner')
     .get(function() {
         return {
+            '_id': this._id,
             'firstName': this.firstName,
             'lastName': this.lastName,
             'username': this.username,

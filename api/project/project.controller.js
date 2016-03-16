@@ -71,6 +71,14 @@ function getSearch(res, params) {
         });
 }
 
+function isOwner(userId, project) {
+    var owner = false;
+    if (project._acl['user:' + userId].permission === 'ADMIN') {
+        owner = true;
+    }
+    return owner;
+}
+
 
 /**
  * Create a new project
@@ -113,7 +121,7 @@ exports.show = function(req, res, next) {
                 }
             } else {
                 //it is a private project
-                res.status(401).send({
+                utils.handleError(res, 401, {
                     'error': 'unauthorized',
                     'errorDescription': 'This project is unauthorized to show with current user'
                 });
@@ -188,8 +196,15 @@ exports.sharedWithMe = function(req, res) {
  */
 exports.update = function(req, res) {
     var projectId = req.params.id;
-    var projectObject = clearProject(req.body);
-    updateProject(projectId, projectObject, res);
+    if (isOwner(req.user._id, req.body)) {
+        var projectObject = clearProject(req.body);
+        updateProject(projectId, projectObject, res);
+    } else {
+        utils.handleError(res, 401, {
+            'error': 'unauthorized',
+            'errorDescription': 'This project is unauthorized to update with current user'
+        });
+    }
 };
 
 
@@ -197,10 +212,18 @@ exports.update = function(req, res) {
  * Publish my project
  */
 exports.publish = function(req, res) {
-    var projectId = req.params.id;
+    var projectId = req.params.id,
+        userId = req.user._id;
     Project.findByIdAsync(projectId).then(function(project) {
-        project.setPublic();
-        updateProject(projectId, project, res);
+        if (project.isOwner(userId)) {
+            project.setPublic();
+            updateProject(projectId, project, res);
+        } else {
+            utils.handleError(res, 401, {
+                'error': 'unauthorized',
+                'errorDescription': 'This project is unauthorized to publish with current user'
+            });
+        }
     }, utils.handleError(res));
 };
 
@@ -209,10 +232,18 @@ exports.publish = function(req, res) {
  * Privatize my project
  */
 exports.private = function(req, res) {
-    var projectId = req.params.id;
+    var projectId = req.params.id,
+        userId = req.user._id;
     Project.findByIdAsync(projectId).then(function(project) {
-        project.setPrivate();
-        updateProject(projectId, project, res);
+        if (project.isOwner(userId)) {
+            project.setPrivate();
+            updateProject(projectId, project, res);
+        } else {
+            utils.handleError(res, 401, {
+                'error': 'unauthorized',
+                'errorDescription': 'This project is unauthorized to publish with current user'
+            });
+        }
     }, utils.handleError(res));
 };
 
@@ -221,24 +252,32 @@ exports.private = function(req, res) {
  * Share my project with other users
  */
 exports.share = function(req, res) {
-    var projectId = req.params.id;
-    var emails = req.body.emails;
-    var noUsers = [];
+    var projectId = req.params.id,
+        emails = req.body.emails,
+        noUsers = [],
+        userId = req.user._id;
     Project.findByIdAsync(projectId).then(function(project) {
-        Promise.map(emails, function(email) {
-            return new Promise(function(resolve, reject) {
-                UserFunctions.getUserId(email).then(function(userId) {
-                    project.share({id: userId, email: email});
-                    resolve();
-                }).catch(function() {
-                    noUsers.push(email);
-                    resolve();
+        if (project.isOwner(userId)) {
+            Promise.map(emails, function(email) {
+                return new Promise(function(resolve, reject) {
+                    UserFunctions.getUserId(email).then(function(userId) {
+                        project.share({id: userId, email: email});
+                        resolve();
+                    }).catch(function() {
+                        noUsers.push(email);
+                        resolve();
+                    });
                 });
+            }).then(function() {
+                updateProject(projectId, project);
+                res.status(200).json({noUsers: noUsers})
+            }).catch(utils.handleError(res));
+        } else {
+            utils.handleError(res, 401, {
+                'error': 'unauthorized',
+                'errorDescription': 'This project is unauthorized to publish with current user'
             });
-        }).then(function() {
-            updateProject(projectId, project);
-            res.status(200).json({noUsers: noUsers})
-        }).catch(utils.handleError(res));
+        }
     }).catch(utils.handleError(res));
 };
 

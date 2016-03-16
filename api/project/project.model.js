@@ -10,19 +10,19 @@ var ProjectSchema = new mongoose.Schema({
     videoUrl: String,
     code: String,
     codeProject: Boolean,
-    timesViewed: { type: Number, default: 0 },
-    timesAdded: { type: Number, default: 0 },
-    defaultTheme: { type: String, default: 'infotab_option_colorTheme' },
+    timesViewed: {type: Number, default: 0},
+    timesAdded: {type: Number, default: 0},
+    defaultTheme: {type: String, default: 'infotab_option_colorTheme'},
     hardware: {
         board: String,
         components: Array,
         connections: Array,
         robot: Array
     },
-    software : {
-        vars : {},
-        setup : {},
-        loop : {}
+    software: {
+        vars: {},
+        setup: {},
+        loop: {}
     },
     hardwareTags: Array,
     userTags: Array,
@@ -54,7 +54,6 @@ ProjectSchema
  */
 ProjectSchema
     .pre('save', function(next) {
-        console.log('PRE SAVE');
         if (!thereIsAdmin(this)) {
             setUserAdmin(this, this.creatorId);
             next(this);
@@ -62,6 +61,13 @@ ProjectSchema
             next();
         }
     });
+
+
+ProjectSchema
+.pre('remove', function(next) {
+    console.log('REMOVE');
+        //todo
+});
 
 
 /**
@@ -142,7 +148,7 @@ ProjectSchema.methods = {
      * @api public
      */
     addView: function() {
-        if(this.timesViewed) {
+        if (this.timesViewed) {
             this.timesViewed++;
         } else {
             this.timesViewed = 0;
@@ -166,6 +172,21 @@ ProjectSchema.methods = {
                 date: new Date()
             }
         };
+    },
+
+    /**
+     * share - project is shared with users
+     *
+     * @param {String} userId
+     * @return {Boolean}
+     * @api public
+     */
+    isOwner: function(userId) {
+        var owner = false;
+        if (this._acl['user:' + userId].permission === 'ADMIN') {
+            owner = true;
+        }
+        return owner;
     }
 };
 
