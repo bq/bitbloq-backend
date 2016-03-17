@@ -5,19 +5,18 @@
 'use strict';
 
 var errors = require('./components/errors');
-var path = require('path');
 var express = require('express');
 var router = express.Router();
 
-module.exports = function (app) {
+module.exports = function(app) {
 
     // Insert routes below
     // router.use('/api/projects', require('./api/project/'));
     // router.use('/api/images', require('./api/image/'));
-    router.use('/api/users', require('./api/user'));
+    router.use('/users', require('./api/user'));
     router.use('/project', require('./api/project'));
-    router.use('/api/auth', require('./components/auth'));
-
+    router.use('/auth', require('./components/auth'));
+    router.use('/mailer', require('./api/mailer'));
 
     // Set a prefix for all calls
     app.use('/bitbloq/v1', router);

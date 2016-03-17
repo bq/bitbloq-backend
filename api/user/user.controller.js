@@ -5,14 +5,16 @@ var User = require('./user.model'),
     utils = require('../utils'),
     config = require('../../config/environment'),
     jwt = require('jsonwebtoken'),
-    auth = require('../../components/auth/auth.service');
-
+    auth = require('../../components/auth/auth.service'),
+    mailer = require('../../components/mailer');
 
 /**
  * Get list of users
  * restriction: 'admin'
  */
 exports.index = function(req, res) {
+    console.log('===============================TU MADRE EN TANGA!===============================index');
+
     var limit = req.query.limit || 0;
     var skip = req.query.skip || 0;
     var sortKey = req.query.sortKey || '_id';
@@ -35,6 +37,8 @@ exports.index = function(req, res) {
  * Creates a new user
  */
 exports.create = function(req, res) {
+    console.log('===============================TU MADRE EN TANGA!===============================create');
+
     if (req.body.email && req.body.password) {
         var newUser = new User(req.body);
         newUser.provider = 'local';
@@ -59,6 +63,8 @@ exports.create = function(req, res) {
  * Social login
  */
 exports.socialLogin = function(req, res) {
+    console.log('===============================TU MADRE EN TANGA!===============================socialLogin');
+
     var provider = req.body.provider;
     var token = req.body.accessToken;
     switch (provider) {
@@ -218,7 +224,6 @@ exports.socialLogin = function(req, res) {
                                 console.log('No avatar', err);
                             }
 
-
                             var newUser = new User(userData);
                             newUser.role = 'user';
                             newUser.saveAsync().then(function(user) {
@@ -250,6 +255,8 @@ exports.socialLogin = function(req, res) {
  * Returns if a user exists
  */
 exports.usernameExists = function(req, res) {
+    console.log('===============================TU MADRE EN TANGA!===============================usernameExists');
+
     var username = req.params.username;
     var query = User.where({
         username: username
@@ -273,6 +280,8 @@ exports.usernameExists = function(req, res) {
  * Show a single profile user
  */
 exports.show = function(req, res, next) {
+    console.log('===============================TU MADRE EN TANGA!===============================show');
+
     var userId = req.params.id;
     UserFunctions.getUserProfile(userId).then(function(userProfile) {
         res.json(userProfile);
@@ -285,12 +294,13 @@ exports.show = function(req, res, next) {
     });
 };
 
-
 /**
  * Deletes a user
  * restriction: 'admin'
  */
 exports.destroy = function(req, res) {
+    console.log('===============================TU MADRE EN TANGA!===============================destroy');
+
     User.findByIdAndRemoveAsync(req.params.id)
         .then(function() {
             res.status(204).end();
@@ -302,6 +312,8 @@ exports.destroy = function(req, res) {
  * Give password to a social user
  */
 exports.turnToLocal = function(req, res) {
+    console.log('===============================TU MADRE EN TANGA!===============================turnToLocal');
+
     var userId = req.user._id;
     var newPass = String(req.body.newPassword);
 
@@ -324,22 +336,24 @@ exports.turnToLocal = function(req, res) {
  * Change a users password
  */
 exports.changePassword = function(req, res) {
+    console.log('===============================TU MADRE EN TANGA!===============================changePassword');
+    console.log(req.user._id);
     var userId = req.user._id;
-    var oldPass = String(req.body.oldPassword);
+    // var oldPass = String(req.body.oldPassword);
     var newPass = String(req.body.newPassword);
 
     User.findByIdAsync(userId)
         .then(function(user) {
-            if (user.authenticate(oldPass)) {
-                user.password = newPass;
-                return user.saveAsync()
-                    .then(function() {
-                        res.status(204).end();
-                    })
-                    .catch(utils.validationError(res));
-            } else {
-                return res.status(403).end();
-            }
+            // if (user.authenticate(oldPass)) {
+            user.password = newPass;
+            return user.saveAsync()
+                .then(function() {
+                    return res.status(204).end();
+                })
+                .catch(utils.validationError(res));
+            // } else {
+            //     return res.status(403).end();
+            // }
         });
 };
 
@@ -347,6 +361,8 @@ exports.changePassword = function(req, res) {
  * Reset a users password
  */
 exports.resetPassword = function(req, res) {
+    console.log('===============================TU MADRE EN TANGA!===============================resetPassword');
+
     var email = req.params.email;
     var query = User.where({
         email: email
@@ -371,25 +387,34 @@ exports.resetPassword = function(req, res) {
  * Get my info
  */
 exports.me = function(req, res, next) {
-    var userId = req.user._id;
-    User.findOneAsync({
-            _id: userId
-        }, '-salt -password')
-        .then(function(user) {
-            if (!user) {
-                res.status(401).end();
-            }
-            res.json(user.owner);
-        })
-        .catch(function(err) {
-            return next(err);
-        });
+    console.log('===============================TU MADRE EN TANGA!===============================me');
+    if (req) {
+
+        var userId = req.user._id;
+        User.findOneAsync({
+                _id: userId
+            }, '-salt -password')
+            .then(function(user) {
+                if (!user) {
+                    res.status(401).end();
+                }
+                res.json(user.owner);
+            })
+            .catch(function(err) {
+                return next(err);
+            });
+    } else {
+        res.send(404).end();
+    }
 };
 
 /**
  * Update my user
  */
+
 exports.updateMe = function(req, res) {
+    console.log('===============================TU MADRE EN TANGA!===============================updateMe');
+
     var reqUser = req.body,
         userId = req.user._id;
 
@@ -423,6 +448,7 @@ exports.updateMe = function(req, res) {
  * Update my user properties
  */
 exports.updateMyProperties = function(req, res) {
+    console.log('===============================TU MADRE EN TANGA!===============================updateMyProperties');
 
     var userProperties = req.body.properties,
         userId = req.user._id;
@@ -450,6 +476,8 @@ exports.updateMyProperties = function(req, res) {
  * Return a user id
  */
 exports.getUserId = function(req, res) {
+    console.log('===============================TU MADRE EN TANGA!===============================getUserId');
+
     UserFunctions.getUserId(req.params.email).then(function(userId) {
         res.status(200).send(userId);
     }).catch(utils.handleError(res));
@@ -459,5 +487,43 @@ exports.getUserId = function(req, res) {
  * Authentication callback
  */
 exports.authCallback = function(req, res) {
+    console.log('authCallback===============================TU MADRE EN TANGA!===============================authCallback');
+
     res.redirect('/');
+};
+
+/**
+ * Send token by email
+ */
+exports.emailToken = function(req, res) {
+    console.log('emailToken===============================TU MADRE EN TANGA!===============================emailToken');
+
+    var email = req.body.email;
+    var subject = 'Cambio de clave en Bitbloq :)';
+    console.log(config);
+    User.findOneAsync({
+        email: req.body.email
+    }).then(function(user) {
+        console.log('THE USER IS: ', user)
+        var token = jwt.sign({
+                _id: user._id
+            }, config.secrets.session, {
+                expiresIn: 60 * 240
+            }),
+            url = config.CLIENT_DOMAIN + '/#/recovery/' + token,
+            locals = {
+                email: email,
+                subject: subject,
+                resetUrl: url
+            };
+
+        mailer.sendOne('password_reset', locals, function(err) {
+            if (err) {
+                console.log('ERROR: ', err);
+                utils.handleError(res);
+            }
+            res.sendStatus(200);
+        });
+
+    })
 };

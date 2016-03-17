@@ -25,7 +25,7 @@ module.exports = function(app) {
 
     app.use(compression());
     app.use(bodyParser.urlencoded({
-        extended: true
+        extended: false
     }));
     app.use(bodyParser.json());
     app.use(cookieParser());
@@ -45,7 +45,6 @@ module.exports = function(app) {
     //   })
     // }));
 
-
     // Allow CORS
     app.use(function(req, res, next) {
         res.header('Access-Control-Allow-Origin', req.headers.origin);
@@ -58,7 +57,6 @@ module.exports = function(app) {
     var cors = require('cors');
 
     app.use(cors());
-
 
     /**
      * Lusca - express server security
@@ -78,7 +76,6 @@ module.exports = function(app) {
     //       xssProtection: true
     //     }));
     //   }
-
 
     if ('production' === env) {
         app.use(morgan('dev'));
