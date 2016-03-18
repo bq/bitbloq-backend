@@ -17,6 +17,7 @@ module.exports = function(app) {
     router.use('/project', require('./api/project'));
     router.use('/auth', require('./components/auth'));
     router.use('/mailer', require('./api/mailer'));
+    router.use('/forum', require('./api/forum'));
 
     // Set a prefix for all calls
     app.use('/bitbloq/v1', router);

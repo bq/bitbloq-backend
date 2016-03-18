@@ -13,7 +13,6 @@ var User = require('./user.model'),
  * restriction: 'admin'
  */
 exports.index = function(req, res) {
-    console.log('===============================TU MADRE EN TANGA!===============================index');
 
     var limit = req.query.limit || 0;
     var skip = req.query.skip || 0;
@@ -37,7 +36,6 @@ exports.index = function(req, res) {
  * Creates a new user
  */
 exports.create = function(req, res) {
-    console.log('===============================TU MADRE EN TANGA!===============================create');
 
     if (req.body.email && req.body.password) {
         var newUser = new User(req.body);
@@ -63,7 +61,6 @@ exports.create = function(req, res) {
  * Social login
  */
 exports.socialLogin = function(req, res) {
-    console.log('===============================TU MADRE EN TANGA!===============================socialLogin');
 
     var provider = req.body.provider;
     var token = req.body.accessToken;
@@ -255,7 +252,6 @@ exports.socialLogin = function(req, res) {
  * Returns if a user exists
  */
 exports.usernameExists = function(req, res) {
-    console.log('===============================TU MADRE EN TANGA!===============================usernameExists');
 
     var username = req.params.username;
     var query = User.where({
@@ -280,7 +276,6 @@ exports.usernameExists = function(req, res) {
  * Show a single profile user
  */
 exports.show = function(req, res, next) {
-    console.log('===============================TU MADRE EN TANGA!===============================show');
 
     var userId = req.params.id;
     UserFunctions.getUserProfile(userId).then(function(userProfile) {
@@ -299,7 +294,6 @@ exports.show = function(req, res, next) {
  * restriction: 'admin'
  */
 exports.destroy = function(req, res) {
-    console.log('===============================TU MADRE EN TANGA!===============================destroy');
 
     User.findByIdAndRemoveAsync(req.params.id)
         .then(function() {
@@ -312,7 +306,6 @@ exports.destroy = function(req, res) {
  * Give password to a social user
  */
 exports.turnToLocal = function(req, res) {
-    console.log('===============================TU MADRE EN TANGA!===============================turnToLocal');
 
     var userId = req.user._id;
     var newPass = String(req.body.newPassword);
@@ -336,7 +329,6 @@ exports.turnToLocal = function(req, res) {
  * Change a users password
  */
 exports.changePassword = function(req, res) {
-    console.log('===============================TU MADRE EN TANGA!===============================changePassword');
     console.log(req.user._id);
     var userId = req.user._id;
     // var oldPass = String(req.body.oldPassword);
@@ -361,7 +353,6 @@ exports.changePassword = function(req, res) {
  * Reset a users password
  */
 exports.resetPassword = function(req, res) {
-    console.log('===============================TU MADRE EN TANGA!===============================resetPassword');
 
     var email = req.params.email;
     var query = User.where({
@@ -387,24 +378,23 @@ exports.resetPassword = function(req, res) {
  * Get my info
  */
 exports.me = function(req, res, next) {
-    console.log('===============================TU MADRE EN TANGA!===============================me');
     if (req) {
 
         var userId = req.user._id;
-        User.findOneAsync({
+        return User.findOne({
                 _id: userId
             }, '-salt -password')
             .then(function(user) {
                 if (!user) {
-                    res.status(401).end();
+                    return res.status(401).end();
                 }
-                res.json(user.owner);
+                return res.json(user.owner);
             })
             .catch(function(err) {
                 return next(err);
             });
     } else {
-        res.send(404).end();
+        return res.send(404).end();
     }
 };
 
@@ -413,12 +403,11 @@ exports.me = function(req, res, next) {
  */
 
 exports.updateMe = function(req, res) {
-    console.log('===============================TU MADRE EN TANGA!===============================updateMe');
 
     var reqUser = req.body,
         userId = req.user._id;
 
-    User.findByIdAsync(userId).then(function(userToUpdate) {
+    return User.findById(userId).then(function(userToUpdate) {
         if (userToUpdate) {
             userToUpdate.username = reqUser.username || userToUpdate.username || '';
             userToUpdate.firstName = reqUser.firstName || userToUpdate.firstName || '';
@@ -433,13 +422,13 @@ exports.updateMe = function(req, res) {
             userToUpdate.properties.cookiePolicyAccepted = reqUser.properties.cookiePolicyAccepted || userToUpdate.properties.cookiePolicyAccepted || '';
             userToUpdate.properties.hasBeenAskedIfTeacher = reqUser.properties.hasBeenAskedIfTeacher || userToUpdate.properties.hasBeenAskedIfTeacher || '';
 
-            User.updateAsync({
+            return User.updateAsync({
                 _id: userId
             }, userToUpdate).then(function() {
-                res.status(200).end();
+                return res.status(200).end();
             });
         } else {
-            res.sendStatus(204);
+            return res.sendStatus(204);
         }
     });
 };
@@ -448,7 +437,6 @@ exports.updateMe = function(req, res) {
  * Update my user properties
  */
 exports.updateMyProperties = function(req, res) {
-    console.log('===============================TU MADRE EN TANGA!===============================updateMyProperties');
 
     var userProperties = req.body.properties,
         userId = req.user._id;
@@ -476,7 +464,6 @@ exports.updateMyProperties = function(req, res) {
  * Return a user id
  */
 exports.getUserId = function(req, res) {
-    console.log('===============================TU MADRE EN TANGA!===============================getUserId');
 
     UserFunctions.getUserId(req.params.email).then(function(userId) {
         res.status(200).send(userId);
@@ -487,7 +474,6 @@ exports.getUserId = function(req, res) {
  * Authentication callback
  */
 exports.authCallback = function(req, res) {
-    console.log('authCallback===============================TU MADRE EN TANGA!===============================authCallback');
 
     res.redirect('/');
 };
@@ -496,7 +482,6 @@ exports.authCallback = function(req, res) {
  * Send token by email
  */
 exports.emailToken = function(req, res) {
-    console.log('emailToken===============================TU MADRE EN TANGA!===============================emailToken');
 
     var email = req.body.email;
     var subject = 'Cambio de clave en Bitbloq :)';
