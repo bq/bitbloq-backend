@@ -63,13 +63,6 @@ ProjectSchema
     });
 
 
-ProjectSchema
-.pre('remove', function(next) {
-    console.log('REMOVE');
-        //todo
-});
-
-
 /**
  * Private functions
  */
@@ -172,6 +165,22 @@ ProjectSchema.methods = {
                 date: new Date()
             }
         };
+    },
+
+    /**
+     * resetShare - project acl is reset
+     *
+     * @api public
+     */
+    resetShare: function() {
+        var newAcl = {};
+        if(this._acl.ALL){
+            newAcl = {
+                'ALL': this._acl.ALL
+            }
+        }
+        this._acl = newAcl;
+        setUserAdmin(this, this.creatorId);
     },
 
     /**

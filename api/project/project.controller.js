@@ -4,7 +4,6 @@ var Project = require('./project.model'),
     UserFunctions = require('../user/user.functions'),
     utils = require('../utils'),
     Promise = require('bluebird');
-var auth = require('../../components/auth/auth.service');
 
 var perPage = 20;
 
@@ -84,6 +83,14 @@ function isOwner(userId, project) {
  * Create a new project
  */
 exports.create = function(req, res) {
+
+    // Was an image uploaded? If so, we'll use its public URL
+    // in cloud storage.
+    if (req.file && req.file.cloudStoragePublicUrl) {
+        req.body.imageUrl = req.file.cloudStoragePublicUrl;
+    }
+
+
     var projectObject = clearProject(req.body);
     projectObject.creatorId = req.user._id;
     var newProject = new Project(projectObject);
@@ -253,24 +260,29 @@ exports.private = function(req, res) {
  */
 exports.share = function(req, res) {
     var projectId = req.params.id,
-        emails = req.body.emails,
-        noUsers = [],
+        emails = req.body,
+        response = {
+            noUsers: [],
+            users: []
+        },
         userId = req.user._id;
     Project.findByIdAsync(projectId).then(function(project) {
         if (project.isOwner(userId)) {
+            project.resetShare();
             Promise.map(emails, function(email) {
                 return new Promise(function(resolve, reject) {
                     UserFunctions.getUserId(email).then(function(userId) {
                         project.share({id: userId, email: email});
+                        response.users.push(email);
                         resolve();
                     }).catch(function() {
-                        noUsers.push(email);
+                        response.noUsers.push(email);
                         resolve();
                     });
                 });
             }).then(function() {
                 updateProject(projectId, project);
-                res.status(200).json({noUsers: noUsers})
+                res.status(200).json({users: response.users, noUsers: response.noUsers})
             }).catch(utils.handleError(res));
         } else {
             utils.handleError(res, 401, {
@@ -286,11 +298,22 @@ exports.share = function(req, res) {
  * Deletes a Project
  */
 exports.destroy = function(req, res) {
-    Project.findByIdAndRemoveAsync(req.params.id)
-        .then(function() {
-            res.status(204).end();
-        })
-        .catch(utils.handleError(res));
+    var userId = req.user._id,
+        projectId = req.params.id;
+    Project.findByIdAsync(projectId).then(function(project) {
+        if (project.isOwner(userId)) {
+            Project.findByIdAndRemoveAsync(projectId)
+                .then(function() {
+                    res.status(204).end();
+                })
+                .catch(utils.handleError(res));
+        } else {
+            utils.handleError(res, 401, {
+                'error': 'unauthorized',
+                'errorDescription': 'This project is unauthorized to delete with current user'
+            });
+        }
+    }).catch(utils.handleError(res));
 };
 
 
