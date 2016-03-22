@@ -83,6 +83,8 @@ CategorySchema
 /**
  * Methods
  */
-CategorySchema.methods = {};
+CategorySchema.methods = {
+
+};
 
 module.exports = mongoose.model('Category', CategorySchema);

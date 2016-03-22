@@ -12,9 +12,9 @@ router.delete('/thread/:id', auth.hasRole('admin'), controller.destroyThread);
 
 // GET
 router.get('/', controller.showForumIndex);
-router.get('/category/:id', controller.showThreadsInCategory);
-router.get('/thread/:id', controller.showThread);
-router.get('/answers/:thread', controller.showAnswersInThread);
+router.get('/categories/:id/:by?', controller.showThreadsInCategory);
+router.get('/threads/:id', controller.showThread);
+router.get('/answers/:id', controller.showAnswersInThread);
 
 // HEAD
 

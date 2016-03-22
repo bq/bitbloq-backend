@@ -31,7 +31,17 @@ exports.createThread = function(req, res) {
 exports.createAnswer = function(req, res) {
     var newAnswer = new Answer(req.body);
     newAnswer.save().then(function() {
-        res.sendStatus(200);
+        newAnswer.countAnswersInThread({
+            threadId: req.body.threadId
+        }).then(function(numberOfAnswers) {
+            Thread.findByIdAndUpdate(newAnswer.threadId, {
+                new: true,
+                lastAnswerDate: newAnswer.updatedAt,
+                numberOfAnswers: numberOfAnswers
+            }).then(function() {
+                res.sendStatus(200);
+            }).catch(utils.handleError(res));
+        }).catch(utils.handleError(res))
     }).catch(utils.validationError(res));
 };
 
@@ -64,6 +74,9 @@ exports.showForumIndex = function(req, res) {
 
                             var defCat = {
                                 name: category.name,
+                                section: category.section,
+                                description: category.description,
+                                order: category.order,
                                 numberOfThreads: numberOfThreads,
                                 numberOfAnswers: numberOfAnswers,
                                 lastThread: thread
@@ -78,6 +91,9 @@ exports.showForumIndex = function(req, res) {
 
                     var defCat = {
                         name: category.name,
+                        section: category.section,
+                        description: category.description,
+                        order: category.order,
                         numberOfThreads: 0,
                         numberOfAnswers: 0,
                         lastThread: ''
@@ -99,14 +115,54 @@ exports.showForumIndex = function(req, res) {
  * Get all threads in a category
  */
 exports.showThreadsInCategory = function(req, res) {
+    var matchThread;
 
-    var matchThread = new Thread({
-        categoryId: req.params.id
-    });
+    switch (req.params.by) {
+        case 'uuid':
+            matchThread = new Thread({
+                categoryId: req.params.id
+            });
 
-    matchThread.getThreadsInCategory().then(function(threads) {
-        res.status(200).json(threads);
-    }).catch(utils.handleError(res));
+            matchThread.getThreadsInCategory().then(function(threads) {
+                res.status(200).json(threads);
+            }).catch(utils.handleError(res));
+            break;
+        case 'id':
+            Category.findById(req.params.id, {
+                uuid: 'uuid',
+                _id: 0
+            }).then(function(response) {
+
+                matchThread = new Thread({
+                    categoryId: response.uuid
+                });
+                matchThread.getThreadsInCategory().then(function(threads) {
+                    res.status(200).json(threads);
+                }).catch(utils.handleError(res));
+            });
+            break;
+        case 'name':
+            var query = Category.where({
+                name: req.params.id
+            });
+            query.findOne({}, {
+                uuid: 'uuid',
+                _id: 0
+            }).then(function(response) {
+                console.log('by name: ', response)
+
+                matchThread = new Thread({
+                    categoryId: response.uuid
+                });
+                matchThread.getThreadsInCategory().then(function(threads) {
+                    res.status(200).json(threads);
+                }).catch(utils.handleError(res));
+            });
+
+            break;
+        default:
+            res.status(422).send('You need to provide "id" or "uuid" ');
+    }
 };
 
 /**
@@ -126,7 +182,7 @@ exports.showThread = function(req, res) {
  */
 exports.showAnswersInThread = function(req, res) {
     var matchAnswers = new Answer({
-        themeId: req.params.thread
+        threadId: req.params.id
     });
     matchAnswers.getAnswersInThread().then(function(answers) {
         res.status(200).json(answers);

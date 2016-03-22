@@ -11,6 +11,14 @@ var ThreadSchema = new Schema({
         trim: true
     },
     lastAnswerDate: Date,
+    numberOfAnswers: {
+        type: Number,
+        default: 0
+    },
+    numberOfViews: {
+        type: Number,
+        default: 0
+    },
     categoryId: {
         type: String,
         lowercase: true,
@@ -61,6 +69,12 @@ ThreadSchema.methods = {
     },
 
     getThreadsInCategory: function() {
+        return this.model('Thread').find({
+            categoryId: this.categoryId
+        });
+    },
+
+    getThreadsInCategoryByID: function() {
         return this.model('Thread').find({
             categoryId: this.categoryId
         });
