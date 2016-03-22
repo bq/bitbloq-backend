@@ -64,6 +64,20 @@ ThreadSchema.methods = {
         return this.model('Thread').find({
             categoryId: this.categoryId
         });
+    },
+
+    getLastThreadInCategory: function() {
+        return this.model('Thread').findOne({
+            categoryId: this.categoryId
+        }).sort({
+            updatedAt: 'asc'
+        }).limit(1);
+    },
+
+    countThreadsInCategory: function() {
+        return this.model('Thread').count({
+            categoryId: this.categoryId
+        });
     }
 };
 

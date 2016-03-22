@@ -2,7 +2,8 @@
 var Answer = require('./models/answer.model'),
     Category = require('./models/category.model'),
     Thread = require('./models/thread.model'),
-    utils = require('../utils');
+    utils = require('../utils'),
+    Promise = require('bluebird');
 
 /**
  * Create Category
@@ -38,7 +39,61 @@ exports.createAnswer = function(req, res) {
  * Gets Main forum section
  */
 exports.showForumIndex = function(req, res) {
-    return res.sendStatus(200);
+    var mainForumCategories = [],
+        promisesArr;
+
+    Category.findAsync({}).then(function(categories) {
+
+        promisesArr = categories.map(function(category) {
+
+            var matchThread = new Thread({
+                categoryId: category.uuid
+            });
+
+            return matchThread.countThreadsInCategory().then(function(numberOfThreads) {
+
+                if (numberOfThreads > 0) {
+
+                    return matchThread.getLastThreadInCategory().then(function(thread) {
+
+                        var countAnswers = new Answer({
+                            threadId: thread._id
+                        });
+
+                        return countAnswers.countAnswersInThread().then(function(numberOfAnswers) {
+
+                            var defCat = {
+                                name: category.name,
+                                numberOfThreads: numberOfThreads,
+                                numberOfAnswers: numberOfAnswers,
+                                lastThread: thread
+                            };
+
+                            mainForumCategories.push(defCat);
+                            Promise.resolve();
+                        });
+                    });
+
+                } else {
+
+                    var defCat = {
+                        name: category.name,
+                        numberOfThreads: 0,
+                        numberOfAnswers: 0,
+                        lastThread: ''
+                    };
+
+                    mainForumCategories.push(defCat);
+                    Promise.resolve();
+                }
+            });
+        });
+
+        return Promise.all(promisesArr).then(function() {
+            res.status(200).json(mainForumCategories);
+        });
+    }).catch(utils.handleError(res));
+
 };
 /**
  * Get all threads in a category

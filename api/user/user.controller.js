@@ -45,7 +45,7 @@ exports.create = function(req, res) {
             var token = jwt.sign({
                 _id: user._id
             }, config.secrets.session, {
-                expiresIn: 60 * 240
+                expiresIn: 600 * 240
             });
             res.json({
                 token: token
@@ -99,7 +99,7 @@ exports.socialLogin = function(req, res) {
                                 var token = jwt.sign({
                                     _id: user._id
                                 }, config.secrets.session, {
-                                    expiresIn: 60 * 240
+                                    expiresIn: 600 * 240
                                 });
                                 res.status(200).json({
                                     token: token,
@@ -110,7 +110,7 @@ exports.socialLogin = function(req, res) {
                             var token = jwt.sign({
                                 _id: user._id
                             }, config.secrets.session, {
-                                expiresIn: 60 * 240
+                                expiresIn: 600 * 240
                             });
                             res.status(200).json({
                                 token: token,
@@ -134,7 +134,7 @@ exports.socialLogin = function(req, res) {
                             var token = jwt.sign({
                                 _id: user._id
                             }, config.secrets.session, {
-                                expiresIn: 60 * 240
+                                expiresIn: 600 * 240
                             });
                             res.json({
                                 token: token,
@@ -181,7 +181,7 @@ exports.socialLogin = function(req, res) {
                                 var token = jwt.sign({
                                     _id: user._id
                                 }, config.secrets.session, {
-                                    expiresIn: 60 * 240
+                                    expiresIn: 600 * 240
                                 });
                                 res.status(200).json({
                                     token: token,
@@ -192,7 +192,7 @@ exports.socialLogin = function(req, res) {
                             var token = jwt.sign({
                                 _id: user._id
                             }, config.secrets.session, {
-                                expiresIn: 60 * 240
+                                expiresIn: 600 * 240
                             });
                             res.status(200).json({
                                 token: token,
@@ -227,7 +227,7 @@ exports.socialLogin = function(req, res) {
                                 var token = jwt.sign({
                                     _id: user._id
                                 }, config.secrets.session, {
-                                    expiresIn: 60 * 240
+                                    expiresIn: 600 * 240
                                 });
                                 res.json({
                                     token: token,
@@ -493,7 +493,7 @@ exports.emailToken = function(req, res) {
         var token = jwt.sign({
                 _id: user._id
             }, config.secrets.session, {
-                expiresIn: 60 * 240
+                expiresIn: 600 * 240
             }),
             url = config.CLIENT_DOMAIN + '/#/recovery/' + token,
             locals = {

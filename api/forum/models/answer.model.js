@@ -26,7 +26,7 @@ var AnswerSchema = new Schema({
             trim: true
         }
     },
-    themeId: {
+    threadId: {
         type: String,
         lowercase: false,
         trim: false
@@ -65,7 +65,12 @@ AnswerSchema
 AnswerSchema.methods = {
     getAnswersInThread: function() {
         return this.model('Answer').find({
-            themeId: this.themeId
+            threadId: this.threadId
+        });
+    },
+    countAnswersInThread: function() {
+        return this.model('Answer').count({
+            threadId: this.threadId
         });
     }
 };

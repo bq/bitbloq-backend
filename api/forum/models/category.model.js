@@ -53,6 +53,25 @@ CategorySchema
         return section.length;
     }, 'Category section cannot be empty');
 
+// Validate unique name
+CategorySchema
+    .path('name')
+    .validate(function(name, respond) {
+        return this.constructor.findOneAsync({
+            name: name
+        }).then(function(category) {
+            if (category) {
+                return respond(false);
+            } else {
+                return respond(true);
+            }
+            return respond(true);
+        }).catch(function(err) {
+            throw err;
+        })
+
+    }, 'Category name already in use');
+
 /**
  * Pre-save hook
  */

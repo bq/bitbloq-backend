@@ -6,7 +6,8 @@ var expressJwt = require('express-jwt');
 var compose = require('composable-middleware');
 var User = require('../../api/user/user.model');
 var validateJwt = expressJwt({
-    secret: config.secrets.session
+    secret: config.secrets.session,
+    credentialsRequired: false
 });
 
 /**
@@ -19,7 +20,6 @@ function normalizeToken(req, res, next) {
     }
     next();
 }
-
 
 /**
  * Attaches the user object to the request if authenticated
@@ -35,7 +35,7 @@ function isAuthenticated() {
         })
         // Attach user to request
         .use(function(req, res, next) {
-            User.findByIdAsync(req.user._id)
+            User.findByIdAsync(req.user && req.user._id)
                 .then(function(user) {
                     if (!user) {
                         return res.status(401).end();
@@ -76,7 +76,7 @@ function signToken(id, role) {
         _id: id,
         role: role
     }, config.secrets.session, {
-        expiresIn: 60 * 240
+        expiresIn: 600 * 240
     });
 }
 
@@ -91,7 +91,6 @@ function setTokenCookie(req, res) {
     res.cookie('token', token);
     res.redirect('/');
 }
-
 
 /**
  * Attaches the user object to the request if authenticated
@@ -121,7 +120,7 @@ function getUser() {
                         req.user = user;
                         next();
                     })
-                    .catch(function(err) {
+                    .catch(function() {
                         return next();
                     });
             } else {
