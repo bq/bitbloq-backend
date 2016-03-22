@@ -149,8 +149,6 @@ exports.showThreadsInCategory = function(req, res) {
                 uuid: 'uuid',
                 _id: 0
             }).then(function(response) {
-                console.log('by name: ', response)
-
                 matchThread = new Thread({
                     categoryId: response.uuid
                 });

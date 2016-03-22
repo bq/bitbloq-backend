@@ -329,7 +329,6 @@ exports.turnToLocal = function(req, res) {
  * Change a users password
  */
 exports.changePassword = function(req, res) {
-    console.log(req.user._id);
     var userId = req.user._id;
     // var oldPass = String(req.body.oldPassword);
     var newPass = String(req.body.newPassword);
@@ -485,11 +484,9 @@ exports.emailToken = function(req, res) {
 
     var email = req.body.email;
     var subject = 'Cambio de clave en Bitbloq :)';
-    console.log(config);
     User.findOneAsync({
         email: req.body.email
     }).then(function(user) {
-        console.log('THE USER IS: ', user)
         var token = jwt.sign({
                 _id: user._id
             }, config.secrets.session, {
@@ -504,7 +501,6 @@ exports.emailToken = function(req, res) {
 
         mailer.sendOne('password_reset', locals, function(err) {
             if (err) {
-                console.log('ERROR: ', err);
                 utils.handleError(res);
             }
             res.sendStatus(200);

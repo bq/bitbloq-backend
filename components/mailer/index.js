@@ -13,8 +13,6 @@
         switch (process.env.NODE_ENV) {
             case 'local':
             case 'development':
-                console.log('creamos el defaultTransport de emails');
-                console.log(config.mailer.auth);
                 defaultTransport = nodemailer.createTransport('smtps://' + config.mailer.auth.user + '%40gmail.com:' + config.mailer.auth.pass + '@smtp.gmail.com');
                 break;
             case 'production':
@@ -51,13 +49,11 @@
         }
         emailTemplates(templatesDir, function(err, template) {
             if (err) {
-                //console.log(err);
                 return fn(err);
             }
             // Send a single email
             template(templateName, locals, function(err, html, text) {
                 if (err) {
-                    //console.log(err);
                     return fn(err);
                 }
 
