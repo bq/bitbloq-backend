@@ -6,17 +6,17 @@ var auth = require('../../components/auth/auth.service');
 
 var router = express.Router();
 
-router.delete('/:id', auth.hasRole('admin'), controller.destroy);
+// HEAD
+router.head('/:username', controller.usernameExists);
 
+router.delete('/:id', auth.hasRole('admin'), controller.destroy);
 // GET
 router.get('/', auth.hasRole('admin'), controller.index);
 router.get('/reset/:email', controller.resetPassword);
 router.get('/email/:email', controller.getUserId);
 router.get('/me', auth.isAuthenticated(), controller.me);
-router.get('/:id', controller.show);
 
-// HEAD
-router.head('/:username', controller.usernameExists);
+router.get('/:id', controller.show);
 
 // POST
 router.post('/', controller.create);
