@@ -72,7 +72,14 @@ AnswerSchema.methods = {
         return this.model('Answer').count({
             threadId: this.threadId
         });
-    }
+    },
+    getLastAnswerInThread: function() {
+        return this.model('Answer').findOne({
+            threadId: this.threadId
+        }).sort({
+            updatedAt: 'asc'
+        }).limit(1);
+    },
 };
 
 module.exports = mongoose.model('Answer', AnswerSchema);

@@ -19,9 +19,46 @@ exports.createCategory = function(req, res) {
  * Create Thread
  */
 exports.createThread = function(req, res) {
-    var newThread = new Thread(req.body);
+    var newThread = new Thread(req.body.thread);
+    var newAnswer = new Answer(req.body.answer);
+    var matchThread = new Thread({
+        categoryId: req.body.thread.categoryId
+    });
+    // Save the thread
     newThread.save().then(function() {
-        res.sendStatus(200);
+        newAnswer.threadId = newThread._id;
+        // Save the answer
+        newAnswer.save().then(function() {
+            // Get all threads in category
+            matchThread.getThreadsInCategory({
+                categoryId: req.body.categoryId
+            }).then(function(threads) {
+                // Count answers and threads
+                var numberOfAnswers = 0;
+                var numberOfThreads = threads.length;
+                threads.forEach(function(thread) {
+                    if (thread.numberOfAnswers > 1) {
+                        numberOfAnswers += thread.numberOfAnswers - 1
+                        console.log('Tiene', thread.numberOfAnswers);
+                    } else if (thread.numberOfAnswers === 1) {
+                        if (thread._id !== newThread._id) {
+                            numberOfAnswers += 1;
+                        }
+                    }
+                });
+                console.log('Total: ', numberOfAnswers);
+                // Update Category stats
+                Category.findOneAndUpdate({
+                    uuid: newThread.categoryId
+                }, {
+                    numberOfThreads: numberOfThreads,
+                    lastThread: newThread,
+                    numberOfAnswers: numberOfAnswers
+                }).then(function() {
+                    res.status(200).send(newThread._id);
+                }).catch(utils.handleError(res));
+            }).catch(utils.handleError(res));
+        }).catch(utils.validationError(res));
     }).catch(utils.validationError(res));
 };
 
@@ -34,12 +71,28 @@ exports.createAnswer = function(req, res) {
         newAnswer.countAnswersInThread({
             threadId: req.body.threadId
         }).then(function(numberOfAnswers) {
+            if (numberOfAnswers <= 1) {
+                numberOfAnswers = 0;
+            } else {
+                numberOfAnswers = numberOfAnswers - 1
+            }
             Thread.findByIdAndUpdate(newAnswer.threadId, {
                 new: true,
                 lastAnswerDate: newAnswer.updatedAt,
                 numberOfAnswers: numberOfAnswers
-            }).then(function() {
-                res.sendStatus(200);
+            }).then(function(thread) {
+                Category.findOneAndUpdate({
+                    uuid: thread.categoryId
+                }, {
+                    $set: {
+                        lastThread: thread
+                    },
+                    $inc: {
+                        numberOfAnswers: 1
+                    }
+                }).then(function() {
+                    res.sendStatus(200);
+                }).catch(utils.handleError(res));
             }).catch(utils.handleError(res));
         }).catch(utils.handleError(res))
     }).catch(utils.validationError(res));
@@ -55,54 +108,18 @@ exports.showForumIndex = function(req, res) {
     Category.findAsync({}).then(function(categories) {
 
         promisesArr = categories.map(function(category) {
-
-            var matchThread = new Thread({
-                categoryId: category.uuid
-            });
-
-            return matchThread.countThreadsInCategory().then(function(numberOfThreads) {
-
-                if (numberOfThreads > 0) {
-
-                    return matchThread.getLastThreadInCategory().then(function(thread) {
-
-                        var countAnswers = new Answer({
-                            threadId: thread._id
-                        });
-
-                        return countAnswers.countAnswersInThread().then(function(numberOfAnswers) {
-
-                            var defCat = {
-                                name: category.name,
-                                section: category.section,
-                                description: category.description,
-                                order: category.order,
-                                numberOfThreads: numberOfThreads,
-                                numberOfAnswers: numberOfAnswers,
-                                lastThread: thread
-                            };
-
-                            mainForumCategories.push(defCat);
-                            Promise.resolve();
-                        });
-                    });
-
-                } else {
-
-                    var defCat = {
-                        name: category.name,
-                        section: category.section,
-                        description: category.description,
-                        order: category.order,
-                        numberOfThreads: 0,
-                        numberOfAnswers: 0,
-                        lastThread: ''
-                    };
-
-                    mainForumCategories.push(defCat);
-                    Promise.resolve();
-                }
-            });
+            var defCat = {
+                name: category.name,
+                section: category.section,
+                description: category.description,
+                order: category.order,
+                numberOfThreads: category.numberOfThreads,
+                numberOfAnswers: category.numberOfAnswers,
+                lastThread: category.lastThread,
+                uuid: category.uuid
+            };
+            mainForumCategories.push(defCat);
+            Promise.resolve();
         });
 
         return Promise.all(promisesArr).then(function() {
@@ -199,6 +216,20 @@ exports.updateThread = function(req, res) {
 };
 
 /**
+ * Update thread views
+ */
+exports.updateThreadViews = function(req, res) {
+    var threadId = req.params.id;
+    Thread.findByIdAndUpdateAsync(threadId, {
+        $inc: {
+            numberOfViews: 1
+        }
+    }).then(function() {
+        res.sendStatus(200);
+    }).catch(utils.handleError(res));
+};
+
+/**
  * Update an answer
  */
 exports.updateAnswer = function(req, res) {
@@ -213,12 +244,34 @@ exports.updateAnswer = function(req, res) {
  * Deletes an answer
  */
 exports.destroyAnswer = function(req, res) {
-    var answerId = req.params.id;
-    Answer.findByIdAndRemoveAsync(answerId)
+    var answerId = req.params.id,
+        threadId = req.params.threadid;
+
+    Answer.findByIdAndRemove(answerId)
         .then(function() {
-            res.status(204).end();
-        })
-        .catch(utils.handleError(res));
+            var matchAnswers = new Answer({
+                threadId: threadId
+            });
+            matchAnswers.getLastThreadInCategory().then(function(thread) {
+                Thread.findByIdAndUpdate(thread._id, {
+                    lastAnswerDate: thread.updatedAt,
+                }, {
+                    $inc: {
+                        numberOfAnswers: -1
+                    }
+                }).then(function() {
+                    Category.findOneAndUpdate({
+                        uuid: thread.categoryId
+                    }, {
+                        $inc: {
+                            numberOfAnswers: -1
+                        }
+                    }).then(function() {
+                        res.status(204).end();
+                    }).catch(utils.handleError(res));
+                }).catch(utils.handleError(res));
+            });
+        }).catch(utils.handleError(res));
 };
 
 /**
@@ -226,9 +279,17 @@ exports.destroyAnswer = function(req, res) {
  */
 exports.destroyThread = function(req, res) {
     var threadId = req.params.id;
-    Thread.findByIdAndRemoveAsync(threadId)
-        .then(function() {
+    Thread.findByIdAndRemoveAsync(threadId, {
+        new: true
+    }).then(function(thread) {
+        Category.findOneAndUpdate({
+            uuid: thread.categoryId
+        }, {
+            $inc: {
+                numberOfAnswers: -1
+            }
+        }).then(function() {
             res.status(204).end();
-        })
-        .catch(utils.handleError(res));
+        }).catch(utils.handleError(res));
+    }).catch(utils.handleError(res));
 };

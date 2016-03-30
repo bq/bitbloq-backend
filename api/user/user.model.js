@@ -26,6 +26,10 @@ var UserSchema = new Schema({
         lowercase: true,
         trim: true
     },
+    bannedInForum: {
+        type: Boolean,
+        default: false
+    },
     googleEmail: '',
     facebookEmail: '',
     role: {
@@ -157,7 +161,6 @@ UserSchema
             throw err;
         });
     }, 'The specified username is already in use.');
-
 
 var validatePresenceOf = function(value) {
     return value && value.length;

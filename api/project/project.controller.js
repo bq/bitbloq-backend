@@ -23,15 +23,17 @@ function clearProject(project) {
     return project;
 }
 
-
 function getCountPublic(res, params) {
     var query = params.query ? JSON.parse(params.query) : {};
-    query = utils.extend(query, {'_acl.ALL.permission': 'READ'});
+    query = utils.extend(query, {
+        '_acl.ALL.permission': 'READ'
+    });
     Project.count(query).then(function(counter) {
-        res.status(200).json({'count': counter});
+        res.status(200).json({
+            'count': counter
+        });
     }).catch(utils.handleError(res));
 }
-
 
 function completeProjects(res, projects) {
     var projectResult = [];
@@ -52,10 +54,11 @@ function completeProjects(res, projects) {
     }).catch(utils.handleError(res));
 }
 
-
 function getSearch(res, params) {
     var query = params.query ? JSON.parse(params.query) : {};
-    query = utils.extend(query, {'_acl.ALL.permission': 'READ'});
+    query = utils.extend(query, {
+        '_acl.ALL.permission': 'READ'
+    });
     var page = params.page || 0;
     Project.find(query)
         .limit(perPage)
@@ -78,7 +81,6 @@ function isOwner(userId, project) {
     return owner;
 }
 
-
 /**
  * Create a new project
  */
@@ -89,7 +91,6 @@ exports.create = function(req, res) {
     if (req.file && req.file.cloudStoragePublicUrl) {
         req.body.imageUrl = req.file.cloudStoragePublicUrl;
     }
-
 
     var projectObject = clearProject(req.body);
     projectObject.creatorId = req.user._id;
@@ -137,7 +138,6 @@ exports.show = function(req, res, next) {
         .catch(utils.handleError(res, 404));
 };
 
-
 /**
  * Get public project list
  */
@@ -154,7 +154,6 @@ exports.getAll = function(req, res) {
         getSearch(res);
     }
 };
-
 
 /**
  * Get my projects
@@ -176,7 +175,6 @@ exports.me = function(req, res) {
         .catch(utils.handleError(res));
 };
 
-
 /**
  * Get project shared with me
  */
@@ -197,7 +195,6 @@ exports.sharedWithMe = function(req, res) {
         .catch(utils.handleError(res));
 };
 
-
 /**
  * Update my project
  */
@@ -213,7 +210,6 @@ exports.update = function(req, res) {
         });
     }
 };
-
 
 /**
  * Publish my project
@@ -234,7 +230,6 @@ exports.publish = function(req, res) {
     }, utils.handleError(res));
 };
 
-
 /**
  * Privatize my project
  */
@@ -254,7 +249,6 @@ exports.private = function(req, res) {
     }, utils.handleError(res));
 };
 
-
 /**
  * Share my project with other users
  */
@@ -272,7 +266,10 @@ exports.share = function(req, res) {
             Promise.map(emails, function(email) {
                 return new Promise(function(resolve, reject) {
                     UserFunctions.getUserId(email).then(function(userId) {
-                        project.share({id: userId, email: email});
+                        project.share({
+                            id: userId,
+                            email: email
+                        });
                         response.users.push(email);
                         resolve();
                     }).catch(function() {
@@ -282,7 +279,10 @@ exports.share = function(req, res) {
                 });
             }).then(function() {
                 updateProject(projectId, project);
-                res.status(200).json({users: response.users, noUsers: response.noUsers})
+                res.status(200).json({
+                    users: response.users,
+                    noUsers: response.noUsers
+                })
             }).catch(utils.handleError(res));
         } else {
             utils.handleError(res, 401, {
@@ -292,7 +292,6 @@ exports.share = function(req, res) {
         }
     }).catch(utils.handleError(res));
 };
-
 
 /**
  * Deletes a Project
@@ -315,7 +314,6 @@ exports.destroy = function(req, res) {
         }
     }).catch(utils.handleError(res));
 };
-
 
 /**
  * Authentication callback

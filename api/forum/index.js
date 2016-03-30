@@ -7,7 +7,7 @@ var auth = require('../../components/auth/auth.service');
 var router = express.Router();
 
 // DELETE
-router.delete('/answer/:id', auth.hasRole('admin'), controller.destroyAnswer);
+router.delete('/answer/:id/:threadid/:categoryid', auth.hasRole('admin'), controller.destroyAnswer);
 router.delete('/thread/:id', auth.hasRole('admin'), controller.destroyThread);
 
 // GET
@@ -26,5 +26,7 @@ router.post('/answer', controller.createAnswer);
 // PUT
 router.put('/thread/:id', auth.isAuthenticated(), controller.updateThread);
 router.put('/answer/:id', auth.isAuthenticated(), controller.updateAnswer);
+router.put('/threadStats/views/:id', auth.isAuthenticated(), controller.updateThreadViews);
+// router.put('/threadStats/downloads/:id', auth.isAuthenticated(), controller.updateThreadDownloads);
 
 module.exports = router;

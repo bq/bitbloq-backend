@@ -30,7 +30,10 @@ var CategorySchema = new Schema({
         type: Number,
         min: 0,
         max: 1000
-    }
+    },
+    numberOfThreads: Number,
+    numberOfAnswers: Number,
+    lastThread: {}
 }, {
     timestamps: true
 });
