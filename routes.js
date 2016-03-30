@@ -11,13 +11,13 @@ var router = express.Router();
 module.exports = function(app) {
 
     // Insert routes below
-    // router.use('/api/projects', require('./api/project/'));
     // router.use('/api/images', require('./api/image/'));
     router.use('/users', require('./api/user'));
     router.use('/project', require('./api/project'));
     router.use('/auth', require('./components/auth'));
     router.use('/mailer', require('./api/mailer'));
     router.use('/forum', require('./api/forum'));
+    router.use('/bloq', require('./api/bloq'));
 
     // Set a prefix for all calls
     app.use('/bitbloq/v1', router);
