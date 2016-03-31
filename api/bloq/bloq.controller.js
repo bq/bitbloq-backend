@@ -1,8 +1,7 @@
 'use strict';
 
 var Bloq = require('./bloq.model'),
-    utils = require('../utils'),
-    Promise = require('bluebird');
+    utils = require('../utils');
 
 var perPage = 20;
 
