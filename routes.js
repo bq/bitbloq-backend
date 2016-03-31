@@ -18,6 +18,7 @@ module.exports = function(app) {
     router.use('/mailer', require('./api/mailer'));
     router.use('/forum', require('./api/forum'));
     router.use('/bloq', require('./api/bloq'));
+    router.use('/property', require('./api/property'));
 
     // Set a prefix for all calls
     app.use('/bitbloq/v1', router);

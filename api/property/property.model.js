@@ -1,0 +1,14 @@
+'use strict';
+
+var mongoose = require('bluebird').promisifyAll(require('mongoose'));
+
+var PropertySchema = new mongoose.Schema({
+    web2boardVersion : String,
+    bitbloqLibsVersion : String,
+    bloqsSortTree : {},
+    _createdAt : Date,
+    _updatedAt : Date
+});
+
+
+module.exports = mongoose.model('Property', PropertySchema);
