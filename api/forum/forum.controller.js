@@ -78,7 +78,7 @@ exports.createAnswer = function(req, res) {
             }
             Thread.findByIdAndUpdate(newAnswer.threadId, {
                 new: true,
-                lastAnswerDate: newAnswer.updatedAt,
+                lastAnswer: newAnswer,
                 numberOfAnswers: numberOfAnswers
             }).then(function(thread) {
                 Category.findOneAndUpdate({

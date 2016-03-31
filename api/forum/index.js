@@ -17,6 +17,7 @@ router.get('/threads/:id', controller.showThread);
 router.get('/answers/:id', controller.showAnswersInThread);
 
 // HEAD
+router.head('/threadStats/views/:id', auth.isAuthenticated(), controller.updateThreadViews);
 
 // POST
 router.post('/category', controller.createCategory);
@@ -26,7 +27,6 @@ router.post('/answer', controller.createAnswer);
 // PUT
 router.put('/thread/:id', auth.isAuthenticated(), controller.updateThread);
 router.put('/answer/:id', auth.isAuthenticated(), controller.updateAnswer);
-router.put('/threadStats/views/:id', auth.isAuthenticated(), controller.updateThreadViews);
 // router.put('/threadStats/downloads/:id', auth.isAuthenticated(), controller.updateThreadDownloads);
 
 module.exports = router;

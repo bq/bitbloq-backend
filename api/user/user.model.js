@@ -76,6 +76,7 @@ UserSchema
             'role': this.role,
             'googleEmail': this.googleEmail,
             'facebookEmail': this.facebookEmail,
+            'bannedInForum': this.bannedInForum,
             'properties': {
                 'avatar': this.properties.avatar,
                 'newsletter': this.properties.newsletter,

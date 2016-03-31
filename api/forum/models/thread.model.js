@@ -10,7 +10,7 @@ var ThreadSchema = new Schema({
         lowercase: false,
         trim: true
     },
-    lastAnswerDate: Date,
+    lastAnswer: {},
     numberOfAnswers: {
         type: Number,
         default: 0
