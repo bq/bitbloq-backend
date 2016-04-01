@@ -140,7 +140,7 @@ exports.showThreadsInCategory = function(req, res) {
                 categoryId: req.params.id
             });
 
-            matchThread.getThreadsInCategory().then(function(threads) {
+            matchThread.getThreadsInCategory().sort('-updatedAt').then(function(threads) {
                 res.status(200).json(threads);
             }).catch(utils.handleError(res));
             break;
@@ -153,7 +153,7 @@ exports.showThreadsInCategory = function(req, res) {
                 matchThread = new Thread({
                     categoryId: response.uuid
                 });
-                matchThread.getThreadsInCategory().then(function(threads) {
+                matchThread.getThreadsInCategory().sort('-updatedAt').then(function(threads) {
                     res.status(200).json(threads);
                 }).catch(utils.handleError(res));
             });
@@ -169,7 +169,7 @@ exports.showThreadsInCategory = function(req, res) {
                 matchThread = new Thread({
                     categoryId: response.uuid
                 });
-                matchThread.getThreadsInCategory().then(function(threads) {
+                matchThread.getThreadsInCategory().sort('-updatedAt').then(function(threads) {
                     res.status(200).json(threads);
                 }).catch(utils.handleError(res));
             });

@@ -508,3 +508,38 @@ exports.emailToken = function(req, res) {
 
     })
 };
+
+/**
+ * Ban a user in forum
+ */
+exports.banUserInForum = function(req, res) {
+    var userId = req.params.id;
+    User.findByIdAndUpdate(userId, {
+        bannedInForum: true
+    }).then(function() {
+        res.sendStatus(200);
+    })
+};
+
+/**
+ * Unban a user in forum
+ */
+exports.unbanUserInForum = function(req, res) {
+    var userId = req.params.id;
+    User.findByIdAndUpdate(userId, {
+        bannedInForum: false
+    }).then(function() {
+        res.sendStatus(200);
+    })
+};
+
+/**
+ * Get all banned users
+ */
+exports.showBannedUsers = function(req, res) {
+    User.find({
+        bannedInForum: true
+    }).then(function(users) {
+        res.status(200).json(users);
+    }).catch(utils.handleError(res));
+};
