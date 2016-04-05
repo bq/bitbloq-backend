@@ -46,7 +46,6 @@ exports.createThread = function(req, res) {
                         }
                     }
                 });
-                console.log('Total: ', numberOfAnswers);
                 // Update Category stats
                 Category.findOneAndUpdate({
                     uuid: newThread.categoryId
@@ -279,17 +278,22 @@ exports.destroyAnswer = function(req, res) {
  */
 exports.destroyThread = function(req, res) {
     var threadId = req.params.id;
-    Thread.findByIdAndRemoveAsync(threadId, {
-        new: true
-    }).then(function(thread) {
-        Category.findOneAndUpdate({
-            uuid: thread.categoryId
-        }, {
-            $inc: {
-                numberOfAnswers: -1
-            }
-        }).then(function() {
-            res.status(204).end();
+    var matchAnswers = new Answer({
+        threadId: threadId
+    });
+    matchAnswers.removeAnswersInThread().then(function() {
+        Thread.findByIdAndRemoveAsync(threadId, {
+            new: true
+        }).then(function(thread) {
+            Category.findOneAndUpdate({
+                uuid: thread.categoryId
+            }, {
+                $inc: {
+                    numberOfAnswers: -1
+                }
+            }).then(function() {
+                res.status(204).end();
+            }).catch(utils.handleError(res));
         }).catch(utils.handleError(res));
     }).catch(utils.handleError(res));
 };

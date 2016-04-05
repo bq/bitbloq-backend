@@ -68,6 +68,11 @@ AnswerSchema.methods = {
             threadId: this.threadId
         });
     },
+    removeAnswersInThread: function() {
+        return this.model('Answer').remove({
+            threadId: this.threadId
+        })
+    },
     countAnswersInThread: function() {
         return this.model('Answer').count({
             threadId: this.threadId
