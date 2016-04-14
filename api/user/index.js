@@ -9,18 +9,20 @@ var router = express.Router();
 // DELETE
 router.delete('/:id', auth.hasRole('admin'), controller.destroy);
 
+// HEAD
+router.head('/:username', controller.usernameExists);
+router.head('/:id/ban', auth.hasRole('admin'), controller.banUserInForum);
+router.head('/:id/unban', auth.hasRole('admin'), controller.unbanUserInForum);
+
+
 // GET
 router.get('/', auth.hasRole('admin'), controller.index);
 router.get('/reset/:email', controller.resetPassword);
 router.get('/email/:email', controller.getUserId);
 router.get('/me', auth.isAuthenticated(), controller.me);
 router.get('/banned', controller.showBannedUsers);
-router.get('/:id', controller.show);
 
-// HEAD
-router.head('/:username', controller.usernameExists);
-router.head('/:id/ban', auth.hasRole('admin'), controller.banUserInForum);
-router.head('/:id/unban', auth.hasRole('admin'), controller.unbanUserInForum);
+router.get('/:id', controller.show);
 
 // POST
 router.post('/', controller.create);

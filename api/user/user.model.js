@@ -106,6 +106,8 @@ UserSchema
 UserSchema
     .path('email')
     .validate(function(email) {
+        //TODO esto podría ir en atributo en Schema o meterlo abajo....
+
         return email.length;
     }, 'Email cannot be blank');
 
@@ -113,6 +115,8 @@ UserSchema
 UserSchema
     .path('password')
     .validate(function(password) {
+        //TODO esto podría ir en atributo en Schema....
+
         return password.length;
     }, 'Password cannot be blank');
 
