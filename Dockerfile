@@ -1,6 +1,6 @@
 FROM node:4.4.2
 RUN apt-get update && apt-get install -y git
-COPY bitbloq-backend /usr/bitbloq-backend
+COPY dist /usr/bitbloq-backend
 ENV MONGO_URL files_mongo_1
 WORKDIR /usr/bitbloq-backend
 RUN npm cache clean && npm install
