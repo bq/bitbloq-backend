@@ -7,7 +7,7 @@ module.exports = {
     CLIENT_DOMAIN: 'http://localhost:9000',
     // MongoDB connection options
     mongo: {
-        uri: 'mongodb://104.197.73.145/bitbloq-server-dev'
+        uri: 'mongodb://MONGO_URL/bitbloq-server-dev'
     },
     mailer: {
         auth: {
