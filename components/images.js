@@ -14,7 +14,9 @@
 'use strict';
 
 var request = require('request');
-var gcloud = require('gcloud');
+var gcloud = require('gcloud')({
+    projectId: 'nodejs-us'
+});
 
 
 module.exports = function (gcloudConfig, cloudStorageBucket, logging) {

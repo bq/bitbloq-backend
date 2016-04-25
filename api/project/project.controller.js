@@ -61,8 +61,8 @@ function getSearch(res, params) {
     });
     var page = params.page || 0;
     Project.find(query)
-        .limit(perPage)
-        .skip(perPage * page)
+        .limit(parseInt(perPage))
+        .skip(parseInt(perPage * page))
         .sort({
             name: 'asc'
         }).exec(function(err, projects) {
@@ -85,13 +85,6 @@ function isOwner(userId, project) {
  * Create a new project
  */
 exports.create = function(req, res) {
-
-    // Was an image uploaded? If so, we'll use its public URL
-    // in cloud storage.
-    if (req.file && req.file.cloudStoragePublicUrl) {
-        req.body.imageUrl = req.file.cloudStoragePublicUrl;
-    }
-
     var projectObject = clearProject(req.body);
     projectObject.creatorId = req.user._id;
     var newProject = new Project(projectObject);
@@ -165,8 +158,8 @@ exports.me = function(req, res) {
         pageSize = req.query.pageSize || perPage;
     query['_acl.user:' + userId + '.permission'] = 'ADMIN';
     Project.find(query)
-        .limit(pageSize)
-        .skip(pageSize * page)
+        .limit(parseInt(pageSize))
+        .skip(parseInt(pageSize * page))
         .sort({
             name: 'asc'
         }).then(function(projects) {
@@ -184,9 +177,10 @@ exports.sharedWithMe = function(req, res) {
         page = req.query.page || 0,
         pageSize = req.query.pageSize || perPage;
     query['_acl.user:' + userId + '.permission'] = 'READ';
+
     Project.find(query)
-        .limit(pageSize)
-        .skip(pageSize * page)
+        .limit(parseInt(pageSize))
+        .skip(parseInt(pageSize * page))
         .sort({
             name: 'asc'
         }).then(function(projects) {

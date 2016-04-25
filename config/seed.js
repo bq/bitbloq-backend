@@ -11,7 +11,7 @@ var Category = require('../api/forum/models/category.model');
 var Property = require('../api/property/property.model');
 
 
-return User.find({}).removeAsync()
+User.find({}).removeAsync()
     .then(function() {
         return User.createAsync({
             provider: 'local',
@@ -31,24 +31,34 @@ return User.find({}).removeAsync()
     });
 
 
-return Project.find({}).removeAsync()
+Project.find({}).removeAsync()
     .then(function() {
         return Project.createAsync({
                 "name": "proyecto1",
                 "description": "mi descripcion",
-                "code": "mi code"
+                "code": "mi code",
+                "_acl": {
+                    'user:57164392527b27df52dbe734': {
+                        permission: 'ADMIN'
+                    }
+                }
             },
             {
                 "name": "proyecto2",
                 "description": "otra mas",
-                "code": "codecodecodecode"
+                "code": "codecodecodecode",
+                "_acl": {
+                    'user:57164392527b27df52dbe734': {
+                        permission: 'READ'
+                    }
+                }
             })
             .then(function() {
                 console.log('finished populating projects');
             });
     });
 
-return Bloq.find({}).removeAsync()
+Bloq.find({}).removeAsync()
     .then(function() {
         return Bloq.createAsync({
             "type": "output",
@@ -3960,7 +3970,7 @@ return Bloq.find({}).removeAsync()
             });
     });
 
-return Category.find({}).removeAsync()
+Category.find({}).removeAsync()
     .then(function() {
         return Category.createAsync({
                 "name": "exposición",
@@ -4128,7 +4138,7 @@ return Category.find({}).removeAsync()
             });
     });
 
-return Property.find({}).removeAsync()
+Property.find({}).removeAsync()
     .then(function() {
         return Property.createAsync({
             "web2boardVersion" : "1.0.0",

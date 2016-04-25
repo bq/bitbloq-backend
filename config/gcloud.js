@@ -64,20 +64,20 @@ var clientSecret = config.oauth2.clientSecret;
 
 if (!projectId || projectId === 'your-project-id') {
     throw new Error('You must set the GCLOUD_PROJECT env var or add your ' +
-        'project id to config.js!');
+        'project id to gcloud.js!');
 }
 
 if (!cloudStorageBucket || cloudStorageBucket === 'your-bucket-name') {
     throw new Error('You must set the CLOUD_BUCKET env var or add your ' +
-        'bucket name to config.js!');
+        'bucket name to gcloud.js!');
 }
 
 if (!clientId || clientId === 'your-client-id') {
     throw new Error('You must set the OAUTH_CLIENT_ID env var or add your ' +
-        'client id to config.js!');
+        'client id to gcloud.js!');
 }
 
 if (!clientSecret || clientSecret === 'your-client-secret') {
     throw new Error('You must set the OAUTH_CLIENT_SECRET env var or add your ' +
-        'client secret config.js!');
+        'client secret gcloud.js!');
 }
