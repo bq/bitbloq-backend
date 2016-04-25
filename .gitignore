@@ -10,5 +10,5 @@ dist/
 .idea/
 
 #configurations
-
 config/.env
+config/
