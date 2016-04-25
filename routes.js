@@ -12,7 +12,7 @@ module.exports = function(app) {
 
     // Insert routes below
     // router.use('/api/images', require('./api/image/'));
-    router.use('/users', require('./api/user'));
+    router.use('/user', require('./api/user'));
     router.use('/project', require('./api/project'));
     router.use('/auth', require('./components/auth'));
     router.use('/mailer', require('./api/mailer'));

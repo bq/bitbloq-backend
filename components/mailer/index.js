@@ -4,7 +4,7 @@
         config = require('../../config/environment'),
         emailTemplates = require('email-templates'),
         path = require('path'),
-        templatesDir = path.resolve('views/mailer/');
+        templatesDir = path.resolve('res/mailer/');
 
     var defaultTransport,
         EmailAddressRequiredError = new Error('email address required');
