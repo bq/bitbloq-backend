@@ -5,6 +5,6 @@ var controller = require('./bloq.controller');
 
 var router = express.Router();
 
-router.get('/', controller.getAll);
+router.get('/', controller.get);
 
 module.exports = router;
