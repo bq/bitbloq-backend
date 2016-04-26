@@ -481,9 +481,8 @@ exports.authCallback = function(req, res) {
  * Send token by email
  */
 exports.emailToken = function(req, res) {
-
     var email = req.body.email;
-    var subject = 'Cambio de clave en Bitbloq :)';
+    var subject = 'Cambio de clave en Bitbloq';
     User.findOneAsync({
         email: req.body.email
     }).then(function(user) {

@@ -19,10 +19,15 @@ i {
   font-size: 12px;
   color: #666;
 }
-button {
+.mailer__button {
   font-family: Arial, sans-serif;
   font-size: 16px;
   background-color: #95C517;
-  color: #293A0C;
+  color: #FFFFFF;
   padding: 15px 10px;
+  text-decoration: none;
+}
+
+.mailer__container--button{
+  margin: 15px 0px;
 }

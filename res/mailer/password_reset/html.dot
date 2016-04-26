@@ -1,4 +1,4 @@
-<img src="../../images/app/logobibtbloq.png" alt="Bitbloq logo">
+<img src="https://s3-eu-west-1.amazonaws.com/bitbloq.bq.com/images/common/logobit.png" alt="Bitbloq logo">
 <h1>Restablece tu contraseña</h1>
 <p>
   Hola <br>
@@ -6,7 +6,11 @@
   No te preocupes, ¡podemos ayudarte! <br>
   Para introducir una nueva contraseña haz click en el siguiente botón:
 </p>
-<button>RESTABLECER CONTRASEÑA</button>
+<br>
+<div class="mailer__container--button">
+<a class="mailer__button" href="{{=it.resetUrl}}">RESTABLECER CONTRASEÑA</a>
+</div>
+<br>
 <p>
   o bien, corta y pega el siguiente enlace en la barra de direcciones de tu navegador:
 </p>
@@ -15,4 +19,3 @@
   Un saludo, <br>
   <i>el equipo de</i> Bitbloq.
 </p>
-Prueba del correo, con css y todo :P <a href="{{=it.resetUrl || ''}}">{{=it.resetUrl || ''}}</a>
