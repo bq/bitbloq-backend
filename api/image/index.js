@@ -11,12 +11,11 @@ require('dotenv').config({path: 'config/.env'});
 
 var storage = s3({
     destination: function(req, file, cb) {
-        cb(null, 'api-images');
+        cb(null, 'api-images/'+ req.params.collection);
 
     },
     filename: function(req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now());
-
+        cb(null, req.params.id);
     }
 });
 
@@ -25,6 +24,6 @@ var multerObject = multer({storage: storage});
 
 var router = express.Router();
 
-router.post('/', auth.isAuthenticated(), multerObject.single('file'), controller.create);
+router.post('/:collection/:id', auth.isAuthenticated(), multerObject.single('file'), controller.create);
 
 module.exports = router;

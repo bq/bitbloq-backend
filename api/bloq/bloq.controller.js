@@ -9,13 +9,13 @@ var perPage = 20;
 /**
  * Get public bloq list
  */
-exports.getAll = function(req, res) {
+exports.get = function(req, res) {
     var query = req.query.query ? JSON.parse(req.query.query) : {},
         page = req.query.page || 0,
     pageSize = req.query.pageSize || perPage;
     Bloq.find(query)
-        .limit(pageSize)
-        .skip(pageSize * page)
+        .limit(parseInt(pageSize))
+        .skip(parseInt(pageSize * page))
         .sort({
             name: 'asc'
         }).exec(function(err, projects) {
