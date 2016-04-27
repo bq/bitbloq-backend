@@ -9,6 +9,7 @@ var Project = require('../api/project/project.model');
 var Bloq = require('../api/bloq/bloq.model');
 var Category = require('../api/forum/models/category.model');
 var Property = require('../api/property/property.model');
+var Token = require('../api/recovery/token.model');
 
 
 User.find({}).removeAsync()
@@ -30,6 +31,17 @@ User.find({}).removeAsync()
             });
     });
 
+
+Token.find({}).removeAsync()
+    .then(function() {
+        return Token.createAsync({
+                "userId": "123456",
+                "token": "987654"
+            })
+            .then(function() {
+                console.log('finished populating tokens');
+            });
+    });
 
 Project.find({}).removeAsync()
     .then(function() {
