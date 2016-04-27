@@ -6,36 +6,14 @@ var mongoose = require('bluebird').promisifyAll(require('mongoose'));
 var Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
-    firstName: {
-        type: String,
-        lowercase: true,
-        trim: true
-    },
-    lastName: {
-        type: String,
-        lowercase: true,
-        trim: true
-    },
-    username: {
-        type: String,
-        lowercase: true,
-        trim: true
-    },
-    email: {
-        type: String,
-        lowercase: true,
-        trim: true
-    },
-    bannedInForum: {
-        type: Boolean,
-        default: false
-    },
-    googleEmail: '',
-    facebookEmail: '',
-    role: {
-        type: String,
-        default: 'user'
-    },
+    firstName: { type: String, lowercase: true, trim: true },
+    lastName: { type: String, lowercase: true, trim: true },
+    username: { type: String, lowercase: true, trim: true },
+    email: { type: String, lowercase: true, trim: true },
+    bannedInForum: { type: Boolean, default: false },
+    googleEmail: String,
+    facebookEmail: String,
+    role: { type: String, default: 'user'},
     properties: {
         avatar: String,
         newsletter: Boolean,
@@ -45,7 +23,8 @@ var UserSchema = new Schema({
     },
     password: String,
     provider: String,
-    salt: String
+    salt: String,
+    _createdAt: { type: Date, default: Date.now }
 });
 
 /**

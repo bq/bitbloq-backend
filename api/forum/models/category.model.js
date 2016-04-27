@@ -4,36 +4,15 @@ var mongoose = require('bluebird').promisifyAll(require('mongoose'));
 var Schema = mongoose.Schema;
 
 var CategorySchema = new Schema({
-    name: {
-        type: String,
-        lowercase: false,
-        trim: true,
-        required: true
-    },
-    uuid: {
-        type: String,
-        lowercase: true,
-        trim: true
-    },
-    section: {
-        type: String,
-        lowercase: true,
-        trim: true,
-        required: true
-    },
-    description: {
-        type: String,
-        lowercase: false,
-        trim: false
-    },
-    order: {
-        type: Number,
-        min: 0,
-        max: 1000
-    },
+    name: { type: String, lowercase: false, trim: true, required: true },
+    uuid: { type: String, lowercase: true, trim: true },
+    section: { type: String, lowercase: true, trim: true, required: true },
+    description: { type: String, lowercase: false, trim: false },
+    order: { type: Number, min: 0, max: 1000 },
     numberOfThreads: Number,
     numberOfAnswers: Number,
-    lastThread: {}
+    lastThread: {},
+    _createdAt: { type: Date, default: Date.now }
 }, {
     timestamps: true
 });

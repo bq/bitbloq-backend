@@ -8,7 +8,7 @@ var FeedbackSchema = new mongoose.Schema({
     browser: String,
     userAgent: String,
     userInfo: {},
-    _createdAt : Date,
+    _createdAt: { type: Date, default: Date.now },
     _updatedAt : Date
 });
 

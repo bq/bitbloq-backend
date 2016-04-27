@@ -9,7 +9,7 @@ var BloqSchema = new mongoose.Schema({
     bloqClass : String,
     content : Array,
     code : String,
-    _createdAt : Date,
+    _createdAt: { type: Date, default: Date.now },
     _updatedAt : Date
 });
 

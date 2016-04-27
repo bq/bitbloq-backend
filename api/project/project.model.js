@@ -26,7 +26,8 @@ var ProjectSchema = new mongoose.Schema({
     },
     hardwareTags: Array,
     userTags: Array,
-    _acl: {}
+    _acl: {},
+    _createdAt: { type: Date, default: Date.now }
 });
 
 /**
