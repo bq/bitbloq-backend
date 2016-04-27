@@ -339,7 +339,6 @@ exports.changePassword = function(req, res) {
         if (recoveryToken) {
             User.findByIdAsync(userId)
                 .then(function(user) {
-                    // if (user.authenticate(oldPass)) {
                     user.password = newPass;
                     return user.saveAsync()
                         .then(function() {
@@ -347,9 +346,6 @@ exports.changePassword = function(req, res) {
                             return res.status(204).end();
                         })
                         .catch(utils.validationError(res));
-                    // } else {
-                    //     return res.status(403).end();
-                    // }
                 });
         } else {
             return res.status(401).end();
@@ -358,25 +354,17 @@ exports.changePassword = function(req, res) {
 };
 
 exports.changePasswordAuthenticated = function(req, res) {
-
     var userId = req.user._id;
-
-    // var oldPass = String(req.body.oldPassword);
     var newPass = String(req.body.newPassword);
 
     User.findByIdAsync(userId)
         .then(function(user) {
-            // if (user.authenticate(oldPass)) {
             user.password = newPass;
             return user.saveAsync()
                 .then(function() {
-                    Token.findByIdAndRemoveAsync(userId).then(function() {})
                     return res.status(204).end();
                 })
                 .catch(utils.validationError(res));
-            // } else {
-            //     return res.status(403).end();
-            // }
         });
 };
 

@@ -32,8 +32,8 @@ router.post('/forgot', controller.emailToken);
 // PUT
 router.put('/me', auth.isAuthenticated(), controller.updateMe);
 router.put('/me/properties', auth.isAuthenticated(), controller.updateMyProperties);
-router.put('/:id/password', auth.isAuthenticated(), controller.changePassword);
 router.put('/me/password', auth.isAuthenticated(), controller.changePasswordAuthenticated);
+router.put('/:id/password', auth.isAuthenticated(), controller.changePassword);
 router.put('/:id/social', auth.isAuthenticated(), controller.turnToLocal);
 
 module.exports = router;
