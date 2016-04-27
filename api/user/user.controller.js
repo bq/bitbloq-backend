@@ -2,6 +2,7 @@
 
 var User = require('./user.model'),
     UserFunctions = require('./user.functions'),
+    Token = require('../recovery/token.model'),
     utils = require('../utils'),
     config = require('../../config/environment'),
     jwt = require('jsonwebtoken'),
@@ -330,6 +331,36 @@ exports.turnToLocal = function(req, res) {
  */
 exports.changePassword = function(req, res) {
     var userId = req.user._id;
+
+    // var oldPass = String(req.body.oldPassword);
+    var newPass = String(req.body.newPassword);
+
+    Token.findById(userId, function(err, recoveryToken) {
+        if (recoveryToken) {
+            User.findByIdAsync(userId)
+                .then(function(user) {
+                    // if (user.authenticate(oldPass)) {
+                    user.password = newPass;
+                    return user.saveAsync()
+                        .then(function() {
+                            Token.remove(recoveryToken).then(function() {})
+                            return res.status(204).end();
+                        })
+                        .catch(utils.validationError(res));
+                    // } else {
+                    //     return res.status(403).end();
+                    // }
+                });
+        } else {
+            return res.status(401).end();
+        }
+    })
+};
+
+exports.changePasswordAuthenticated = function(req, res) {
+
+    var userId = req.user._id;
+
     // var oldPass = String(req.body.oldPassword);
     var newPass = String(req.body.newPassword);
 
@@ -339,6 +370,7 @@ exports.changePassword = function(req, res) {
             user.password = newPass;
             return user.saveAsync()
                 .then(function() {
+                    Token.findByIdAndRemoveAsync(userId).then(function() {})
                     return res.status(204).end();
                 })
                 .catch(utils.validationError(res));
@@ -486,11 +518,15 @@ exports.emailToken = function(req, res) {
     User.findOneAsync({
         email: req.body.email
     }).then(function(user) {
+
+        //En este punto tenemos el id con user._id
+        //Buscamos si el usuario user._id tiene token en la base de datos. Si tiene,
+        //No generamos uno nuevo. Si no tiene, porque le ha expirado o porque no lo
+        //había generado, le firmamos uno y le generamos la clave
+
         var token = jwt.sign({
                 _id: user._id
-            }, config.secrets.session, {
-                expiresIn: 600 * 240
-            }),
+            }, config.secrets.session, {}),
             url = config.CLIENT_DOMAIN + '/#/recovery/' + token,
             locals = {
                 email: email,
@@ -498,13 +534,19 @@ exports.emailToken = function(req, res) {
                 resetUrl: url
             };
 
-        mailer.sendOne('password_reset', locals, function(err) {
-            if (err) {
-                utils.handleError(res);
-            }
-            res.sendStatus(200);
+        var tokenModel = new Token({
+            'userId': user._id,
+            'token': token
         });
-
+        tokenModel.saveAsync().then(function() {
+                mailer.sendOne('password_reset', locals, function(err) {
+                    if (err) {
+                        utils.handleError(res);
+                    }
+                    res.sendStatus(200);
+                });
+            })
+            .catch(utils.handleError);
     })
 };
 
