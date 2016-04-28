@@ -353,11 +353,9 @@ exports.changePassword = function(req, res) {
     })
 };
 
-
 /**
  * Change user password when logged
  */
-
 
 exports.changePasswordAuthenticated = function(req, res) {
     var userId = req.user._id;
@@ -492,7 +490,10 @@ exports.getUserId = function(req, res) {
 
     UserFunctions.getUserId(req.params.email).then(function(userId) {
         res.status(200).send(userId);
-    }).catch(utils.handleError(res));
+    }).catch(
+        res.status(404).json({
+            message: 'This email is not registered, please sign up. '
+        }));
 };
 
 /**
