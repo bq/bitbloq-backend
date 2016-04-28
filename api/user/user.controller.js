@@ -353,6 +353,12 @@ exports.changePassword = function(req, res) {
     })
 };
 
+
+/**
+ * Change user password when logged
+ */
+
+
 exports.changePasswordAuthenticated = function(req, res) {
     var userId = req.user._id;
     var newPass = String(req.body.newPassword);

@@ -36,12 +36,14 @@ exports.setup = function(User) {
 
                 if (!user) {
                     return done(null, false, {
+                        user: 'undefined',
                         message: 'This email is not registered.'
                     });
 
                 }
                 if (!user.authenticate(password)) {
                     return done(null, false, {
+                        user: user._id,
                         message: 'This password is not correct.'
                     });
                 }
