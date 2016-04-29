@@ -332,6 +332,9 @@ exports.turnToLocal = function(req, res) {
 exports.changePassword = function(req, res) {
     var userId = req.user._id;
 
+    console.log("userId");
+    console.log(userId);
+
     // var oldPass = String(req.body.oldPassword);
     var newPass = String(req.body.newPassword);
 
@@ -486,14 +489,20 @@ exports.updateMyProperties = function(req, res) {
 /**
  * Return a user id
  */
-exports.getUserId = function(req, res) {
 
+//
+exports.getUserId = function(req, res) {
     UserFunctions.getUserId(req.params.email).then(function(userId) {
-        res.status(200).send(userId);
-    }).catch(
-        res.status(404).json({
-            message: 'This email is not registered, please sign up. '
-        }));
+        if (userId) {
+            res.status(200).json({
+                'user': userId
+            });
+        } else {
+            utils.handleError(res, 404, {
+                'error': 'This email is not registered'
+            });
+        }
+    }).catch(utils.handleError);
 };
 
 /**

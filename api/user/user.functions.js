@@ -39,7 +39,7 @@ exports.getUserId = function(email) {
             } else if (user) {
                 resolve(user._id);
             } else {
-                reject(err);
+                resolve();
             }
         });
     });
