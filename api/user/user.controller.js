@@ -7,7 +7,8 @@ var User = require('./user.model'),
     config = require('../../config/environment'),
     jwt = require('jsonwebtoken'),
     auth = require('../../components/auth/auth.service'),
-    mailer = require('../../components/mailer');
+    mailer = require('../../components/mailer'),
+    async = require('async');
 
 /**
  * Get list of users
@@ -28,9 +29,13 @@ exports.index = function(req, res) {
         .skip(skip)
         .limit(limit)
         .sort(sort)
-        .then(function(users) {
-            res.status(200).send(users);
-        }).catch(utils.handleError(res));
+        .exec(function(err, users) {
+            if (err) {
+                res.status(400).send(err);
+            } else {
+                res.status(200).send(users);
+            }
+        });
 };
 
 /**
@@ -42,25 +47,33 @@ exports.create = function(req, res) {
         var newUser = new User(req.body);
         newUser.provider = 'local';
         newUser.role = 'user';
-        newUser.saveAsync().then(function(user) {
-            var token = jwt.sign({
-                _id: user._id
-            }, config.secrets.session, {
-                expiresIn: 600 * 240
-            });
-            res.json({
-                token: token
-            });
-        }).catch(utils.handleError(res));
-    } else {
-        res.sendStatus(422);
-    }
 
+        newUser.save(function(err, user) {
+            if (err) {
+                res.status(409).send(err);
+            } else {
+                if (user) {
+                    var token = jwt.sign({
+                        _id: user._id
+                    }, config.secrets.session, {
+                        expiresIn: 600 * 240
+                    });
+                    res.json({
+                        token: token
+                    });
+                } else {
+                    res.sendStatus(500);
+                }
+            }
+        });
+    }
 };
 
 /**
  * Social login
  */
+
+//WATERFALL
 exports.socialLogin = function(req, res) {
 
     var provider = req.body.provider;
@@ -131,6 +144,7 @@ exports.socialLogin = function(req, res) {
                         };
                         var newUser = new User(userData);
                         newUser.role = 'user';
+
                         newUser.saveAsync().then(function(user) {
                             var token = jwt.sign({
                                 _id: user._id
@@ -245,7 +259,6 @@ exports.socialLogin = function(req, res) {
             break;
         default:
             throw 'Error: not a provider';
-
     }
 };
 
@@ -253,20 +266,19 @@ exports.socialLogin = function(req, res) {
  * Returns if a user exists
  */
 exports.usernameExists = function(req, res) {
-
     var username = req.params.username;
-    var query = User.where({
+
+    User.findOne({
         username: username
-    });
-    query.findOne(function(err, user) {
+    }, function(err, user) {
         if (err) {
-            return utils.handleError(err);
+            res.status(500).send(err);
         } else if (user) {
-            return res.status(200).set({
+            res.status(200).set({
                 'exists': true
             }).send();
         } else {
-            return res.status(204).set({
+            res.status(204).set({
                 'exists': false
             }).send();
         }
@@ -276,18 +288,22 @@ exports.usernameExists = function(req, res) {
 /**
  * Show a single profile user
  */
-exports.show = function(req, res, next) {
+exports.show = function(req, res) {
 
     var userId = req.params.id;
-    UserFunctions.getUserProfile(userId).then(function(userProfile) {
-        res.json(userProfile);
-    }).catch(function(err) {
+
+    UserFunctions.getUserProfile(userId, function(err, userProfile) {
         if (err) {
-            return next(err);
+            res.status(500).send(err);
         } else {
-            return res.status(404).end();
+            if (userProfile) {
+                res.status(200).json(userProfile);
+            } else {
+                res.sendStatus(404);
+            }
         }
-    });
+    })
+
 };
 
 /**
@@ -296,16 +312,19 @@ exports.show = function(req, res, next) {
  */
 exports.destroy = function(req, res) {
 
-    User.findByIdAndRemoveAsync(req.params.id)
-        .then(function() {
-            res.status(204).end();
-        })
-        .catch(utils.handleError(res));
+    User.findById(req.params.id, function(err) {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.sendStatus(204);
+        }
+    });
+
 };
 
 /**
  * Give password to a social user
- */
+ */ //WATERFALL
 exports.turnToLocal = function(req, res) {
 
     var userId = req.user._id;
@@ -329,11 +348,10 @@ exports.turnToLocal = function(req, res) {
 /**
  * Change a users password
  */
+
+//WATERFALL
 exports.changePassword = function(req, res) {
     var userId = req.user._id;
-
-    console.log("userId");
-    console.log(userId);
 
     // var oldPass = String(req.body.oldPassword);
     var newPass = String(req.body.newPassword);
@@ -360,6 +378,8 @@ exports.changePassword = function(req, res) {
  * Change user password when logged
  */
 
+//WATERFALL
+
 exports.changePasswordAuthenticated = function(req, res) {
     var userId = req.user._id;
     var newPass = String(req.body.newPassword);
@@ -378,6 +398,8 @@ exports.changePasswordAuthenticated = function(req, res) {
 /**
  * Reset a users password
  */
+
+//WATERFALL
 exports.resetPassword = function(req, res) {
 
     var email = req.params.email;
@@ -403,30 +425,36 @@ exports.resetPassword = function(req, res) {
 /**
  * Get my info
  */
-exports.me = function(req, res, next) {
-    if (req) {
+exports.me = function(req, res) {
 
+    if (req) {
         var userId = req.user._id;
-        return User.findOne({
+        User.findOne({
                 _id: userId
-            }, '-salt -password')
-            .then(function(user) {
-                if (!user) {
-                    return res.status(401).end();
+            },
+            '-salt -password',
+            function(err, user) {
+                if (err) {
+                    res.status(400).send(err);
+                } else {
+                    if (!user) {
+                        res.sendStatus(401);
+                    } else {
+                        res.status(200).json(user.owner)
+                    }
                 }
-                return res.json(user.owner);
             })
-            .catch(function(err) {
-                return next(err);
-            });
+
     } else {
-        return res.send(404).end();
+        res.sendStatus(404);
     }
 };
 
 /**
  * Update my user
  */
+
+//WATERFALL
 
 exports.updateMe = function(req, res) {
 
@@ -481,7 +509,7 @@ exports.updateMyProperties = function(req, res) {
         new: true
     }, function(err, user) {
         if (err) {
-            utils.handleError(err);
+            res.status(500).send(err);
         }
         res.status(200).json(user.owner);
     });
@@ -492,17 +520,18 @@ exports.updateMyProperties = function(req, res) {
 
 //
 exports.getUserId = function(req, res) {
-    UserFunctions.getUserId(req.params.email).then(function(userId) {
+    UserFunctions.getUserId(req.params.email, function(err, userId) {
         if (userId) {
             res.status(200).json({
                 'user': userId
             });
         } else {
-            utils.handleError(res, 404, {
+            res.status(400).send({
                 'error': 'This email is not registered'
             });
         }
-    }).catch(utils.handleError);
+
+    })
 };
 
 /**
@@ -516,6 +545,8 @@ exports.authCallback = function(req, res) {
 /**
  * Send token by email
  */
+
+//WATERFALL
 exports.emailToken = function(req, res) {
     var email = req.body.email;
     var subject = 'Cambio de clave en Bitbloq';
@@ -559,11 +590,16 @@ exports.emailToken = function(req, res) {
  */
 exports.banUserInForum = function(req, res) {
     var userId = req.params.id;
+
     User.findByIdAndUpdate(userId, {
         bannedInForum: true
-    }).then(function() {
-        res.sendStatus(200);
-    })
+    }, function(err, user) {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.sendStatus(200).json(user.owner);
+        }
+    });
 };
 
 /**
@@ -571,20 +607,30 @@ exports.banUserInForum = function(req, res) {
  */
 exports.unbanUserInForum = function(req, res) {
     var userId = req.params.id;
+
     User.findByIdAndUpdate(userId, {
         bannedInForum: false
-    }).then(function() {
-        res.sendStatus(200);
-    })
+    }, function(err, user) {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.sendStatus(200).json(user.owner);
+        }
+    });
 };
 
 /**
  * Get all banned users
  */
 exports.showBannedUsers = function(req, res) {
+
     User.find({
         bannedInForum: true
-    }).then(function(users) {
-        res.status(200).json(users);
-    }).catch(utils.handleError(res));
+    }, function(err, users) {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.status(200).json(users);
+        }
+    })
 };

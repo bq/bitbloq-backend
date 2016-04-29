@@ -8,17 +8,16 @@ var User = require('./user.model'),
  * @param {String} userId
  * @return {Promise} userProfile
  */
-exports.getUserProfile = function(userId) {
-    return new Promise(function(resolve, reject) {
-        User.findByIdAsync(userId).then(function(user) {
-            if (!user) {
-                reject();
-            } else {
-                resolve(user.profile);
-            }
-        }).catch(function(err) {
-            reject(err);
-        });
+exports.getUserProfile = function(userId, next) {
+
+    User.find(userId, function(err, user) {
+        if (err) {
+            next(err);
+        } else if (user) {
+            next(user.profile);
+        } else {
+            next();
+        }
     });
 };
 
@@ -27,21 +26,17 @@ exports.getUserProfile = function(userId) {
  * @param {String} email
  * @return {Promise} userId
  */
-exports.getUserId = function(email) {
-    return new Promise(function(resolve, reject) {
-        var query = User.where({
-            email: email
-        });
-
-        query.findOne(function(err, user) {
-            if (err) {
-                reject(err);
-            } else if (user) {
-                resolve(user._id);
-            } else {
-                resolve();
-            }
-        });
+exports.getUserId = function(email, next) {
+    User.findOne({
+        email: email
+    }, function(err, user) {
+        if (err) {
+            next(err);
+        } else if (user) {
+            next(err, user._id);
+        } else {
+            next();
+        }
     });
 };
 
