@@ -1,19 +1,18 @@
 /* global Buffer */
 'use strict';
 
-var crypto = require('crypto');
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var crypto = require('crypto'),
+    mongoose = require('mongoose');
 
-var UserSchema = new Schema({
-    firstName: { type: String, lowercase: true, trim: true },
-    lastName: { type: String, lowercase: true, trim: true },
-    username: { type: String, lowercase: true, trim: true },
-    email: { type: String, lowercase: true, trim: true },
-    bannedInForum: { type: Boolean, default: false },
+var UserSchema = new mongoose.Schema({
+    firstName: {type: String, lowercase: true, trim: true},
+    lastName: {type: String, lowercase: true, trim: true},
+    username: {type: String, lowercase: true, trim: true},
+    email: {type: String, lowercase: true, trim: true},
+    bannedInForum: {type: Boolean, default: false},
     googleEmail: String,
     facebookEmail: String,
-    role: { type: String, default: 'user'},
+    role: {type: String, default: 'user'},
     properties: {
         avatar: String,
         newsletter: Boolean,
@@ -24,7 +23,7 @@ var UserSchema = new Schema({
     password: String,
     provider: String,
     salt: String,
-    _createdAt: { type: Date, default: Date.now }
+    _createdAt: {type: Date, default: Date.now}
 });
 
 /**

@@ -3,7 +3,8 @@
 var Project = require('./project.model'),
     UserFunctions = require('../user/user.functions'),
     utils = require('../utils'),
-    Promise = require('bluebird');
+    Promise = require('bluebird'),
+    async = require('async');
 
 var perPage = 20;
 
@@ -39,23 +40,25 @@ function getCountPublic(res, params) {
     });
 }
 
+
+function getUserProject(item, next) {
+    var project = JSON.parse(JSON.stringify(item));
+    UserFunctions.getUserProfile(project.creatorId, function(err, user) {
+        if (user) {
+            project.creatorUsername = user.username;
+        }
+        next(err, project);
+    });
+}
+
 function completeProjects(res, projects) {
-    var projectResult = [];
-    Promise.map(projects, function(item) {
-        var project = JSON.parse(JSON.stringify(item));
-        return new Promise(function(resolve, reject) {
-            UserFunctions.getUserProfile(project.creatorId).then(function(user) {
-                project.creatorUsername = user.username;
-                projectResult.push(project);
-                resolve();
-            }).catch(function() {
-                projectResult.push(project);
-                resolve();
-            });
-        });
-    }).then(function() {
-        res.status(200).json(projectResult);
-    }).catch(utils.handleError(res));
+    async.map(projects, getUserProject, function(err, completedProjects) {
+        if (err) {
+            res.status(500).send(err)
+        } else {
+            res.status(200).json(completedProjects);
+        }
+    });
 }
 
 function getSearch(res, params) {

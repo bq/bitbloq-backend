@@ -4,17 +4,16 @@ var User = require('./user.model');
 
 
 /**
- * Get a single profile user (Promise Function)
+ * Get a single profile user
  * @param {String} userId
- * @return {Promise} userProfile
+ * @return {Function} next
  */
 exports.getUserProfile = function(userId, next) {
-
-    User.find(userId, function(err, user) {
+    User.findById(userId, function(err, user) {
         if (err) {
             next(err);
         } else if (user) {
-            next(user.profile);
+            next(err, user.profile);
         } else {
             next();
         }
@@ -22,9 +21,9 @@ exports.getUserProfile = function(userId, next) {
 };
 
 /**
- * Return a user id (Promise Function)
+ * Get a user id
  * @param {String} email
- * @return {Promise} userId
+ * @return {Function} next
  */
 exports.getUserId = function(email, next) {
     User.findOne({
