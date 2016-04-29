@@ -1,7 +1,7 @@
 'use strict';
 var request = require('request-promise');
-var User = require('./user.model'),
-    Promise = require('bluebird');
+var User = require('./user.model');
+
 
 /**
  * Get a single profile user (Promise Function)
