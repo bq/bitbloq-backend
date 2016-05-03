@@ -1,7 +1,6 @@
 'use strict';
 
-var Property = require('./property.model'),
-    utils = require('../utils');
+var Property = require('./property.model');
 
 var perPage = 20;
 
@@ -12,15 +11,14 @@ var perPage = 20;
 exports.getAll = function(req, res) {
     var query = req.query.query ? JSON.parse(req.query.query) : {},
         page = req.query.page || 0,
-    pageSize = req.query.pageSize || perPage;
+        pageSize = req.query.pageSize || perPage;
     Property.find(query)
-        .limit(pageSize)
-        .skip(pageSize * page)
-        .sort({
-            name: 'asc'
-        }).exec(function(err, projects) {
+        .limit(parseInt(pageSize))
+        .skip(parseInt(pageSize * page))
+        .sort({name: 'asc'})
+        .exec(function(err, projects) {
             if (err) {
-                utils.handleError(res, null, err)
+                res.status(500).send(err);
             }
             res.status(200).json(projects);
         });
