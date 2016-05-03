@@ -336,16 +336,20 @@ exports.destroy = function(req, res) {
     Project.findById(projectId, function(err, project) {
         if (err) {
             res.status(500).send(err)
-        } else {
+        } else if (project) {
             if (project.isOwner(userId)) {
-                Project.findByIdAndRemoveAsync(projectId)
-                    .then(function() {
+                Project.findByIdAndRemove(projectId, function(err) {
+                    if (err) {
+                        utils.handleError(res);
+                    } else {
                         res.status(204).end();
-                    })
-                    .catch(utils.handleError(res));
+                    }
+                });
             } else {
                 res.sendStatus(401);
             }
+        } else {
+            res.sendStatus(404);
         }
     });
 };
