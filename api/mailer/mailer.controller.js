@@ -1,7 +1,6 @@
 'use strict';
 
-var utils = require('../utils'),
-    mailer = require('../../components/mailer');
+var mailer = require('../../components/mailer');
 
 /**
  * Send an email
@@ -15,8 +14,7 @@ exports.sendEmail = function(req, res) {
     };
     mailer.sendOne('password_reset', locals, function(err) {
         if (err) {
-            console.log('ERROR: ', err);
-            utils.handleError(res);
+            res.status(500).send(err);
         }
         res.sendStatus(200);
     });
