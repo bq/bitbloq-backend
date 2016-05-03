@@ -344,82 +344,119 @@ exports.turnToLocal = function(req, res) {
             });
         }
     }).catch(utils.handleError(res));
+
 };
+
 /**
  * Change a users password
  */
 
-//WATERFALL
+//WATERFALL - done
 exports.changePassword = function(req, res) {
     var userId = req.user._id;
+    var tokenRec;
 
-    // var oldPass = String(req.body.oldPassword);
     var newPass = String(req.body.newPassword);
 
-    Token.findById(userId, function(err, recoveryToken) {
-        if (recoveryToken) {
-            User.findByIdAsync(userId)
-                .then(function(user) {
-                    user.password = newPass;
-                    return user.saveAsync()
-                        .then(function() {
-                            Token.remove(recoveryToken).then(function() {})
-                            return res.status(204).end();
-                        })
-                        .catch(utils.validationError(res));
-                });
-        } else {
-            return res.status(401).end();
+    async.waterfall([
+        function (tokenCallback){
+          Token.findById(userId, tokenCallback);
+        },
+
+        function(token, tokenCallback) {
+            tokenRec = token;
+            if (token) {
+                User.findById(token, tokenCallback);
+            } else {
+                tokenCallback(401);
+            }
+        },
+        function(user, tokenCallback) {
+            user.password = newPass;
+            user.save(tokenCallback);
+        },
+        function(user, saved, tokenCallback) {
+            Token.remove(tokenRec, tokenCallback);
         }
-    })
+    ], function(err, result) {
+        console.log("err");
+
+        if (result) {
+            console.log("hola");
+            res.sendStatus(204);
+        } else {
+            if (err) {
+                res.sendStatus(err);
+            }
+        }
+    });
 };
 
 /**
  * Change user password when logged
  */
 
-//WATERFALL
+//WATERFALL - hecho
 
 exports.changePasswordAuthenticated = function(req, res) {
     var userId = req.user._id;
     var newPass = String(req.body.newPassword);
 
-    User.findByIdAsync(userId)
-        .then(function(user) {
+    async.waterfall([
+        function(userCallback) {
+            User.findById(userId, userCallback);
+        },
+        function(user, userCallback) {
             user.password = newPass;
-            return user.saveAsync()
-                .then(function() {
-                    return res.status(204).end();
-                })
-                .catch(utils.validationError(res));
-        });
+            user.save(userCallback);
+        }
+    ], function(err, result) {
+
+        if (result) {
+            res.sendStatus(204);
+        } else {
+            if (err) {
+                res.status(500).send(err);
+            }
+        }
+    });
 };
 
 /**
  * Reset a users password
  */
 
-//WATERFALL
+//WATERFALL - hecho
+
 exports.resetPassword = function(req, res) {
 
     var email = req.params.email;
-    var query = User.where({
-        email: email
+
+    async.waterfall([
+        function(userCallback) {
+            User.findOne({
+                email: email
+            }, userCallback)
+        },
+        function(user, userCallback) {
+            if (user) {
+                auth.sendTokenByEmail(user, userCallback);
+            } else {
+                res.sendStatus(500);
+            }
+        }
+
+    ], function(err, result) {
+        if (result) {
+            res.sendStatus(200);
+        } else {
+            if (err) {
+                res.sendStatus(500);
+            }
+        }
+
     });
 
-    query.findOne(function(err, user) {
-        if (err) {
-            utils.handleError(err);
-        } else if (user) {
-            auth.sendTokenByEmail(user).then(function() {
-                res.sendStatus(200);
-            }, function(err) {
-                utils.handleError(err);
-            });
-        } else {
-            utils.handleError(err);
-        }
-    });
 };
 
 /**
@@ -454,35 +491,46 @@ exports.me = function(req, res) {
  * Update my user
  */
 
-//WATERFALL
+//WATERFALL - hecho
 
 exports.updateMe = function(req, res) {
 
     var reqUser = req.body,
         userId = req.user._id;
 
-    return User.findById(userId).then(function(userToUpdate) {
-        if (userToUpdate) {
-            userToUpdate.username = reqUser.username || userToUpdate.username || '';
-            userToUpdate.firstName = reqUser.firstName || userToUpdate.firstName || '';
-            userToUpdate.lastName = reqUser.lastName || userToUpdate.lastName || '';
-            userToUpdate.email = userToUpdate.email || '';
-            userToUpdate.googleEmail = reqUser.googleEmail || userToUpdate.googleEmail || '';
-            userToUpdate.facebookEmail = reqUser.facebookEmail || userToUpdate.facebookEmail || '';
-            userToUpdate.role = 'user';
-            userToUpdate.properties.avatar = reqUser.properties.avatar || userToUpdate.properties.avatar || '';
-            userToUpdate.properties.language = reqUser.properties.language || userToUpdate.properties.language || 'es-ES';
-            userToUpdate.properties.newsletter = reqUser.properties.newsletter || userToUpdate.properties.newsletter || '';
-            userToUpdate.properties.cookiePolicyAccepted = reqUser.properties.cookiePolicyAccepted || userToUpdate.properties.cookiePolicyAccepted || '';
-            userToUpdate.properties.hasBeenAskedIfTeacher = reqUser.properties.hasBeenAskedIfTeacher || userToUpdate.properties.hasBeenAskedIfTeacher || '';
+    async.waterfall([
+        function(userCallback) {
+            User.findById(userId, userCallback);
+        },
+        function(userToUpdate, userCallback) {
+            if (userToUpdate) {
+                userToUpdate.username = reqUser.username || userToUpdate.username || '';
+                userToUpdate.firstName = reqUser.firstName || userToUpdate.firstName || '';
+                userToUpdate.lastName = reqUser.lastName || userToUpdate.lastName || '';
+                userToUpdate.email = userToUpdate.email || '';
+                userToUpdate.googleEmail = reqUser.googleEmail || userToUpdate.googleEmail || '';
+                userToUpdate.facebookEmail = reqUser.facebookEmail || userToUpdate.facebookEmail || '';
+                userToUpdate.role = 'user';
+                userToUpdate.properties.avatar = reqUser.properties.avatar || userToUpdate.properties.avatar || '';
+                userToUpdate.properties.language = reqUser.properties.language || userToUpdate.properties.language || 'es-ES';
+                userToUpdate.properties.newsletter = reqUser.properties.newsletter || userToUpdate.properties.newsletter || '';
+                userToUpdate.properties.cookiePolicyAccepted = reqUser.properties.cookiePolicyAccepted || userToUpdate.properties.cookiePolicyAccepted || '';
+                userToUpdate.properties.hasBeenAskedIfTeacher = reqUser.properties.hasBeenAskedIfTeacher || userToUpdate.properties.hasBeenAskedIfTeacher || '';
+                User.updateAsync({
+                    _id: userId
+                }, userToUpdate, userCallback);
 
-            return User.updateAsync({
-                _id: userId
-            }, userToUpdate).then(function() {
-                return res.status(200).end();
-            });
+            } else {
+                res.sendStatus(204);
+            }
+        }
+    ], function(err, result) {
+        if (result) {
+            res.sendStatus(200);
         } else {
-            return res.sendStatus(204);
+            if (err) {
+                res.sendStatus(500);
+            }
         }
     });
 };
@@ -550,39 +598,44 @@ exports.authCallback = function(req, res) {
 exports.emailToken = function(req, res) {
     var email = req.body.email;
     var subject = 'Cambio de clave en Bitbloq';
-    User.findOneAsync({
-        email: req.body.email
-    }).then(function(user) {
+    var locals;
 
-        //En este punto tenemos el id con user._id
-        //Buscamos si el usuario user._id tiene token en la base de datos. Si tiene,
-        //No generamos uno nuevo. Si no tiene, porque le ha expirado o porque no lo
-        //había generado, le firmamos uno y le generamos la clave
-
-        var token = jwt.sign({
-                _id: user._id
-            }, config.secrets.session, {}),
-            url = config.CLIENT_DOMAIN + '/#/recovery/' + token,
+    async.waterfall([
+        function(userCallback) {
+            User.findOne({
+                email: req.body.email
+            }, userCallback);
+        },
+        function(user, userCallback) {
+            var token = jwt.sign({
+                    _id: user._id
+                }, config.secrets.session, {}),
+                url = config.CLIENT_DOMAIN + '/#/recovery/' + token;
             locals = {
                 email: email,
                 subject: subject,
                 resetUrl: url
             };
-
-        var tokenModel = new Token({
-            'userId': user._id,
-            'token': token
-        });
-        tokenModel.saveAsync().then(function() {
-                mailer.sendOne('password_reset', locals, function(err) {
-                    if (err) {
-                        utils.handleError(res);
-                    }
-                    res.sendStatus(200);
-                });
+            var tokenModel = new Token({
+                'userId': user._id,
+                'token': token
+            });
+            tokenModel.save(userCallback);
+        }
+    ], function(err, result) {
+        if (result) {
+            mailer.sendOne('password_reset', locals, function(err) {
+                if (err) {
+                    res.sendStatus(500);
+                }
+                res.sendStatus(200);
             })
-            .catch(utils.handleError);
-    })
+        } else {
+            if (err) {
+                res.sendStatus(500);
+            }
+        }
+    });
 };
 
 /**
