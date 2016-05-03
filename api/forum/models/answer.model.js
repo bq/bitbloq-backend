@@ -1,9 +1,8 @@
 'use strict';
 
-var mongoose = require('bluebird').promisifyAll(require('mongoose'));
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose');
 
-var AnswerSchema = new Schema({
+var AnswerSchema = new mongoose.Schema({
     content: { type: String, lowercase: false, trim: false },
     owner: {
         username: { type: String, lowercase: true, trim: true },
@@ -30,39 +29,31 @@ AnswerSchema
     }, 'Answer content cannot be empty');
 
 /**
- * Pre-save hook
- */
-AnswerSchema
-    .pre('save', function(next) {
-        next();
-    });
-
-/**
  * Methods
  */
 AnswerSchema.methods = {
-    getAnswersInThread: function() {
-        return this.model('Answer').find({
+    getAnswersInThread: function(next) {
+        this.model('Answer').find({
             threadId: this.threadId
-        });
+        }, next);
     },
-    removeAnswersInThread: function() {
+    removeAnswersInThread: function(next) {
         return this.model('Answer').remove({
             threadId: this.threadId
-        })
+        }, next)
     },
-    countAnswersInThread: function() {
+    countAnswersInThread: function(next) {
         return this.model('Answer').count({
             threadId: this.threadId
-        });
+        }, next);
     },
-    getLastAnswerInThread: function() {
+    getLastAnswerInThread: function(next) {
         return this.model('Answer').findOne({
             threadId: this.threadId
         }).sort({
             updatedAt: 'asc'
-        }).limit(1);
-    },
+        }).limit(1).exec(next);
+    }
 };
 
 module.exports = mongoose.model('Answer', AnswerSchema);

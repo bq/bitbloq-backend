@@ -1,9 +1,8 @@
 'use strict';
 
-var mongoose = require('bluebird').promisifyAll(require('mongoose'));
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose');
 
-var CategorySchema = new Schema({
+var CategorySchema = new mongoose.Schema({
     name: { type: String, lowercase: false, trim: true, required: true },
     uuid: { type: String, lowercase: true, trim: true },
     section: { type: String, lowercase: true, trim: true, required: true },
@@ -54,13 +53,6 @@ CategorySchema
 
     }, 'Category name already in use');
 
-/**
- * Pre-save hook
- */
-CategorySchema
-    .pre('save', function(next) {
-        next();
-    });
 
 /**
  * Methods

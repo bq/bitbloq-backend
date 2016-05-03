@@ -1,17 +1,16 @@
 'use strict';
 
-var mongoose = require('bluebird').promisifyAll(require('mongoose'));
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose');
 
-var ThreadSchema = new Schema({
+var ThreadSchema = new mongoose.Schema({
 
-    title: { type: String, lowercase: false, trim: true },
+    title: {type: String, lowercase: false, trim: true},
     lastAnswer: {},
-    numberOfAnswers: { type: Number, default: 0 },
-    numberOfViews: { type: Number, default: 0 },
-    categoryId: { type: String, lowercase: true, trim: true },
-    creator: { _id: String, name: String },
-    _createdAt: { type: Date, default: Date.now }
+    numberOfAnswers: {type: Number, default: 0},
+    numberOfViews: {type: Number, default: 0},
+    categoryId: {type: String, lowercase: true, trim: true},
+    creator: {_id: String, name: String},
+    _createdAt: {type: Date, default: Date.now}
 }, {
     timestamps: true
 });
@@ -34,48 +33,42 @@ ThreadSchema
         return categoryId.length;
     }, 'Thread categoryId cannot be empty');
 
-/**
- * Pre-save hook
- */
-ThreadSchema
-    .pre('save', function(next) {
-        next();
-    });
 
 /**
  * Methods
  */
 ThreadSchema.methods = {
-    getThread: function() {
-        return this.model('Thread').findOne({
+    getThread: function(next) {
+        this.model('Thread').findOne({
             _id: this._id
-        });
+        }, next);
     },
 
-    getThreadsInCategory: function() {
-        return this.model('Thread').find({
+    getThreadsInCategory: function(next) {
+        this.model('Thread').find({
             categoryId: this.categoryId
-        });
+        }, next);
     },
 
-    getThreadsInCategoryByID: function() {
-        return this.model('Thread').find({
+    getThreadsInCategoryByID: function(next) {
+        this.model('Thread').find({
             categoryId: this.categoryId
-        });
+        }, next);
     },
 
-    getLastThreadInCategory: function() {
-        return this.model('Thread').findOne({
+    getLastThreadInCategory: function(next) {
+        this.model('Thread').findOne({
             categoryId: this.categoryId
         }).sort({
             updatedAt: 'asc'
-        }).limit(1);
+        }).limit(1)
+            .exec(next);
     },
 
-    countThreadsInCategory: function() {
-        return this.model('Thread').count({
+    countThreadsInCategory: function(next) {
+        this.model('Thread').count({
             categoryId: this.categoryId
-        });
+        }, next);
     }
 };
 
