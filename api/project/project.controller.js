@@ -218,12 +218,18 @@ exports.sharedWithMe = function(req, res) {
  */
 exports.update = function(req, res) {
     var projectId = req.params.id;
-    if (isOwner(req.user._id, req.body)) {
-        var projectObject = clearProject(req.body);
-        updateProject(projectId, projectObject, res);
-    } else {
-        res.sendStatus(401);
-    }
+    Project.findById(projectId, function(err, project) {
+        if (err) {
+            utils.handleError(res)
+        } else {
+            if (project.isOwner(req.user._id)) {
+                var projectObject = clearProject(req.body);
+                updateProject(projectId, projectObject, res);
+            } else {
+                res.sendStatus(401);
+            }
+        }
+    });
 };
 
 /**
