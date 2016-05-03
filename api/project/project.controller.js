@@ -3,7 +3,6 @@
 var Project = require('./project.model'),
     UserFunctions = require('../user/user.functions'),
     utils = require('../utils'),
-    Promise = require('bluebird'),
     async = require('async');
 
 var perPage = 20;
@@ -35,11 +34,12 @@ function getCountPublic(res, params) {
         if (err) {
             res.status(500).send(err);
         } else {
-            res.status(200).json({'count': counter});
+            res.status(200).json({
+                'count': counter
+            });
         }
     });
 }
-
 
 function getUserProject(item, next) {
     var project = JSON.parse(JSON.stringify(item));
@@ -70,7 +70,9 @@ function getSearch(res, params) {
     Project.find(query)
         .limit(parseInt(perPage))
         .skip(parseInt(perPage * page))
-        .sort({name: 'asc'})
+        .sort({
+            name: 'asc'
+        })
         .exec(function(err, projects) {
             if (err) {
                 res.status(500).send(err);
@@ -169,7 +171,9 @@ exports.me = function(req, res) {
     Project.find(query)
         .limit(parseInt(pageSize))
         .skip(parseInt(pageSize * page))
-        .sort({name: 'asc'})
+        .sort({
+            name: 'asc'
+        })
         .exec(function(err, projects) {
             if (err) {
                 res.status(500).send(err);
@@ -192,7 +196,9 @@ exports.sharedWithMe = function(req, res) {
     Project.find(query)
         .limit(parseInt(pageSize))
         .skip(parseInt(pageSize * page))
-        .sort({name: 'asc'})
+        .sort({
+            name: 'asc'
+        })
         .exec(function(err, projects) {
             if (err) {
                 res.status(500).send(err);
@@ -268,27 +274,37 @@ exports.share = function(req, res) {
         } else {
             if (project.isOwner(userId)) {
                 project.resetShare();
-                Promise.map(emails, function(email) {
-                    return new Promise(function(resolve, reject) {
-                        UserFunctions.getUserId(email).then(function(userId) {
-                            project.share({
-                                id: userId,
-                                email: email
+                async.map(emails, function(email, done) {
+                        if (email === req.user.email) {
+                            done();
+                        } else {
+                            UserFunctions.getUserId(email, function(err, user) {
+                                if (user) {
+                                    project.share({
+                                        id: user,
+                                        email: email
+                                    });
+                                    response.users.push(email);
+                                } else if (!err) {
+                                    response.noUsers.push(email);
+                                }
+                                done(err);
                             });
-                            response.users.push(email);
-                            resolve();
-                        }).catch(function() {
-                            response.noUsers.push(email);
-                            resolve();
-                        });
+                        }
+                    },
+                    function(err, results) {
+                        if (err) {
+                            utils.handleError(err);
+                        } else {
+                            Project.findByIdAndUpdate(projectId, project, function(err, project) {
+                                if (err) {
+                                    utils.handleError(err);
+                                } else {
+                                    res.status(200).json(response);
+                                }
+                            });
+                        }
                     });
-                }).then(function() {
-                    updateProject(projectId, project);
-                    res.status(200).json({
-                        users: response.users,
-                        noUsers: response.noUsers
-                    })
-                }).catch(res.status(500).send(err));
             } else {
                 res.sendStatus(401);
             }
