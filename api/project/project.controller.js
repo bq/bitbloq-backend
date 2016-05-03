@@ -116,27 +116,32 @@ exports.show = function(req, res, next) {
         } else {
             if (!project) {
                 res.sendStatus(404);
-            }
-
-            if (project._acl.ALL && project._acl.ALL.permission === 'READ') {
-                //it is public
-                if (req.query && req.query.profile) {
-                    res.status(200).json(project.profile);
-                } else {
-                    project.addView();
-                    updateProject(projectId, project);
-                    res.status(200).json(project);
-                }
-            } else if (req.user && project._acl['user:' + req.user._id] && (project._acl['user:' + req.user._id].permission === 'READ' || project._acl['user:' + req.user._id].permission === 'ADMIN')) {
-                //it is a shared project
-                if (req.query && req.query.profile) {
-                    res.status(200).json(project.profile);
-                } else {
-                    res.status(200).json(project);
-                }
             } else {
-                //it is a private project
-                res.sendStatus(401);
+                if (project._acl.ALL && project._acl.ALL.permission === 'READ') {
+                    //it is public
+                    if (req.query && req.query.profile) {
+                        res.status(200).json(project.profile);
+                    } else {
+                        project.addView();
+                        Project.findByIdAndUpdate(projectId, project, function(err, project) {
+                            if (err) {
+                                res.status(500).send(err);
+                            } else {
+                                res.status(200).json(project);
+                            }
+                        });
+                    }
+                } else if (req.user && project._acl['user:' + req.user._id] && (project._acl['user:' + req.user._id].permission === 'READ' || project._acl['user:' + req.user._id].permission === 'ADMIN')) {
+                    //it is a shared project
+                    if (req.query && req.query.profile) {
+                        res.status(200).json(project.profile);
+                    } else {
+                        res.status(200).json(project);
+                    }
+                } else {
+                    //it is a private project
+                    res.sendStatus(401);
+                }
             }
         }
     });
@@ -227,14 +232,18 @@ exports.update = function(req, res) {
 exports.publish = function(req, res) {
     var projectId = req.params.id,
         userId = req.user._id;
-    Project.findByIdAsync(projectId).then(function(project) {
-        if (project.isOwner(userId)) {
-            project.setPublic();
-            updateProject(projectId, project, res);
+    Project.findById(projectId, function(err, project) {
+        if (err) {
+            utils.handleError(res)
         } else {
-            res.sendStatus(401);
+            if (project.isOwner(userId)) {
+                project.setPublic();
+                updateProject(projectId, project, res);
+            } else {
+                res.sendStatus(401);
+            }
         }
-    }, utils.handleError(res));
+    });
 };
 
 /**
