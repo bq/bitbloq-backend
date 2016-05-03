@@ -20,6 +20,13 @@ function completeCategory(category, next) {
 }
 
 
+function getTheadsInCategory(category, next){
+    Thread.find({categoryId: category.uuid}).sort('-updatedAt').exec(function(err, threads) {
+        next(err, {category: category, threads: threads})
+    });
+}
+
+
 /**
  * Create Category
  */
@@ -160,22 +167,18 @@ exports.showForumIndex = function(req, res) {
 
 
 /**
- * Get all threads in a category
+ * Get info category and all threads in a category
  */
-exports.showThreadsInCategory = function(req, res) {
-    var matchThread;
-    var category = req.params.category;
-    Category.findOne({name: category}, function(err, category) {
+exports.getCategory = function(req, res) {
+    var categoryName = req.params.category;
+    async.waterfall([
+        Category.findOne.bind(Category, {name: categoryName}),
+        getTheadsInCategory
+    ], function(err, completedCategory) {
         if (err) {
             res.status(500).send(err);
         } else {
-            Thread.find({categoryId: category.uuid}).sort('-updatedAt').exec(function(err, threads) {
-                if (err) {
-                    res.status(500).send(err);
-                } else {
-                    res.status(200).json(threads);
-                }
-            })
+            res.status(200).json(completedCategory);
         }
     });
 };

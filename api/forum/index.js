@@ -12,7 +12,7 @@ router.delete('/thread/:id', auth.hasRole('admin'), controller.destroyThread);
 
 // GET
 router.get('/', controller.showForumIndex);
-router.get('/category/:category', controller.showThreadsInCategory);
+router.get('/category/:category', controller.getCategory);
 router.get('/thread/:id', controller.getThread);
 
 // HEAD
