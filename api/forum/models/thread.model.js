@@ -38,11 +38,6 @@ ThreadSchema
  * Methods
  */
 ThreadSchema.methods = {
-    getThread: function(next) {
-        this.model('Thread').findOne({
-            _id: this._id
-        }, next);
-    },
 
     getThreadsInCategory: function(next) {
         this.model('Thread').find({

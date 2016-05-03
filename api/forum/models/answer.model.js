@@ -32,11 +32,6 @@ AnswerSchema
  * Methods
  */
 AnswerSchema.methods = {
-    getAnswersInThread: function(next) {
-        this.model('Answer').find({
-            threadId: this.threadId
-        }, next);
-    },
     removeAnswersInThread: function(next) {
         return this.model('Answer').remove({
             threadId: this.threadId

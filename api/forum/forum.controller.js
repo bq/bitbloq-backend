@@ -4,6 +4,22 @@ var Answer = require('./models/answer.model'),
     Thread = require('./models/thread.model'),
     async = require('async');
 
+
+function completeCategory(category, next) {
+    //todo get stats
+    next(null, {
+        name: category.name,
+        section: category.section,
+        description: category.description,
+        order: category.order,
+        numberOfThreads: category.numberOfThreads,
+        numberOfAnswers: category.numberOfAnswers,
+        lastThread: category.lastThread,
+        uuid: category.uuid
+    });
+}
+
+
 /**
  * Create Category
  */
@@ -60,7 +76,7 @@ exports.createThread = function(req, res) {
                 numberOfAnswers: numberOfAnswers
             }, next);
         }
-    ], function(err, result) {
+    ], function(err) {
         if (err) {
             res.status(500).send(err);
         } else {
@@ -122,31 +138,16 @@ exports.createAnswer = function(req, res) {
     });
 };
 
+
 /**
  * Gets Main forum section
  */
 exports.showForumIndex = function(req, res) {
-    var mainForumCategories = [],
-        promisesArr;
-
     Category.find({}, function(err, categories) {
         if (err) {
             res.status(500).send(err);
         } else {
-            async.map(function(category) {
-                var defCat = {
-                    name: category.name,
-                    section: category.section,
-                    description: category.description,
-                    order: category.order,
-                    numberOfThreads: category.numberOfThreads,
-                    numberOfAnswers: category.numberOfAnswers,
-                    lastThread: category.lastThread,
-                    uuid: category.uuid
-                };
-                mainForumCategories.push(defCat);
-                Promise.resolve();
-            }, function(err, mainForumCategories) {
+            async.map(categories, completeCategory, function(err, mainForumCategories) {
                 if (err) {
                     res.status(500).send(err);
                 } else {
@@ -157,105 +158,44 @@ exports.showForumIndex = function(req, res) {
     });
 };
 
+
 /**
  * Get all threads in a category
  */
 exports.showThreadsInCategory = function(req, res) {
     var matchThread;
-
-    switch (req.params.by) {
-        case 'uuid':
-            matchThread = new Thread({
-                categoryId: req.params.id
-            });
-
-            matchThread.getThreadsInCategory().sort('-updatedAt').exec(function(err, threads) {
+    var category = req.params.category;
+    Category.findOne({name: category}, function(err, category) {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            Thread.find({categoryId: category.uuid}).sort('-updatedAt').exec(function(err, threads) {
                 if (err) {
                     res.status(500).send(err);
                 } else {
                     res.status(200).json(threads);
                 }
-            });
-            break;
-        case 'id':
-            Category.findById(req.params.id, {
-                uuid: 'uuid',
-                _id: 0
-            }).exec(function(err, response) {
-                if (err) {
-                    res.status(500).send(err);
-                } else {
-                    matchThread = new Thread({
-                        categoryId: response.uuid
-                    });
-                    matchThread.getThreadsInCategory().sort('-updatedAt').exec(function(err, threads) {
-                        if (err) {
-                            res.status(500).send(err);
-                        } else {
-                            res.status(200).json(threads);
-                        }
-                    });
-                }
-            });
-            break;
-        case 'name':
-            var query = Category.where({
-                name: req.params.id
-            });
-            query.findOne({}, {
-                uuid: 'uuid',
-                _id: 0
-            }).exec(function(err, response) {
-                if (err) {
-                    res.status(500).send(err);
-                } else {
-                    matchThread = new Thread({
-                        categoryId: response.uuid
-                    });
-                    matchThread.getThreadsInCategory().sort('-updatedAt').exec(function(err, threads) {
-                        if (err) {
-                            res.status(500).send(err);
-                        } else {
-                            res.status(200).json(threads);
-                        }
-                    }).catch(utils.handleError(res));
-                }
-            });
-
-            break;
-        default:
-            res.status(422).send('You need to provide "id" or "uuid" ');
-    }
-};
-
-/**
- * Get a single thread by Id
- */
-exports.showThread = function(req, res) {
-    var matchThread = new Thread({
-        _id: req.params.id
-    });
-    matchThread.getThread(function(err, thread) {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.status(200).json(thread);
+            })
         }
     });
 };
 
 /**
- * Get all answers in a thread
+ * Get a single thread by Id
  */
-exports.showAnswersInThread = function(req, res) {
-    var matchAnswers = new Answer({
-        threadId: req.params.id
-    });
-    matchAnswers.getAnswersInThread(function(err, answers) {
+exports.getThread = function(req, res) {
+    var themeId = req.params.id;
+
+    async.parallel([
+        Thread.findById.bind(Thread, themeId),
+        Answer.find.bind(Answer, {threadId: themeId})
+
+    ], function(err, results) {
         if (err) {
+            console.log(err);
             res.status(500).send(err);
         } else {
-            res.status(200).json(answers);
+            res.status(200).json({thread: results[0], answers: results[1]});
         }
     });
 };
