@@ -5,14 +5,52 @@ var crypto = require('crypto'),
     mongoose = require('mongoose');
 
 var UserSchema = new mongoose.Schema({
-    firstName: {type: String, lowercase: true, trim: true},
-    lastName: {type: String, lowercase: true, trim: true},
-    username: {type: String, lowercase: true, trim: true},
-    email: {type: String, lowercase: true, trim: true},
-    bannedInForum: {type: Boolean, default: false},
-    googleEmail: String,
-    facebookEmail: String,
-    role: {type: String, default: 'user'},
+    firstName: {
+        type: String,
+        lowercase: true,
+        trim: true
+    },
+    lastName: {
+        type: String,
+        lowercase: true,
+        trim: true
+    },
+    username: {
+        type: String,
+        lowercase: true,
+        trim: true
+    },
+    email: {
+        type: String,
+        lowercase: true,
+        trim: true
+    },
+    bannedInForum: {
+        type: Boolean,
+        default: false
+    },
+    social: {
+        google: {
+            email: {
+                type: String,
+                lowercase: true,
+                trim: true
+            },
+            id: String
+        },
+        facebook: {
+            email: {
+                type: String,
+                lowercase: true,
+                trim: true
+            },
+            id: String
+        }
+    },
+    role: {
+        type: String,
+        default: 'user'
+    },
     properties: {
         avatar: String,
         newsletter: Boolean,
@@ -23,7 +61,10 @@ var UserSchema = new mongoose.Schema({
     password: String,
     provider: String,
     salt: String,
-    _createdAt: {type: Date, default: Date.now}
+    _createdAt: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 /**
@@ -52,6 +93,17 @@ UserSchema
             'username': this.username,
             'email': this.email,
             'role': this.role,
+            'social': {
+                'google': {
+                    email: this.social.google.email,
+                    id: this.social.google.id
+                },
+                'facebook': {
+                    email: this.social.facebook.email,
+                    id: this.social.facebook.id
+                }
+            },
+
             'googleEmail': this.googleEmail,
             'facebookEmail': this.facebookEmail,
             'bannedInForum': this.bannedInForum,
@@ -107,9 +159,12 @@ UserSchema
             $or: [{
                 email: value
             }, {
-                facebookEmail: value
-            }, {
-                googleEmail: value
+              google:{
+                email: value
+              },
+              facebook:{
+                email: value
+              }
             }]
         });
         return this.constructor.findOneAsync(query).then(function(user) {

@@ -75,187 +75,240 @@ exports.create = function(req, res) {
 
 //WATERFALL
 exports.socialLogin = function(req, res) {
-
     var provider = req.body.provider;
     var token = req.body.accessToken;
+    var responseSocial;
     switch (provider) {
         case 'google':
-            UserFunctions.getGoogleSocialProfile(token).then(function(response) {
-                try {
-                    response = JSON.parse(response);
-                } catch (err) {
-                    return res.status(422).send(err);
-                }
-                var query = User.where({
-                    $or: [{
-                        email: response.email
-                    }, {
-                        facebookEmail: response.email
-                    }, {
-                        googleEmail: response.email
-                    }]
-                });
-
-                query.findOne(query, function(err, user) {
-                    if (err) {
-                        res.status(422).send(err);
-                    }
-                    if (user) {
-                        if (user.googleEmail === '') {
-
-                            User.update({
-                                _id: user._id
+            async.waterfall([
+                function(socialCallback) {
+                    UserFunctions.getGoogleSocialProfile(token, socialCallback).then(function(response) {
+                        response = JSON.parse(response);
+                        responseSocial = response;
+                        User.findOne({
+                            $or: [{
+                                email: response.email
                             }, {
-                                $set: {
-                                    googleEmail: response.email
+                                social: {
+                                    facebook: {
+                                        email: response.email
+                                    }
                                 }
-                            }, function(err, user) {
-                                var token = jwt.sign({
-                                    _id: user._id
-                                }, config.secrets.session, {
-                                    expiresIn: 600 * 240
-                                });
-                                res.status(200).json({
-                                    token: token,
-                                    user: user.owner
-                                }).end();
-                            });
-                        } else {
-                            var token = jwt.sign({
-                                _id: user._id
-                            }, config.secrets.session, {
-                                expiresIn: 600 * 240
-                            });
-                            res.status(200).json({
-                                token: token,
-                                user: user.owner
-                            });
-                        }
-                    } else {
-                        var userData = {
-                            firstName: response.given_name,
-                            lastName: response.family_name,
-                            email: response.email,
-                            googleEmail: response.email,
-                            properties: {
-                                avatar: response.picture
-                            },
-                            provider: 'social'
-                        };
-                        var newUser = new User(userData);
-                        newUser.role = 'user';
+                            }, {
+                                social: {
+                                    google: {
+                                        email: response.email
+                                    }
+                                }
+                            }]
+                        }, socialCallback);
+                    });
+                }
 
-                        newUser.saveAsync().then(function(user) {
-                            var token = jwt.sign({
-                                _id: user._id
-                            }, config.secrets.session, {
-                                expiresIn: 600 * 240
-                            });
-                            res.json({
-                                token: token,
-                                user: user.owner
-                            });
-                        }, function(err) {
-                            return res.status(422).json(err);
+            ], function(err, user) {
+                if (err) {
+                    res.sendStatus(422);
+                }
+                if (user) {
+                    if (user.social.google.email === '') {
+                        async.waterfall([
+                            function(userCallback) {
+                                User.update({
+                                    _id: user._id
+                                }, {
+                                    $set: {
+                                        social: {
+                                            google: {
+                                                email: responseSocial.email,
+                                                id: responseSocial.id
+                                            }
+                                        }
+                                    }
+                                }, userCallback);
+                            },
+                            function(user, userCallback) {
+                                UserFunctions.generateToken(user, userCallback);
+                            }
+                        ], function(err, response) {
+                            if (response) {
+                                res.status(200).send(response);
+                            } else {
+                                res.sendStatus(500);
+                            }
+                        });
+                    } else {
+                        UserFunctions.generateToken(user, function(err, response) {
+                            if (err) {
+                                res.sendStatus(500);
+                            } else {
+                                if (response) {
+                                    res.status(200).send(response);
+                                }
+                            }
                         });
                     }
-                });
+                } else {
+                    var userData = {
+                        firstName: responseSocial.given_name,
+                        lastName: responseSocial.family_name,
+                        email: responseSocial.email,
+                        social: {
+                            google: {
+                                email: responseSocial.email,
+                                id: responseSocial.id,
+                            }
+                        },
+                        properties: {
+                            avatar: responseSocial.picture
+                        },
+                        provider: 'social'
+                    };
+                    var newUser = new User(userData);
+                    newUser.role = 'user';
 
-            }).catch(utils.handleError(res));
+                    async.waterfall([
+                        function(saveCallback) {
+                            newUser.save(saveCallback);
+                        },
+                        function(user, saved, saveCallback) {
+                            UserFunctions.generateToken(user, saveCallback);
+                        }
+                    ], function(err, response) {
+                        if (err) {
+                            res.status(422).json(err);
+                        } else {
+                            if (response) {
+                                res.status(200).send(response);
+                            }
+                        }
+                    });
+                }
+
+            });
             break;
         case 'facebook':
-            UserFunctions.getFacebookSocialProfile(token).then(function(response) {
-                try {
-                    response = JSON.parse(response);
-                } catch (err) {
-                    res.status(422).send(err).end();
-                }
-                var query = User.where({
-                    $or: [{
-                        email: response.email
-                    }, {
-                        facebookEmail: response.email
-                    }, {
-                        googleEmail: response.email
-                    }]
-                });
-
-                query.findOne(query, function(err, user) {
-                    if (err) {
-                        res.status(404).send(err).end();
-                    }
-                    if (user) {
-                        if (user.facebookEmail === '') {
-                            User.update({
-                                _id: user._id
-                            }, {
-                                $set: {
-                                    facebookEmail: response.email
-                                }
-                            }, function(err, user) {
-                                var token = jwt.sign({
-                                    _id: user._id
-                                }, config.secrets.session, {
-                                    expiresIn: 600 * 240
-                                });
-                                res.status(200).json({
-                                    token: token,
-                                    user: user.owner
-                                }).end();
-                            });
-                        } else {
-                            var token = jwt.sign({
-                                _id: user._id
-                            }, config.secrets.session, {
-                                expiresIn: 600 * 240
-                            });
-                            res.status(200).json({
-                                token: token,
-                                user: user.owner
-                            }).end();
+            async.waterfall([
+                function(socialCallback) {
+                    UserFunctions.getFacebookSocialProfile(token, socialCallback).then(function(response) {
+                        try {
+                            response = JSON.parse(response);
+                            responseSocial = response;
+                        } catch (err) {
+                            socialCallback(err);
                         }
-                    } else {
-                        UserFunctions.getFacebookAvatar(response.id).then(function(avatar) {
-                            var userData = {
-                                firstName: response.first_name,
-                                lastName: response.last_name,
-                                email: response.email,
-                                facebookEmail: response.email,
-                                properties: {
-                                    avatar: ''
-                                },
-                                provider: 'social'
-                            };
-
-                            try {
-                                avatar = JSON.parse(avatar);
-                                if (avatar.data && !avatar.error) {
-                                    userData.properties.avatar = avatar.data.url;
+                        User.findOne({
+                            $or: [{
+                                email: response.email
+                            }, {
+                                social: {
+                                    facebook: {
+                                        email: response.email
+                                    }
                                 }
-                            } catch (err) {
-                                console.log('No avatar', err);
-                            }
+                            }, {
+                                social: {
+                                    google: {
+                                        email: response.email
+                                    }
+                                }
+                            }]
+                        }, socialCallback);
+                    });
+                }
 
-                            var newUser = new User(userData);
-                            newUser.role = 'user';
-                            newUser.saveAsync().then(function(user) {
-                                var token = jwt.sign({
+            ], function(err, user) {
+                if (err) {
+                    res.sendStatus(404);
+                }
+                if (user) {
+                    if (user.social.facebook.email === '') {
+                        async.waterfall([
+                            function(userCallback) {
+                                User.update({
                                     _id: user._id
-                                }, config.secrets.session, {
-                                    expiresIn: 600 * 240
-                                });
-                                res.json({
-                                    token: token,
-                                    user: user.owner
-                                });
-                            }, function(err) {
-                                return res.status(422).json(err);
-                            });
+                                }, {
+                                    $set: {
+                                        social: {
+                                            facebook: {
+                                                email: responseSocial.email,
+                                                id: responseSocial.id
+                                            }
+                                        }
+                                    }
+                                }, userCallback);
+                            },
+                            function(user, userCallback) {
+                                UserFunctions.generateToken(user, userCallback);
+                            }
+                        ], function(err, response) {
+                            if (response) {
+                                res.status(200).send(response);
+                            } else {
+                                res.sendStatus(500);
+                            }
+                        });
+
+                    } else {
+                        UserFunctions.generateToken(user, function(err, response) {
+                            if (err) {
+                                res.sendStatus(500);
+                            } else {
+                                if (response) {
+                                    res.status(200).send(response);
+                                }
+                            }
                         });
                     }
-                });
+                } else {
+                    async.waterfall([
+                        function(socialCallback) {
+                            UserFunctions.getFacebookAvatar(responseSocial.id).then(function(avatar) {
+                                var userData = {
+                                    firstName: responseSocial.first_name,
+                                    lastName: responseSocial.last_name,
+                                    email: responseSocial.email,
+                                    social: {
+                                        facebook: {
+                                            email: responseSocial.email,
+                                            id: responseSocial.id,
+                                        }
+                                    },
+                                    properties: {
+                                        avatar: ''
+                                    },
+                                    provider: 'social'
+                                };
 
-            }).catch(utils.handleError(res));
+                                try {
+                                    avatar = JSON.parse(avatar);
+                                    if (avatar.data && !avatar.error) {
+                                        userData.properties.avatar = avatar.data.url;
+                                    }
+                                } catch (err) {
+                                    console.log('No avatar', err);
+                                }
+
+                                var newUser = new User(userData);
+                                newUser.role = 'user';
+                                newUser.save(socialCallback);
+
+                            });
+                        },
+
+                        function(user, saved, socialCallback) {
+                            UserFunctions.generateToken(user, socialCallback);
+                        }
+                    ], function(err, response) {
+                        if (err) {
+                            res.status(422).json(err);
+                        } else {
+                            if (response) {
+                                res.status(200).send(response);
+                            }
+                        }
+                    });
+                }
+            });
             break;
         default:
             throw 'Error: not a provider';
@@ -330,21 +383,31 @@ exports.turnToLocal = function(req, res) {
     var userId = req.user._id;
     var newPass = String(req.body.newPassword);
 
-    User.findByIdAsync(userId).then(function(user) {
-        if (!user.password) {
-            user.password = newPass;
+    async.waterfall([
+            function(userCallback) {
+                User.findById(userId, userCallback);
+            },
 
-            user.provider = 'local';
-            user.saveAsync().then(function() {
-                res.status(200).end();
-            });
-        } else {
-            utils.handleError(res, 401, {
-                Error: 'That user already has password'
-            });
-        }
-    }).catch(utils.handleError(res));
+            function(user, userCallback) {
+                if (!user.password) {
+                    user.password = newPass;
+                    user.provider = 'local';
 
+                    user.save(userCallback);
+                } else {
+                    userCallback(500);
+                }
+            }
+        ],
+        function(err, response) {
+            if (response) {
+                res.sendStatus(200);
+            } else {
+                if (err) {
+                    res.sendStatus(401);
+                }
+            }
+        });
 };
 
 /**
@@ -359,8 +422,8 @@ exports.changePassword = function(req, res) {
     var newPass = String(req.body.newPassword);
 
     async.waterfall([
-        function (tokenCallback){
-          Token.findById(userId, tokenCallback);
+        function(tokenCallback) {
+            Token.findById(userId, tokenCallback);
         },
 
         function(token, tokenCallback) {
@@ -379,10 +442,7 @@ exports.changePassword = function(req, res) {
             Token.remove(tokenRec, tokenCallback);
         }
     ], function(err, result) {
-        console.log("err");
-
         if (result) {
-            console.log("hola");
             res.sendStatus(204);
         } else {
             if (err) {

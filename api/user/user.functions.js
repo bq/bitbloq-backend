@@ -1,7 +1,8 @@
 'use strict';
-var request = require('request-promise');
-var User = require('./user.model');
-
+var request = require('request-promise'),
+    User = require('./user.model'),
+    config = require('../../config/environment'),
+    jwt = require('jsonwebtoken');
 
 /**
  * Get a single profile user
@@ -38,6 +39,16 @@ exports.getUserId = function(email, next) {
         }
     });
 };
+
+exports.generateToken = function(user, next) {
+    var token = jwt.sign({
+        _id: user._id
+    }, config.secrets.session, {
+        expiresIn: 600 * 240
+    });
+
+    next(null, {token:token, user:user.owner});
+}
 
 /**
  * Get google user data with token
