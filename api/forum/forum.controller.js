@@ -12,7 +12,7 @@ function completeCategory(category, next) {
         Thread.findOne.bind(Thread, {}, null, {sort: {'updatedAt': -1}})
     ], function(err, results) {
         if (err) {
-            next(500);
+            next(err);
         } else {
             var categoryObject = category.toObject();
             categoryObject.numberOfAnswers = results[0];
@@ -26,7 +26,7 @@ function completeCategory(category, next) {
 function countThreads(category, next) {
     Thread.count({categoryId: category._id}, function(err, counter) {
         if (err) {
-            next(500);
+            next(err);
         } else {
             var categoryObject = category.toObject();
             categoryObject.numberOfTreads = counter;
@@ -47,7 +47,7 @@ function getLastThread(category, next) {
 function countAnswersThread(thread, next) {
     Answer.count({threadId: thread._id, main: false}, function(err, counter) {
         if (err) {
-            next(500);
+            next(err);
         } else {
             var threadObject = thread.toObject();
             threadObject.numberOfAnswers = counter;
@@ -67,7 +67,7 @@ function countAnswersCategory(threads) {
 function getThreadsInCategory(category, next) {
     Thread.find({categoryId: category.uuid}).sort('-updatedAt').exec(function(err, threads) {
         if (err) {
-            next(500);
+            next(err);
         } else {
             async.map(threads, countAnswersThread, function(err, completedThreads) {
                 var categoryObject = category.toObject();
@@ -130,7 +130,7 @@ exports.createAnswer = function(req, res) {
             newAnswer.categoryId = thread.categoryId;
             newAnswer.save(next)
         }
-    ], function(err, result) {
+    ], function(err) {
         if (err) {
             res.status(500).send(err);
         } else {
@@ -250,34 +250,14 @@ exports.updateAnswer = function(req, res) {
  * Deletes an answer
  */
 exports.destroyAnswer = function(req, res) {
-    var answerId = req.params.id,
-        threadId = req.params.threadid;
-
-    Answer.findByIdAndRemove(answerId)
-        .then(function() {
-            var matchAnswers = new Answer({
-                threadId: threadId
-            });
-            matchAnswers.getLastThreadInCategory().then(function(thread) {
-                Thread.findByIdAndUpdate(thread._id, {
-                    lastAnswerDate: thread.updatedAt
-                }, {
-                    $inc: {
-                        numberOfAnswers: -1
-                    }
-                }).then(function() {
-                    Category.findOneAndUpdate({
-                        uuid: thread.categoryId
-                    }, {
-                        $inc: {
-                            numberOfAnswers: -1
-                        }
-                    }).then(function() {
-                        res.status(204).end();
-                    }).catch(utils.handleError(res));
-                }).catch(utils.handleError(res));
-            });
-        }).catch(utils.handleError(res));
+    Answer.findByIdAndRemove(req.params.id, function(err) {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            //Todo destroy images in answer
+            res.sendStatus(200);
+        }
+    });
 };
 
 /**
@@ -285,34 +265,14 @@ exports.destroyAnswer = function(req, res) {
  */
 exports.destroyThread = function(req, res) {
     var threadId = req.params.id;
-    var matchAnswers = new Answer({
-        threadId: threadId
-    });
-    matchAnswers.removeAnswersInThread(function(err) {
+    async.waterfall([
+        Answer.remove.bind(Answer, {threadId: threadId}),
+        Thread.findByIdAndRemove.bind(Thread, threadId)
+    ], function(err) {
         if (err) {
             res.status(500).send(err);
         } else {
-            Thread.findByIdAndRemove(threadId, {
-                new: true
-            }, function(err, thread) {
-                if (err) {
-                    res.status(500).send(err);
-                } else {
-                    Category.findOneAndUpdate({
-                        uuid: thread.categoryId
-                    }, {
-                        $inc: {
-                            numberOfAnswers: -1
-                        }
-                    }, function(err) {
-                        if (err) {
-                            res.status(500).send(err);
-                        } else {
-                            res.status(204).end();
-                        }
-                    });
-                }
-            });
+            res.sendStatus(200);
         }
     });
 };
