@@ -175,6 +175,7 @@ exports.getCategory = function(req, res) {
         Category.findOne.bind(Category, {name: categoryName}),
         getTheadsInCategory
     ], function(err, completedCategory) {
+        console.log(completedCategory);
         if (err) {
             res.status(500).send(err);
         } else {
