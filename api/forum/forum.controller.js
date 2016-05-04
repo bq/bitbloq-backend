@@ -100,42 +100,15 @@ exports.createCategory = function(req, res) {
  */
 exports.createThread = function(req, res) {
     var newThread = new Thread(req.body.thread),
-        newAnswer = new Answer(req.body.answer),
-        matchThread = new Thread({categoryId: req.body.thread.categoryId});
-
+        newAnswer = new Answer(req.body.answer);
 
     async.waterfall([
         newThread.save,
         function(thread, saved, next) {
             newAnswer.threadId = newThread._id;
+            newAnswer.categoryId = newThread.categoryId;
             // Save the answer
             newAnswer.save(next);
-        },
-        function(answer, saved, next) {
-            matchThread.getThreadsInCategory.bind(matchThread, {categoryId: req.body.thread.categoryId});
-        },
-        function(threads, next) {
-            var numberOfAnswers = 0;
-            var numberOfThreads = threads.length;
-            threads.forEach(function(thread) {
-                if (thread.numberOfAnswers > 1) {
-                    numberOfAnswers += thread.numberOfAnswers - 1;
-                } else if (thread.numberOfAnswers === 1) {
-                    if (thread._id !== newThread._id) {
-                        numberOfAnswers += 1;
-                    }
-                }
-            });
-            next(null, numberOfThreads);
-        },
-        function(numberOfThreads, next) {
-            Category.findOneAndUpdate({
-                uuid: newThread.categoryId
-            }, {
-                numberOfThreads: numberOfThreads,
-                lastThread: newThread,
-                numberOfAnswers: numberOfAnswers
-            }, next);
         }
     ], function(err) {
         if (err) {
