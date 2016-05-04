@@ -6,11 +6,11 @@ var ThreadSchema = new mongoose.Schema({
 
     title: {type: String, lowercase: false, trim: true},
     lastAnswer: {},
-    numberOfAnswers: {type: Number, default: 0},
     numberOfViews: {type: Number, default: 0},
     categoryId: {type: String, lowercase: true, trim: true},
     creator: {_id: String, name: String},
-    _createdAt: {type: Date, default: Date.now}
+    _createdAt: {type: Date, default: Date.now},
+    _updatedAt: { type: Date, default: Date.now }
 }, {
     timestamps: true
 });

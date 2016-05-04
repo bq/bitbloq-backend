@@ -6,23 +6,77 @@ var Answer = require('./models/answer.model'),
 
 
 function completeCategory(category, next) {
-    //todo get stats
-    next(null, {
-        name: category.name,
-        section: category.section,
-        description: category.description,
-        order: category.order,
-        numberOfThreads: category.numberOfThreads,
-        numberOfAnswers: category.numberOfAnswers,
-        lastThread: category.lastThread,
-        uuid: category.uuid
+    async.parallel([
+        Answer.count.bind(Answer, {categoryId: category.uuid, main: false}),
+        Thread.count.bind(Thread, {categoryId: category.uuid}),
+        Thread.findOne.bind(Thread, {}, null, {sort: {'updatedAt': -1}})
+    ], function(err, results) {
+        if (err) {
+            next(500);
+        } else {
+            var categoryObject = category.toObject();
+            categoryObject.numberOfAnswers = results[0];
+            categoryObject.numberOfThreads = results[1];
+            categoryObject.lastThread = results[2];
+            next(null, categoryObject);
+        }
+    });
+}
+
+function countThreads(category, next) {
+    Thread.count({categoryId: category._id}, function(err, counter) {
+        if (err) {
+            next(500);
+        } else {
+            var categoryObject = category.toObject();
+            categoryObject.numberOfTreads = counter;
+            next(null, categoryObject);
+        }
+    });
+}
+
+function getLastThread(category, next) {
+    Thread.findOne().sort('-updatedAt').exec(function(err, lastThread) {
+        var categoryObject = category.toObject();
+        categoryObject.lastThread = lastThread;
+        next(err, categoryObject);
     });
 }
 
 
-function getTheadsInCategory(category, next){
+function countAnswersThread(thread, next) {
+    Answer.count({threadId: thread._id, main: false}, function(err, counter) {
+        if (err) {
+            next(500);
+        } else {
+            var threadObject = thread.toObject();
+            threadObject.numberOfAnswers = counter;
+            next(null, threadObject);
+        }
+    });
+}
+
+function countAnswersCategory(threads) {
+    var counter = 0;
+    threads.forEach(function(thread) {
+        counter += thread.numberOfAnswers;
+    });
+    return counter;
+}
+
+function getThreadsInCategory(category, next) {
     Thread.find({categoryId: category.uuid}).sort('-updatedAt').exec(function(err, threads) {
-        next(err, {category: category, threads: threads})
+        if (err) {
+            next(500);
+        } else {
+            async.map(threads, countAnswersThread, function(err, completedThreads) {
+                var categoryObject = category.toObject();
+                categoryObject.numberOfThreads = completedThreads.length;
+                categoryObject.numberOfAnswers = countAnswersCategory(completedThreads);
+                categoryObject.lastThread = completedThreads[0];
+                next(err, {category: categoryObject, threads: completedThreads})
+            })
+        }
     });
 }
 
@@ -58,7 +112,7 @@ exports.createThread = function(req, res) {
             newAnswer.save(next);
         },
         function(answer, saved, next) {
-            matchThread.getThreadsInCategory({categoryId: req.body.categoryId}, next);
+            matchThread.getThreadsInCategory.bind(matchThread, {categoryId: req.body.thread.categoryId});
         },
         function(threads, next) {
             var numberOfAnswers = 0;
@@ -149,7 +203,7 @@ exports.createAnswer = function(req, res) {
 /**
  * Gets Main forum section
  */
-exports.showForumIndex = function(req, res) {
+exports.getForumIndex = function(req, res) {
     Category.find({}, function(err, categories) {
         if (err) {
             res.status(500).send(err);
@@ -173,9 +227,8 @@ exports.getCategory = function(req, res) {
     var categoryName = req.params.category;
     async.waterfall([
         Category.findOne.bind(Category, {name: categoryName}),
-        getTheadsInCategory
+        getThreadsInCategory
     ], function(err, completedCategory) {
-        console.log(completedCategory);
         if (err) {
             res.status(500).send(err);
         } else {
@@ -195,11 +248,12 @@ exports.getThread = function(req, res) {
         Answer.find.bind(Answer, {threadId: themeId})
 
     ], function(err, results) {
+        var thread = results[0].toObject();
+        thread.numberOfAnswers = results[1].length - 1;
         if (err) {
-            console.log(err);
             res.status(500).send(err);
         } else {
-            res.status(200).json({thread: results[0], answers: results[1]});
+            res.status(200).json({thread: thread, answers: results[1]});
         }
     });
 };

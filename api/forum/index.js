@@ -11,7 +11,7 @@ router.delete('/answer/:id/:threadid/:categoryid', auth.hasRole('admin'), contro
 router.delete('/thread/:id', auth.hasRole('admin'), controller.destroyThread);
 
 // GET
-router.get('/', controller.showForumIndex);
+router.get('/', controller.getForumIndex);
 router.get('/category/:category', controller.getCategory);
 router.get('/thread/:id', controller.getThread);
 

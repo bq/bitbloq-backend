@@ -3,16 +3,17 @@
 var mongoose = require('mongoose');
 
 var AnswerSchema = new mongoose.Schema({
-    content: { type: String, lowercase: false, trim: false },
+    content: {type: String, lowercase: false, trim: false},
     owner: {
-        username: { type: String, lowercase: true, trim: true },
-        _id: { type: String, lowercase: false, trim: false },
-        avatar: { type: String, lowercase: true, trim: true }
+        username: {type: String, lowercase: true, trim: true},
+        _id: {type: String, lowercase: false, trim: false},
+        avatar: {type: String, lowercase: true, trim: true}
     },
-    threadId: { type: String, lowercase: false, trim: false },
-    main: { type: Boolean, default: false },
+    threadId: {type: String, lowercase: false, trim: false},
+    categoryId: {type: String, lowercase: false, trim: false},
+    main: {type: Boolean, default: false},
     images: [],
-    _createdAt: { type: Date, default: Date.now }
+    _createdAt: {type: Date, default: Date.now}
 }, {
     timestamps: true
 });
