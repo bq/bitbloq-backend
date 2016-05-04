@@ -150,52 +150,19 @@ exports.createThread = function(req, res) {
  * Create Answer
  */
 exports.createAnswer = function(req, res) {
-    var newAnswer = new Answer(req.body);
-    newAnswer.save(function(err) {
+    async.waterfall([
+        Thread.findByIdAndUpdate.bind(Thread, req.body.threadId, {'_updatedAt': Date.now()}),
+        function(thread, next) {
+            var newAnswer = new Answer(req.body);
+            newAnswer.categoryId = thread.categoryId;
+            newAnswer.save(next)
+        }
+    ], function(err, result) {
         if (err) {
             res.status(500).send(err);
         } else {
-            newAnswer.countAnswersInThread({
-                threadId: req.body.threadId
-            }, function(err, numberOfAnswers) {
-                if (err) {
-                    res.status(500).send(err);
-                } else {
-                    if (numberOfAnswers <= 1) {
-                        numberOfAnswers = 0;
-                    } else {
-                        numberOfAnswers = numberOfAnswers - 1
-                    }
-                    Thread.findByIdAndUpdate(newAnswer.threadId, {
-                        new: true,
-                        lastAnswer: newAnswer,
-                        numberOfAnswers: numberOfAnswers
-                    }, function(err, thread) {
-                        if (err) {
-                            res.status(500).send(err);
-                        } else {
-                            Category.findOneAndUpdate({
-                                uuid: thread.categoryId
-                            }, {
-                                $set: {
-                                    lastThread: thread
-                                },
-                                $inc: {
-                                    numberOfAnswers: 1
-                                }
-                            }, function(err) {
-                                if (err) {
-                                    res.status(500).send(err);
-                                } else {
-                                    res.sendStatus(200);
-                                }
-                            });
-                        }
-                    });
-                }
-            });
+            res.sendStatus(200);
         }
-
     });
 };
 
