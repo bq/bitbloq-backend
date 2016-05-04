@@ -17,45 +17,21 @@ var CategorySchema = new mongoose.Schema({
  * Validations
  */
 
-// Validate empty name category
-CategorySchema
-    .path('name')
-    .validate(function(name) {
-        return name.length;
-    }, 'Category name cannot be empty');
-
-// Validate empty name section
-CategorySchema
-    .path('section')
-    .validate(function(section) {
-        return section.length;
-    }, 'Category section cannot be empty');
-
 // Validate unique name
 CategorySchema
     .path('name')
-    .validate(function(name, respond) {
-        return this.constructor.findOneAsync({
+    .validate(function(name, next) {
+        this.constructor.findOne({
             name: name
-        }).then(function(category) {
-            if (category) {
-                return respond(false);
+        }, function(err, category) {
+            if(err){
+                next(err);
+            } else if (category) {
+                next(409);
             } else {
-                return respond(true);
+                next();
             }
-            return respond(true);
-        }).catch(function(err) {
-            throw err;
-        })
-
+        });
     }, 'Category name already in use');
-
-
-/**
- * Methods
- */
-CategorySchema.methods = {
-
-};
 
 module.exports = mongoose.model('Category', CategorySchema);
