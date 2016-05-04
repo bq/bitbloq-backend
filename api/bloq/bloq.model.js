@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 
 var BloqSchema = new mongoose.Schema({
     type: String,
-    name: "String",
+    name: 'String',
     connectors: Array,
     bloqClass: String,
     content: Array,
