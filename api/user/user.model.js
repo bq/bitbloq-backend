@@ -159,15 +159,15 @@ UserSchema
             $or: [{
                 email: value
             }, {
-              google:{
-                email: value
-              },
-              facebook:{
-                email: value
-              }
+                google: {
+                    email: value
+                },
+                facebook: {
+                    email: value
+                }
             }]
         });
-        return this.constructor.findOneAsync(query).then(function(user) {
+        return this.constructor.findOne(query).then(function(user) {
             if (user) {
                 if (self.id === user.id) {
                     return respond(true);
@@ -184,10 +184,12 @@ UserSchema
 UserSchema
     .path('username')
     .validate(function(value, respond) {
+      console.log("NANANANANA BAAAAAAAATMAN");
         var self = this;
-        return this.constructor.findOneAsync({
+
+        this.constructor.findOne({
             username: value
-        }).then(function(user) {
+        }, function(err, user) {
             if (user) {
                 if (self.id === user.id) {
                     return respond(true);
@@ -195,9 +197,8 @@ UserSchema
                 return respond(false);
             }
             return respond(true);
-        }).catch(function(err) {
-            throw err;
-        });
+        })
+
     }, 'The specified username is already in use.');
 
 var validatePresenceOf = function(value) {

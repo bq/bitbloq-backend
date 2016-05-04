@@ -35,17 +35,17 @@ function isAuthenticated() {
         })
         // Attach user to request
         .use(function(req, res, next) {
-            User.findByIdAsync(req.user && req.user._id)
-                .then(function(user) {
+            User.findById(req.user && req.user._id, function(err, user) {
+                if (err) {
+                    next(err);
+                } else {
                     if (!user) {
-                        return res.status(401).end();
+                        res.sendStatus(401);
                     }
                     req.user = user;
                     next();
-                })
-                .catch(function(err) {
-                    return next(err);
-                });
+                }
+            });
         });
 }
 
@@ -112,17 +112,18 @@ function getUser() {
         // Attach user to request
         .use(function(req, res, next) {
             if (req.user) {
-                User.findByIdAsync(req.user._id)
-                    .then(function(user) {
+                User.findById(req.user._id, function(err, user) {
+                    if (err) {
+                        next();
+                    } else {
                         if (!user) {
-                            return res.status(401).end();
+                            res.sendStatus(401);
                         }
                         req.user = user;
                         next();
-                    })
-                    .catch(function() {
-                        return next();
-                    });
+                    }
+                });
+
             } else {
                 next();
             }

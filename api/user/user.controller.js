@@ -523,25 +523,27 @@ exports.resetPassword = function(req, res) {
  * Get my info
  */
 exports.me = function(req, res) {
-
     if (req) {
-        var userId = req.user._id;
-        User.findOne({
-                _id: userId
-            },
-            '-salt -password',
-            function(err, user) {
-                if (err) {
-                    res.status(400).send(err);
-                } else {
-                    if (!user) {
-                        res.sendStatus(401);
+        var userReq = req.user;
+        if (userReq) {
+            var userId = userReq.id;
+            User.findOne({
+                    _id: userId
+                },
+                '-salt -password',
+                function(err, user) {
+                    if (err) {
+                        res.status(400).send(err);
                     } else {
-                        res.status(200).json(user.owner)
+                        if (!user) {
+                            res.sendStatus(401);
+                        } else {
+                            res.status(200).json(user.owner)
+                        }
                     }
-                }
-            })
+                })
 
+        }
     } else {
         res.sendStatus(404);
     }
@@ -576,7 +578,7 @@ exports.updateMe = function(req, res) {
                 userToUpdate.properties.newsletter = reqUser.properties.newsletter || userToUpdate.properties.newsletter || '';
                 userToUpdate.properties.cookiePolicyAccepted = reqUser.properties.cookiePolicyAccepted || userToUpdate.properties.cookiePolicyAccepted || '';
                 userToUpdate.properties.hasBeenAskedIfTeacher = reqUser.properties.hasBeenAskedIfTeacher || userToUpdate.properties.hasBeenAskedIfTeacher || '';
-                User.updateAsync({
+                User.update({
                     _id: userId
                 }, userToUpdate, userCallback);
 
