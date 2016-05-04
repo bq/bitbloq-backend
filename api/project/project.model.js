@@ -10,9 +10,18 @@ var ProjectSchema = new mongoose.Schema({
     videoUrl: String,
     code: String,
     codeProject: Boolean,
-    timesViewed: {type: Number, default: 0},
-    timesAdded: {type: Number, default: 0},
-    defaultTheme: {type: String, default: 'infotab_option_colorTheme'},
+    timesViewed: {
+        type: Number,
+        default: 0
+    },
+    timesAdded: {
+        type: Number,
+        default: 0
+    },
+    defaultTheme: {
+        type: String,
+        default: 'infotab_option_colorTheme'
+    },
     hardware: {
         board: String,
         components: Array,
@@ -27,7 +36,10 @@ var ProjectSchema = new mongoose.Schema({
     hardwareTags: Array,
     userTags: Array,
     _acl: {},
-    _createdAt: { type: Date, default: Date.now }
+    _createdAt: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 /**
@@ -49,7 +61,6 @@ ProjectSchema
         };
     });
 
-
 /**
  * Pre-save hook
  */
@@ -63,11 +74,9 @@ ProjectSchema
         }
     });
 
-
 /**
  * Private functions
  */
-
 
 /**
  * thereIsAdmin - check if there is an admin
@@ -78,7 +87,6 @@ ProjectSchema
 var thereIsAdmin = function(project) {
     var admin = false;
     if (project._acl) {
-        var aux = project._acl;
         for (var item in project._acl) {
             if (project._acl[item].permission === 'ADMIN') {
                 admin = true;
@@ -88,7 +96,6 @@ var thereIsAdmin = function(project) {
     }
     return admin;
 };
-
 
 /**
  * setUserAdmin - set an user admin
@@ -103,7 +110,6 @@ var setUserAdmin = function(project, userId) {
         properties: {}
     };
 };
-
 
 /**
  * Methods
@@ -125,7 +131,6 @@ ProjectSchema.methods = {
         }
     },
 
-
     /**
      * setPrivate - set acl value to private access
      *
@@ -134,7 +139,6 @@ ProjectSchema.methods = {
     setPrivate: function() {
         delete this._acl.ALL;
     },
-
 
     /**
      * addView - add a visit to project
@@ -175,7 +179,7 @@ ProjectSchema.methods = {
      */
     resetShare: function() {
         var newAcl = {};
-        if(this._acl.ALL){
+        if (this._acl.ALL) {
             newAcl = {
                 'ALL': this._acl.ALL
             }

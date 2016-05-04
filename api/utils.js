@@ -2,7 +2,7 @@
 
 exports.validationError = function(res, statusCode, error) {
     statusCode = statusCode || 422;
-    if(error){
+    if (error) {
         res.status(statusCode).send(error);
     } else {
         return function(err) {
@@ -13,7 +13,7 @@ exports.validationError = function(res, statusCode, error) {
 
 exports.handleError = function(res, statusCode, error) {
     statusCode = statusCode || 500;
-    if(error){
+    if (error) {
         res.status(statusCode).send(error);
     } else {
         return function(err) {
@@ -21,7 +21,6 @@ exports.handleError = function(res, statusCode, error) {
         };
     }
 };
-
 
 /**
  * Extend a given object with all the properties in passed-in object(s).
@@ -41,7 +40,6 @@ exports.extend = function(obj) {
     return obj;
 };
 
-
 /**
  * Check if a object is empty
  * @param  {Object}  obj
@@ -49,8 +47,9 @@ exports.extend = function(obj) {
  */
 exports.isEmpty = function(obj) {
     for (var prop in obj) {
-        if (obj.hasOwnProperty(prop))
+        if (obj.hasOwnProperty(prop)) {
             return false;
+        }
     }
     return JSON.stringify(obj) === JSON.stringify({});
 };

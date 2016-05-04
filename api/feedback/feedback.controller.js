@@ -3,14 +3,13 @@
 var Feedback = require('./feedback.model'),
     mailer = require('../../components/mailer');
 
-
 /**
  * Create a new feedback
  */
 exports.create = function(req, res) {
     console.log('CREANDO QUEJA');
     var newProject = new Feedback(req.body);
-    newProject.save(function(err, feedback) {
+    newProject.save(function(err) {
         if (err) {
             res.status(500).send(err);
         } else {

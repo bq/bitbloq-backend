@@ -1,4 +1,4 @@
-
+'use strict'
 /**
  * Create a new project
  */

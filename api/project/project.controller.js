@@ -8,7 +8,7 @@ var Project = require('./project.model'),
 var perPage = 20;
 
 function updateProject(projectId, dataProject, res) {
-    Project.findByIdAndUpdate(projectId, dataProject, function(err, project) {
+    Project.findByIdAndUpdate(projectId, dataProject, function(err) {
         if (err) {
             res.status(500).send(err);
         } else {
@@ -81,14 +81,6 @@ function getSearch(res, params) {
         });
 }
 
-function isOwner(userId, project) {
-    var owner = false;
-    if (project._acl['user:' + userId].permission === 'ADMIN') {
-        owner = true;
-    }
-    return owner;
-}
-
 /**
  * Create a new project
  */
@@ -108,7 +100,7 @@ exports.create = function(req, res) {
 /**
  * Get a single project
  */
-exports.show = function(req, res, next) {
+exports.show = function(req, res) {
     var projectId = req.params.id;
     Project.findById(projectId, function(err, project) {
         if (err) {
@@ -307,11 +299,11 @@ exports.share = function(req, res) {
                             });
                         }
                     },
-                    function(err, results) {
+                    function(err) {
                         if (err) {
                             utils.handleError(err);
                         } else {
-                            Project.findByIdAndUpdate(projectId, project, function(err, project) {
+                            Project.findByIdAndUpdate(projectId, project, function(err) {
                                 if (err) {
                                     utils.handleError(err);
                                 } else {
