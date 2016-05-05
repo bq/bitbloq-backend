@@ -188,13 +188,13 @@ exports.getThread = function(req, res) {
         Answer.find.bind(Answer, {threadId: themeId})
 
     ], function(err, results) {
-        var threadObject = results[0].toObject();
-        threadObject.numberOfAnswers = results[1].length - 1;
         if (err) {
             res.status(500).send(err);
         } else {
+            var threadObject = results[0].toObject();
+            threadObject.numberOfAnswers = results[1].length - 1;
             if (req.user && threadObject.creator._id != req.user._id) {
-                var thread = new Thread(threadObject);
+                var thread = results[0];
                 thread.addView();
                 Thread.findByIdAndUpdate(thread._id, thread, function(err, thread) {
                     if (err) {
