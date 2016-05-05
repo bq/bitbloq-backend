@@ -12,8 +12,7 @@ var BloqSchema = new mongoose.Schema({
     _createdAt: {
         type: Date,
         default: Date.now
-    },
-    _updatedAt: Date
+    }
 });
 
 module.exports = mongoose.model('Bloq', BloqSchema);
