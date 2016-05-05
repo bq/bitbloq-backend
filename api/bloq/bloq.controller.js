@@ -26,3 +26,13 @@ exports.get = function(req, res) {
         });
 
 };
+
+exports.deleteAll = function(req, res) {
+    Bloq.remove({}, function(err) {
+        if (err) {
+            utils.handleError(res, null, err)
+        } else {
+            res.sendStatus(200);
+        }
+    });
+};

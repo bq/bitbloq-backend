@@ -41,9 +41,10 @@ function isAuthenticated() {
                 } else {
                     if (!user) {
                         res.sendStatus(401);
+                    } else {
+                        req.user = user;
+                        next();
                     }
-                    req.user = user;
-                    next();
                 }
             });
         });
