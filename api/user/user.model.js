@@ -34,14 +34,16 @@ var UserSchema = new mongoose.Schema({
             email: {
                 type: String,
                 lowercase: true,
-                trim: true
+                trim: true,
+                default: ''
             },
         },
         facebook: {
             email: {
                 type: String,
                 lowercase: true,
-                trim: true
+                trim: true,
+                default: ''
             },
         }
     },
@@ -50,8 +52,6 @@ var UserSchema = new mongoose.Schema({
         default: 'user'
     },
     properties: {
-        avatar: Boolean,
-        //avatarUrl
         newsletter: Boolean,
         language: String,
         cookiePolicyAccepted: Boolean,
@@ -183,7 +183,7 @@ UserSchema
 UserSchema
     .path('username')
     .validate(function(value, respond) {
-      console.log("NANANANANA BAAAAAAAATMAN");
+        console.log("NANANANANA BAAAAAAAATMAN");
         var self = this;
 
         this.constructor.findOne({

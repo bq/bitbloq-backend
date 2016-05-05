@@ -112,17 +112,15 @@ exports.socialLogin = function(req, res) {
                     res.sendStatus(422);
                 }
                 if (user) {
-                    if (user.social.google.email === '') {
+                    if (!user.social.google.email) {
                         async.waterfall([
                             function(userCallback) {
                                 User.update({
                                     _id: user._id
                                 }, {
                                     $set: {
-                                        social: {
-                                            google: {
-                                                email: responseSocial.email,
-                                            }
+                                        'social.google': {
+                                            email: responseSocial.email,
                                         }
                                     }
                                 }, userCallback);
@@ -157,9 +155,6 @@ exports.socialLogin = function(req, res) {
                             google: {
                                 email: responseSocial.email,
                             }
-                        },
-                        properties: {
-                            avatar: responseSocial.picture
                         },
                         provider: 'social'
                     };
@@ -224,18 +219,17 @@ exports.socialLogin = function(req, res) {
                     res.sendStatus(404);
                 }
                 if (user) {
-                    if (user.social.facebook.email === '') {
+                    if (!user.social.facebook.email) {
                         async.waterfall([
                             function(userCallback) {
                                 User.update({
                                     _id: user._id
                                 }, {
                                     $set: {
-                                        social: {
-                                            facebook: {
-                                                email: responseSocial.email,
-                                            }
+                                        'social.facebook': {
+                                            email: responseSocial.email,
                                         }
+
                                     }
                                 }, userCallback);
                             },
@@ -273,9 +267,6 @@ exports.socialLogin = function(req, res) {
                                         facebook: {
                                             email: responseSocial.email,
                                         }
-                                    },
-                                    properties: {
-                                        avatar: ''
                                     },
                                     provider: 'social'
                                 };
