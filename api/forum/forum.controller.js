@@ -188,12 +188,24 @@ exports.getThread = function(req, res) {
         Answer.find.bind(Answer, {threadId: themeId})
 
     ], function(err, results) {
-        var thread = results[0].toObject();
-        thread.numberOfAnswers = results[1].length - 1;
+        var threadObject = results[0].toObject();
+        threadObject.numberOfAnswers = results[1].length - 1;
         if (err) {
             res.status(500).send(err);
         } else {
-            res.status(200).json({thread: thread, answers: results[1]});
+            if (req.user && threadObject.creator._id != req.user._id) {
+                var thread = new Thread(threadObject);
+                thread.addView();
+                Thread.findByIdAndUpdate(thread._id, thread, function(err, thread) {
+                    if (err) {
+                        res.status(500).send(err);
+                    } else {
+                        res.status(200).json({thread: thread, answers: results[1]});
+                    }
+                });
+            } else {
+                res.status(200).json({thread: threadObject, answers: results[1]});
+            }
         }
     });
 };

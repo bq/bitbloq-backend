@@ -149,7 +149,7 @@ ProjectSchema.methods = {
         if (this.timesViewed) {
             this.timesViewed++;
         } else {
-            this.timesViewed = 0;
+            this.timesViewed = 1;
         }
     },
 
