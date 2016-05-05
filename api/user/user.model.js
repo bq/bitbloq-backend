@@ -36,7 +36,6 @@ var UserSchema = new mongoose.Schema({
                 lowercase: true,
                 trim: true
             },
-            id: String
         },
         facebook: {
             email: {
@@ -44,7 +43,6 @@ var UserSchema = new mongoose.Schema({
                 lowercase: true,
                 trim: true
             },
-            id: String
         }
     },
     role: {
@@ -52,7 +50,8 @@ var UserSchema = new mongoose.Schema({
         default: 'user'
     },
     properties: {
-        avatar: String,
+        avatar: Boolean,
+        //avatarUrl
         newsletter: Boolean,
         language: String,
         cookiePolicyAccepted: Boolean,

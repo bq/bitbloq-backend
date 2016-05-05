@@ -2,6 +2,7 @@
 
 var User = require('./user.model'),
     UserFunctions = require('./user.functions'),
+    ImageFunctions = require('../image/image.functions'),
     Token = require('../recovery/token.model'),
     utils = require('../utils'),
     config = require('../../config/environment'),
@@ -78,6 +79,7 @@ exports.socialLogin = function(req, res) {
     var provider = req.body.provider;
     var token = req.body.accessToken;
     var responseSocial;
+    var avatarUrl;
     switch (provider) {
         case 'google':
             async.waterfall([
@@ -120,7 +122,6 @@ exports.socialLogin = function(req, res) {
                                         social: {
                                             google: {
                                                 email: responseSocial.email,
-                                                id: responseSocial.id
                                             }
                                         }
                                     }
@@ -155,7 +156,6 @@ exports.socialLogin = function(req, res) {
                         social: {
                             google: {
                                 email: responseSocial.email,
-                                id: responseSocial.id,
                             }
                         },
                         properties: {
@@ -163,6 +163,8 @@ exports.socialLogin = function(req, res) {
                         },
                         provider: 'social'
                     };
+
+                    avatarUrl = responseSocial.picture;
                     var newUser = new User(userData);
                     newUser.role = 'user';
 
@@ -171,6 +173,7 @@ exports.socialLogin = function(req, res) {
                             newUser.save(saveCallback);
                         },
                         function(user, saved, saveCallback) {
+                            ImageFunctions.uploadToS3FromUrl(avatarUrl, user._id.toString());
                             UserFunctions.generateToken(user, saveCallback);
                         }
                     ], function(err, response) {
@@ -231,7 +234,6 @@ exports.socialLogin = function(req, res) {
                                         social: {
                                             facebook: {
                                                 email: responseSocial.email,
-                                                id: responseSocial.id
                                             }
                                         }
                                     }
@@ -270,7 +272,6 @@ exports.socialLogin = function(req, res) {
                                     social: {
                                         facebook: {
                                             email: responseSocial.email,
-                                            id: responseSocial.id,
                                         }
                                     },
                                     properties: {
@@ -281,9 +282,11 @@ exports.socialLogin = function(req, res) {
 
                                 try {
                                     avatar = JSON.parse(avatar);
+
                                     if (avatar.data && !avatar.error) {
-                                        userData.properties.avatar = avatar.data.url;
+                                        avatarUrl = avatar.data.url;
                                     }
+
                                 } catch (err) {
                                     console.log('No avatar', err);
                                 }
@@ -296,6 +299,7 @@ exports.socialLogin = function(req, res) {
                         },
 
                         function(user, saved, socialCallback) {
+                            ImageFunctions.uploadToS3FromUrl(avatarUrl, user._id.toString());
                             UserFunctions.generateToken(user, socialCallback);
                         }
                     ], function(err, response) {
@@ -542,7 +546,6 @@ exports.me = function(req, res) {
                         }
                     }
                 })
-
         }
     } else {
         res.sendStatus(404);

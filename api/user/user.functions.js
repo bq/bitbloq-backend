@@ -64,6 +64,10 @@ exports.getFacebookSocialProfile = function(token) {
     return request('https://graph.facebook.com/me?access_token=' + token);
 };
 
+exports.getGoogleAvatar = function(userId){
+  return userId;
+}
+
 exports.getFacebookAvatar = function(userId) {
-    return request('http://graph.facebook.com/v2.5/' + userId + '/picture?redirect=false');
+    return request('http://graph.facebook.com/v2.5/' + userId + '/picture?type=large&redirect=false');
 };

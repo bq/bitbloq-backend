@@ -5,6 +5,10 @@
 
 'use strict';
 
+require('dotenv').config({
+    path: 'config/.env'
+});
+
 var express = require('express'),
     mongoose = require('mongoose'),
     config = require('./config/environment'),
