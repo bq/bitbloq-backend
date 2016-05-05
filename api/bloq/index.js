@@ -6,6 +6,7 @@ var express = require('express'),
     router = express.Router();
 
 router.get('/', controller.get);
+router.post('/all', auth.hasRole('admin'), controller.createAll);
 router.delete('/all', auth.hasRole('admin'), controller.deleteAll);
 
 module.exports = router;

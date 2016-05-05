@@ -27,6 +27,16 @@ exports.get = function(req, res) {
 
 };
 
+exports.createAll = function(req, res) {
+    Bloq.collection.insert(req.body, function(err) {
+        if (err) {
+            utils.handleError(res, null, err)
+        } else {
+            res.sendStatus(200);
+        }
+    });
+};
+
 exports.deleteAll = function(req, res) {
     Bloq.remove({}, function(err) {
         if (err) {
