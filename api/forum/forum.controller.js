@@ -1,15 +1,23 @@
 'use strict';
-var Answer = require('./models/answer.model'),
-    Category = require('./models/category.model'),
-    Thread = require('./models/thread.model'),
+var Answer = require('./models/forumanswer.model'),
+    Category = require('./models/forumcategory.model'),
+    Thread = require('./models/forumthread.model'),
     async = require('async');
-
 
 function completeCategory(category, next) {
     async.parallel([
-        Answer.count.bind(Answer, {categoryId: category.uuid, main: false}),
-        Thread.count.bind(Thread, {categoryId: category.uuid}),
-        Thread.findOne.bind(Thread, {}, null, {sort: {'updatedAt': -1}})
+        Answer.count.bind(Answer, {
+            categoryId: category.uuid,
+            main: false
+        }),
+        Thread.count.bind(Thread, {
+            categoryId: category.uuid
+        }),
+        Thread.findOne.bind(Thread, {}, null, {
+            sort: {
+                'updatedAt': -1
+            }
+        })
     ], function(err, results) {
         if (err) {
             next(err);
@@ -24,7 +32,9 @@ function completeCategory(category, next) {
 }
 
 function countThreads(category, next) {
-    Thread.count({categoryId: category._id}, function(err, counter) {
+    Thread.count({
+        categoryId: category._id
+    }, function(err, counter) {
         if (err) {
             next(err);
         } else {
@@ -43,9 +53,11 @@ function getLastThread(category, next) {
     });
 }
 
-
 function countAnswersThread(thread, next) {
-    Answer.count({threadId: thread._id, main: false}, function(err, counter) {
+    Answer.count({
+        threadId: thread._id,
+        main: false
+    }, function(err, counter) {
         if (err) {
             next(err);
         } else {
@@ -65,7 +77,9 @@ function countAnswersCategory(threads) {
 }
 
 function getThreadsInCategory(category, next) {
-    Thread.find({categoryId: category.uuid}).sort('-updatedAt').exec(function(err, threads) {
+    Thread.find({
+        categoryId: category.uuid
+    }).sort('-updatedAt').exec(function(err, threads) {
         if (err) {
             next(err);
         } else {
@@ -74,12 +88,14 @@ function getThreadsInCategory(category, next) {
                 categoryObject.numberOfThreads = completedThreads.length;
                 categoryObject.numberOfAnswers = countAnswersCategory(completedThreads);
                 categoryObject.lastThread = completedThreads[0];
-                next(err, {category: categoryObject, threads: completedThreads})
+                next(err, {
+                    category: categoryObject,
+                    threads: completedThreads
+                })
             })
         }
     });
 }
-
 
 /**
  * Create Category
@@ -124,7 +140,9 @@ exports.createThread = function(req, res) {
  */
 exports.createAnswer = function(req, res) {
     async.waterfall([
-        Thread.findByIdAndUpdate.bind(Thread, req.body.threadId, {'_updatedAt': Date.now()}),
+        Thread.findByIdAndUpdate.bind(Thread, req.body.threadId, {
+            '_updatedAt': Date.now()
+        }),
         function(thread, next) {
             var newAnswer = new Answer(req.body);
             newAnswer.categoryId = thread.categoryId;
@@ -138,7 +156,6 @@ exports.createAnswer = function(req, res) {
         }
     });
 };
-
 
 /**
  * Gets Main forum section
@@ -159,14 +176,15 @@ exports.getForumIndex = function(req, res) {
     });
 };
 
-
 /**
  * Get info category and all threads in a category
  */
 exports.getCategory = function(req, res) {
     var categoryName = req.params.category;
     async.waterfall([
-        Category.findOne.bind(Category, {name: categoryName}),
+        Category.findOne.bind(Category, {
+            name: categoryName
+        }),
         getThreadsInCategory
     ], function(err, completedCategory) {
         if (err) {
@@ -185,7 +203,9 @@ exports.getThread = function(req, res) {
 
     async.parallel([
         Thread.findById.bind(Thread, themeId),
-        Answer.find.bind(Answer, {threadId: themeId})
+        Answer.find.bind(Answer, {
+            threadId: themeId
+        })
 
     ], function(err, results) {
         if (err) {
@@ -200,11 +220,17 @@ exports.getThread = function(req, res) {
                     if (err) {
                         res.status(500).send(err);
                     } else {
-                        res.status(200).json({thread: thread, answers: results[1]});
+                        res.status(200).json({
+                            thread: thread,
+                            answers: results[1]
+                        });
                     }
                 });
             } else {
-                res.status(200).json({thread: threadObject, answers: results[1]});
+                res.status(200).json({
+                    thread: threadObject,
+                    answers: results[1]
+                });
             }
         }
     });
@@ -278,11 +304,33 @@ exports.destroyAnswer = function(req, res) {
 exports.destroyThread = function(req, res) {
     var threadId = req.params.id;
     async.waterfall([
-        Answer.remove.bind(Answer, {threadId: threadId}),
+        Answer.remove.bind(Answer, {
+            threadId: threadId
+        }),
         Thread.findByIdAndRemove.bind(Thread, threadId)
     ], function(err) {
         if (err) {
             res.status(500).send(err);
+        } else {
+            res.sendStatus(200);
+        }
+    });
+};
+
+exports.createAllCategories = function(req, res) {
+    Category.collection.insert(req.body, function(err) {
+        if (err) {
+            utils.handleError(res, null, err)
+        } else {
+            res.sendStatus(200);
+        }
+    });
+};
+
+exports.deleteAllCategories = function(req, res) {
+    Category.remove({}, function(err) {
+        if (err) {
+            utils.handleError(res, null, err)
         } else {
             res.sendStatus(200);
         }

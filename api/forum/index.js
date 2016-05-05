@@ -9,6 +9,7 @@ var router = express.Router();
 // DELETE
 router.delete('/answer/:id/:threadid/:categoryid', auth.hasRole('admin'), controller.destroyAnswer);
 router.delete('/thread/:id', auth.hasRole('admin'), controller.destroyThread);
+router.delete('/category/all', auth.hasRole('admin'), controller.deleteAllCategories);
 
 // GET
 router.get('/', controller.getForumIndex);
@@ -20,6 +21,7 @@ router.head('/threadStats/views/:id', auth.isAuthenticated(), controller.updateT
 
 // POST
 router.post('/category', auth.hasRole('admin'), controller.createCategory);
+router.post('/category/all', auth.hasRole('admin'), controller.createAllCategories);
 router.post('/thread', auth.isAuthenticated(), controller.createThread);
 router.post('/answer', auth.isAuthenticated(), controller.createAnswer);
 
