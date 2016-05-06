@@ -699,14 +699,14 @@ exports.emailToken = function(req, res) {
  */
 exports.banUserInForum = function(req, res) {
     var userId = req.params.id;
-
     User.findByIdAndUpdate(userId, {
         bannedInForum: true
     }, function(err, user) {
+
         if (err) {
             res.status(500).send(err);
         } else {
-            res.sendStatus(200).json(user.owner);
+            res.status(200).json(user.owner);
         }
     });
 };
@@ -723,7 +723,7 @@ exports.unbanUserInForum = function(req, res) {
         if (err) {
             res.status(500).send(err);
         } else {
-            res.sendStatus(200).json(user.owner);
+            res.status(200).json(user.owner);
         }
     });
 };
