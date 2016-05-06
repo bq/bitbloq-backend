@@ -685,7 +685,7 @@ exports.emailToken = function(req, res) {
                     res.sendStatus(500);
                 }
                 res.sendStatus(200);
-            })
+            });
         } else {
             if (err) {
                 res.sendStatus(500);

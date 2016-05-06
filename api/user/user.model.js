@@ -183,7 +183,6 @@ UserSchema
 UserSchema
     .path('username')
     .validate(function(value, respond) {
-        console.log("NANANANANA BAAAAAAAATMAN");
         var self = this;
 
         this.constructor.findOne({

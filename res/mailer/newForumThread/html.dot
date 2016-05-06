@@ -1,0 +1,20 @@
+<img src="https://s3-eu-west-1.amazonaws.com/bitbloq.bq.com/images/common/logobit.png" alt="Bitbloq logo">
+<h1>Nuevo Tema en el foro</h1>
+<p>
+  Hola <br>
+  estás recibiendo este correo porque el usuario <b>{{=it.username}}</b> ha creado un nuevo tema en el foro  de <b>Bitbloq</b>. <br>
+  Entra y contéstale! <br>
+</p>
+<br>
+<div class="mailer__container--button">
+<a class="mailer__button" href="{{=it.forumUrl}}">Ver tema del foro</a>
+</div>
+<br>
+<p>
+  o bien, corta y pega el siguiente enlace en la barra de direcciones de tu navegador:
+</p>
+<a href="{{=it.forumUrl}}">{{=it.forumUrl}}</a>
+<p>
+  Un saludo, <br>
+  <i>el equipo de</i> Bitbloq.
+</p>
