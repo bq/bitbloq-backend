@@ -1,21 +1,21 @@
 <img src="https://s3-eu-west-1.amazonaws.com/bitbloq.bq.com/images/common/logobit.png" alt="Bitbloq logo">
 <h1>Restablece tu contraseña</h1>
 <p>
-  Hola <br>
-  estás recibiendo este correo porque parece que has olvidado tu <b>contraseña</b> de <b>Bitbloq</b>. <br>
-  No te preocupes, ¡podemos ayudarte! <br>
-  Para introducir una nueva contraseña haz click en el siguiente botón:
+    Hola <br>
+    estás recibiendo este correo porque parece que has olvidado tu <b>contraseña</b> de <b>Bitbloq</b>. <br>
+    No te preocupes, ¡podemos ayudarte! <br>
+    Para introducir una nueva contraseña haz click en el siguiente botón:
 </p>
 <br>
 <div class="mailer__container--button">
-<a class="mailer__button" href="{{=it.resetUrl}}">RESTABLECER CONTRASEÑA</a>
+    <a class="mailer__button" href="{{=it.resetUrl}}">RESTABLECER CONTRASEÑA</a>
 </div>
 <br>
 <p>
-  o bien, corta y pega el siguiente enlace en la barra de direcciones de tu navegador:
+    o bien, corta y pega el siguiente enlace en la barra de direcciones de tu navegador:
 </p>
-<a href="{{=it.resetUrl}}">{{=it.resetUrl}}</a>
+    <a class="url-link" href="{{=it.resetUrl}}">{{=it.resetUrl}}</a>
 <p>
-  Un saludo, <br>
-  <i>el equipo de</i> Bitbloq.
+    Un saludo, <br>
+    <i>el equipo de</i> Bitbloq.
 </p>

@@ -6,11 +6,11 @@
 </p>
 <p>
     Título: <br>
-    <h2><b>{{=it.answerTitle}}</b></h2>
+    <h2><b>{{=it.threadTitle}}</b></h2>
 </p>
 <p>
     Descripción: <br>
-    {{=it.answerContent}}
+    {{=it.threadContent}}
 </p>
 <br>
 <div class="mailer__container--button">
@@ -20,7 +20,7 @@
 <p>
     o bien, corta y pega el siguiente enlace en la barra de direcciones de tu navegador:
 </p>
-<a class="url-link" href="{{=it.forumUrl}}">{{=it.forumUrl}}</a>
+    <a class="url-link" href="{{=it.forumUrl}}">{{=it.forumUrl}}</a>
 <p>
     Un saludo, <br>
     <i>el equipo de</i> Bitbloq.

@@ -3,7 +3,7 @@ var Answer = require('./models/forumanswer.model'),
     Category = require('./models/forumcategory.model'),
     Thread = require('./models/forumthread.model'),
     async = require('async'),
-	mailer = require('../../components/mailer'),
+    mailer = require('../../components/mailer'),
     config = require('../../config/environment');
 
 
@@ -125,10 +125,9 @@ exports.createThread = function(req, res) {
                 email: config.supportEmail,
                 subject: 'Nuevo tema en el foro de Bitbloq',
                 username: answer.owner.username,
-                categoryName: categoryName,
                 forumUrl: 'http://bitbloq.bq.com/#/help/forum/' + categoryName + '/' + answer.threadId,
-                answerTitle: newThread.title,
-                answerContent: answer.content
+                threadTitle: newThread.title,
+                threadContent: answer.content
             };
 
             mailer.sendOne('newForumThread', locals, function(err) {
@@ -156,8 +155,14 @@ exports.createAnswer = function(req, res) {
             Category.findOne({uuid: answer.categoryId}, 'name', function(err, category) {
                 next(err, answer, category.name);
             })
+        },
+        function(answer, categoryName, next) {
+            Thread.findById(req.body.threadId, function(err, thread) {
+                next(err, answer, thread, categoryName);
+            })
         }
-    ], function(err, answer, categoryName) {
+
+    ], function(err, answer, thread, categoryName) {
         if (err) {
             res.status(500).send(err);
         } else {
@@ -165,8 +170,9 @@ exports.createAnswer = function(req, res) {
                 email: config.supportEmail,
                 subject: 'Nueva respuesta en el foro de Bitbloq',
                 username: answer.owner.username,
-                categoryName: categoryName,
-                forumUrl: 'http://bitbloq.bq.com/#/help/forum/' + categoryName + '/' + answer.threadId
+                forumUrl: 'http://bitbloq.bq.com/#/help/forum/' + categoryName + '/' + answer.threadId,
+                answerTitle: thread.title,
+                answerContent: answer.content
             };
 
             mailer.sendOne('newForumAnswer', locals, function(err) {
