@@ -126,7 +126,9 @@ exports.createThread = function(req, res) {
                 subject: 'Nuevo tema en el foro de Bitbloq',
                 username: answer.owner.username,
                 categoryName: categoryName,
-                forumUrl: 'http://bitbloq.bq.com/#/help/forum/' + categoryName + '/' + answer.threadId
+                forumUrl: 'http://bitbloq.bq.com/#/help/forum/' + categoryName + '/' + answer.threadId,
+                answerTitle: newThread.title,
+                answerContent: answer.content
             };
 
             mailer.sendOne('newForumThread', locals, function(err) {
