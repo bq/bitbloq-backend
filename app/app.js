@@ -11,7 +11,7 @@ require('dotenv').config({
 
 var express = require('express'),
     mongoose = require('mongoose'),
-    config = require('./config/config'),
+    config = require('./../config/config'),
     http = require('http');
 
 // Connect to MongoDB
@@ -23,14 +23,14 @@ mongoose.connection.on('error', function(err) {
 
 // Populate databases with sample data
 if (config.seedDB) {
-    require('./res/seed');
+    require('./../res/seed');
 }
 
 // Setup server
 var app = express(),
     server = http.createServer(app);
 
-require('./config/express')(app);
+require('./express')(app);
 require('./routes')(app);
 
 // Start server
