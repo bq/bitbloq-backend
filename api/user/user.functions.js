@@ -1,7 +1,7 @@
 'use strict';
 var request = require('request-promise'),
     User = require('./user.model'),
-    config = require('../../config/environment'),
+    config = require('../../config/config'),
     jwt = require('jsonwebtoken');
 
 /**

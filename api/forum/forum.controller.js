@@ -3,8 +3,8 @@ var Answer = require('./models/forumanswer.model'),
     Category = require('./models/forumcategory.model'),
     Thread = require('./models/forumthread.model'),
     async = require('async'),
-    mailer = require('../../components/mailer'),
-    config = require('../../config/environment');
+	mailer = require('../../components/mailer'),
+    config = require('../../config/config');
 
 
 function completeCategory(category, next) {

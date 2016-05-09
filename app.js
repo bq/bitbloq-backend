@@ -11,7 +11,7 @@ require('dotenv').config({
 
 var express = require('express'),
     mongoose = require('mongoose'),
-    config = require('./config/environment'),
+    config = require('./config/config'),
     http = require('http');
 
 // Connect to MongoDB
