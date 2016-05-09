@@ -12,7 +12,7 @@ exports.sendEmail = function(req, res) {
         name: 'Peter parker',
         resetUrl: 'http://holakease.com'
     };
-    mailer.sendOne('password_reset', locals, function(err) {
+    mailer.sendOne('resetPassword', locals, function(err) {
         if (err) {
             res.status(500).send(err);
         }

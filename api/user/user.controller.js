@@ -680,7 +680,7 @@ exports.emailToken = function(req, res) {
         }
     ], function(err, result) {
         if (result) {
-            mailer.sendOne('password_reset', locals, function(err) {
+            mailer.sendOne('resetPassword', locals, function(err) {
                 if (err) {
                     res.sendStatus(500);
                 }

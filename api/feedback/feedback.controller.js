@@ -20,7 +20,7 @@ exports.create = function(req, res) {
             };
 
             //todo cambiar plantilla
-            mailer.sendOne('password_reset', locals);
+            mailer.sendOne('resetPassword', locals);
             res.sendStatus(200);
         }
     });
