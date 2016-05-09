@@ -6,12 +6,12 @@
 'use strict';
 
 require('dotenv').config({
-    path: 'config/.env'
+    path: 'app/res/config/.env'
 });
 
 var express = require('express'),
     mongoose = require('mongoose'),
-    config = require('./../config/config'),
+    config = require('./res/config/config'),
     http = require('http');
 
 // Connect to MongoDB
@@ -23,7 +23,7 @@ mongoose.connection.on('error', function(err) {
 
 // Populate databases with sample data
 if (config.seedDB) {
-    require('./../res/seed');
+    require('./res/seed');
 }
 
 // Setup server

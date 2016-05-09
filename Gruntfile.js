@@ -35,7 +35,7 @@ module.exports = function(grunt) {
 
         }
 
-        var file = 'config/config.js';
+        var file = 'app/res/config/config.js';
 
         grunt.file.write(file, configJSON);
     });

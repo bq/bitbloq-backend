@@ -52,7 +52,7 @@ describe('crud.js', function () {
       if (process.version.indexOf('v0.10') !== -1) {
         expected = 'Error during request.';
       }
-      if (require('../config/config')().dataBackend === 'cloudsql') {
+      if (require('./config')().dataBackend === 'cloudsql') {
         expected = 'ER_SP_UNDECLARED_VAR: Undeclared variable: NaN';
       }
       request(proxyquire('../app', stubs))
