@@ -125,7 +125,7 @@ exports.createThread = function(req, res) {
                 email: config.supportEmail,
                 subject: 'Nuevo tema en el foro de Bitbloq',
                 username: answer.owner.username,
-                forumUrl: 'http://bitbloq.bq.com/#/help/forum/' + categoryName + '/' + answer.threadId,
+                forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.threadId,
                 threadTitle: newThread.title,
                 threadContent: answer.content
             };
@@ -170,7 +170,7 @@ exports.createAnswer = function(req, res) {
                 email: config.supportEmail,
                 subject: 'Nueva respuesta en el foro de Bitbloq',
                 username: answer.owner.username,
-                forumUrl: 'http://bitbloq.bq.com/#/help/forum/' + categoryName + '/' + answer.threadId,
+                forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.threadId,
                 answerTitle: thread.title,
                 answerContent: answer.content
             };
