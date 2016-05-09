@@ -338,7 +338,7 @@ exports.destroyThread = function(req, res) {
 exports.createAllCategories = function(req, res) {
     Category.collection.insert(req.body, function(err) {
         if (err) {
-            utils.handleError(res, null, err)
+            res.status(500).send(err);
         } else {
             res.sendStatus(200);
         }
@@ -348,7 +348,7 @@ exports.createAllCategories = function(req, res) {
 exports.deleteAllCategories = function(req, res) {
     Category.remove({}, function(err) {
         if (err) {
-            utils.handleError(res, null, err)
+            res.status(500).send(err);
         } else {
             res.sendStatus(200);
         }

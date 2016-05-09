@@ -1,7 +1,6 @@
 'use strict';
 
-var Faq = require('./faq.model.js'),
-    utils = require('../utils');
+var Faq = require('./faq.model.js');
 
 var perPage = 20;
 
@@ -20,7 +19,7 @@ exports.get = function(req, res) {
             name: 'asc'
         }).exec(function(err, projects) {
             if (err) {
-                utils.handleError(res, null, err)
+                res.status(500).send(err);
             }
             res.status(200).json(projects);
         });
@@ -30,7 +29,7 @@ exports.get = function(req, res) {
 exports.createAll = function(req, res) {
     Faq.collection.insert(req.body, function(err) {
         if (err) {
-            utils.handleError(res, null, err)
+            res.status(500).send(err);
         } else {
             res.sendStatus(200);
         }
@@ -40,7 +39,7 @@ exports.createAll = function(req, res) {
 exports.deleteAll = function(req, res) {
     Faq.remove({}, function(err) {
         if (err) {
-            utils.handleError(res, null, err)
+            res.status(500).send(err);
         } else {
             res.sendStatus(200);
         }

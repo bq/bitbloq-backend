@@ -28,7 +28,7 @@ exports.getAll = function(req, res) {
 exports.createAll = function(req, res) {
     Property.collection.insert(req.body, function(err) {
         if (err) {
-            utils.handleError(res, null, err)
+            res.status(500).send(err);
         } else {
             res.sendStatus(200);
         }
@@ -38,7 +38,7 @@ exports.createAll = function(req, res) {
 exports.deleteAll = function(req, res) {
     Property.remove({}, function(err) {
         if (err) {
-            utils.handleError(res, null, err)
+            res.status(500).send(err);
         } else {
             res.sendStatus(200);
         }

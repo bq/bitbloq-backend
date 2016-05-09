@@ -212,7 +212,7 @@ exports.update = function(req, res) {
     var projectId = req.params.id;
     Project.findById(projectId, function(err, project) {
         if (err) {
-            utils.handleError(res)
+            res.status(500).send(err);
         } else {
             if (project.isOwner(req.user._id)) {
                 var projectObject = clearProject(req.body);
@@ -232,7 +232,7 @@ exports.publish = function(req, res) {
         userId = req.user._id;
     Project.findById(projectId, function(err, project) {
         if (err) {
-            utils.handleError(res)
+            res.status(500).send(err);
         } else {
             if (project.isOwner(userId)) {
                 project.setPublic();
@@ -301,11 +301,11 @@ exports.share = function(req, res) {
                     },
                     function(err) {
                         if (err) {
-                            utils.handleError(err);
+                            res.status(500).send(err);
                         } else {
                             Project.findByIdAndUpdate(projectId, project, function(err) {
                                 if (err) {
-                                    utils.handleError(err);
+                                    res.status(500).send(err);
                                 } else {
                                     res.status(200).json(response);
                                 }
@@ -332,7 +332,7 @@ exports.destroy = function(req, res) {
             if (project.isOwner(userId)) {
                 Project.findByIdAndRemove(projectId, function(err) {
                     if (err) {
-                        utils.handleError(res);
+                        res.status(500).send(err);
                     } else {
                         res.status(204).end();
                     }

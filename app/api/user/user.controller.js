@@ -4,7 +4,6 @@ var User = require('./user.model.js'),
     UserFunctions = require('./user.functions.js'),
     ImageFunctions = require('../image/image.functions.js'),
     Token = require('../recovery/token.model.js'),
-    utils = require('../utils'),
     config = require('../../res/config/config'),
     jwt = require('jsonwebtoken'),
     auth = require('../../components/auth/auth.service'),
@@ -132,13 +131,13 @@ exports.socialLogin = function(req, res) {
                             if (response) {
                                 res.status(200).send(response);
                             } else {
-                                res.sendStatus(500);
+                                res.status(500).send(err);
                             }
                         });
                     } else {
                         UserFunctions.generateToken(user, function(err, response) {
                             if (err) {
-                                res.sendStatus(500);
+                                res.status(500).send(err);
                             } else {
                                 if (response) {
                                     res.status(200).send(response);
@@ -240,14 +239,14 @@ exports.socialLogin = function(req, res) {
                             if (response) {
                                 res.status(200).send(response);
                             } else {
-                                res.sendStatus(500);
+                                res.status(500).send(err);
                             }
                         });
 
                     } else {
                         UserFunctions.generateToken(user, function(err, response) {
                             if (err) {
-                                res.sendStatus(500);
+                                res.status(500).send(err);
                             } else {
                                 if (response) {
                                     res.status(200).send(response);
@@ -497,7 +496,7 @@ exports.resetPassword = function(req, res) {
             if (user) {
                 auth.sendTokenByEmail(user, userCallback);
             } else {
-                res.sendStatus(500);
+                userCallback(500);
             }
         }
 
@@ -505,9 +504,7 @@ exports.resetPassword = function(req, res) {
         if (result) {
             res.sendStatus(200);
         } else {
-            if (err) {
-                res.sendStatus(500);
-            }
+            res.status(500).send(err);
         }
 
     });
@@ -572,21 +569,21 @@ exports.updateMe = function(req, res) {
                 userToUpdate.properties.newsletter = reqUser.properties.newsletter || userToUpdate.properties.newsletter || '';
                 userToUpdate.properties.cookiePolicyAccepted = reqUser.properties.cookiePolicyAccepted || userToUpdate.properties.cookiePolicyAccepted || '';
                 userToUpdate.properties.hasBeenAskedIfTeacher = reqUser.properties.hasBeenAskedIfTeacher || userToUpdate.properties.hasBeenAskedIfTeacher || '';
-                User.update({
-                    _id: userId
-                }, userToUpdate, userCallback);
+                User.update({_id: userId}, userToUpdate, userCallback);
 
             } else {
-                res.sendStatus(204);
+                userCallback(null, 204);
             }
         }
     ], function(err, result) {
         if (result) {
-            res.sendStatus(200);
-        } else {
-            if (err) {
-                res.sendStatus(500);
+            if (result === 204) {
+                res.sendStatus(204);
+            } else {
+                res.sendStatus(200);
             }
+        } else {
+            res.status(500).send(err);
         }
     });
 };
@@ -666,7 +663,7 @@ exports.emailToken = function(req, res) {
             var token = jwt.sign({
                     _id: user._id
                 }, config.secrets.session, {}),
-                url = config.CLIENT_DOMAIN + '/#/recovery/' + token;
+                url = config.client_domain + '/#/recovery/' + token;
             locals = {
                 email: email,
                 subject: subject,
@@ -682,14 +679,12 @@ exports.emailToken = function(req, res) {
         if (result) {
             mailer.sendOne('resetPassword', locals, function(err) {
                 if (err) {
-                    res.sendStatus(500);
+                    res.status(500).send(err);
                 }
                 res.sendStatus(200);
             });
         } else {
-            if (err) {
-                res.sendStatus(500);
-            }
+            res.status(500).send(err);
         }
     });
 };

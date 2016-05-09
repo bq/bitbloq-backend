@@ -1,27 +1,5 @@
 'use strict';
 
-exports.validationError = function(res, statusCode, error) {
-    statusCode = statusCode || 422;
-    if (error) {
-        res.status(statusCode).send(error);
-    } else {
-        return function(err) {
-            res.status(statusCode).send(err);
-        };
-    }
-};
-
-exports.handleError = function(res, statusCode, error) {
-    statusCode = statusCode || 500;
-    if (error) {
-        res.status(statusCode).send(error);
-    } else {
-        return function(err) {
-            res.status(statusCode).send(err);
-        };
-    }
-};
-
 /**
  * Extend a given object with all the properties in passed-in object(s).
  * @param  {Object}  obj
