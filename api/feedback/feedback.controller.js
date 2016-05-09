@@ -1,27 +1,31 @@
 'use strict';
 
 var Feedback = require('./feedback.model'),
-    mailer = require('../../components/mailer');
+    mailer = require('../../components/mailer'),
+    config = require('../../config/environment');
 
 /**
  * Create a new feedback
  */
 exports.create = function(req, res) {
-    console.log('CREANDO QUEJA');
-    var newProject = new Feedback(req.body);
-    newProject.save(function(err) {
+    var newFeedback = new Feedback(req.body);
+    newFeedback.save(function(err, feedback) {
         if (err) {
             res.status(500).send(err);
         } else {
-            var email = 'laura.delrio@bq.com'; //todo poner aqui a soporte
             var locals = {
-                email: email,
-                subject: 'Nuevo feedback'
+                email: config.supportEmail,
+                subject: 'Nuevo feedback',
+                user: newFeedback.userInfo,
+                feedback: newFeedback
             };
 
-            //todo cambiar plantilla
-            mailer.sendOne('resetPassword', locals);
-            res.sendStatus(200);
+            mailer.sendOne('newFeedback', locals, function(err) {
+                if (err) {
+                    res.status(500).send(err);
+                }
+                res.status(200).send();
+            });
         }
     });
 };

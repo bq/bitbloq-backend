@@ -1,0 +1,39 @@
+<img src="https://s3-eu-west-1.amazonaws.com/bitbloq.bq.com/images/common/logobit.png" alt="Bitbloq logo">
+<h1>Nuevo feedback de usuario</h1>
+<p>
+    Hola <br>
+    estás recibiendo este correo porque el usuario <b>{{=it.user.username}}</b> ha querido contactar con nosotros. <br>
+</p>
+<p>
+    <b>Datos del usuario: </b><br>
+    Nombre de usuario: {{=it.user.username}}<br>
+    Email: {{=it.user.email}}<br>
+    Nombre: {{=it.user.firstName}}<br>
+    Apellidos: {{=it.user.lastName}}
+</p>
+<p>
+    <b>Tipo: </b><br>
+    {{? it.feedback.os}} Reporte de error
+    {{??}} Ayuda
+    {{?}}
+</p>
+<p>
+    <b>Mensaje: </b><br>
+    {{=it.feedback.message}}
+</p>
+{{? it.feedback.os}}
+<p>
+    <b>Características detalladas por el usuario: </b><br>
+    Navegador: {{=it.feedback.browser}} <br>
+    Sistema operativo: {{=it.feedback.os}} <br>
+</p>
+{{?}}
+<p>
+    <b>Otros datos: </b><br>
+    Agente: {{=it.feedback.userAgent}}<br>
+</p>
+<br>
+<p>
+    Un saludo, <br>
+    <i>el equipo de</i> Bitbloq.
+</p>

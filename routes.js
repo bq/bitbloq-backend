@@ -22,6 +22,7 @@ module.exports = function(app) {
     router.use('/image', require('./api/image'));
     router.use('/faq', require('./api/faq'));
     router.use('/changelog', require('./api/changelog'));
+    router.use('/feedback', require('./api/feedback'));
 
     // Set a prefix for all calls
     app.use('/bitbloq/v1', router);
