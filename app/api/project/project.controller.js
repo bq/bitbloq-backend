@@ -5,7 +5,7 @@ var Project = require('./project.model.js'),
     utils = require('../utils'),
     async = require('async');
 
-var perPage = 20;
+var maxPerPage = 20;
 
 function updateProject(projectId, dataProject, res) {
     Project.findByIdAndUpdate(projectId, dataProject, function(err) {
@@ -56,28 +56,35 @@ function completeProjects(res, projects) {
         if (err) {
             res.status(500).send(err)
         } else {
+
             res.status(200).json(completedProjects);
         }
     });
 }
 
 function getSearch(res, params) {
-    var query = params.query ? JSON.parse(params.query) : {};
+    var query = params.query ? JSON.parse(params.query) : {},
+        page = params.page || 0,
+        perPage = (query.perPage && (query.perPage <= maxPerPage)) ? query.perPage : maxPerPage,
+        sortFilter = JSON.parse(params.sort) || {
+            name: 'desc'
+        };
+
     query = utils.extend(query, {
         '_acl.ALL.permission': 'READ'
     });
-    var page = params.page || 0;
+
     Project.find(query)
         .limit(parseInt(perPage))
         .skip(parseInt(perPage * page))
-        .sort({
-            name: 'asc'
-        })
+        .sort(sortFilter)
         .exec(function(err, projects) {
             if (err) {
                 res.status(500).send(err);
+                console.log('Error');
+            } else {
+                completeProjects(res, projects)
             }
-            completeProjects(res, projects)
         });
 }
 
