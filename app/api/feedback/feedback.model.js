@@ -3,12 +3,15 @@
 var mongoose = require('mongoose');
 
 var FeedbackSchema = new mongoose.Schema({
-    message : String,
+    message: String,
     os: String,
     browser: String,
     userAgent: String,
     userInfo: {},
-    _createdAt: { type: Date, default: Date.now }
+    _createdAt: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 

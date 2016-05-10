@@ -3,10 +3,14 @@
 var mongoose = require('bluebird').promisifyAll(require('mongoose'));
 
 var TokenSchema = new mongoose.Schema({
-  _id: String,
+    _id: String,
     userId: String,
     token: String,
-    _createdAt: { type: Date, expires: 7200, default: Date.now }
+    _createdAt: {
+        type: Date,
+        expires: 7200,
+        default: Date.now
+    }
 });
 
 
@@ -14,10 +18,10 @@ var TokenSchema = new mongoose.Schema({
  * Pre-save hook
  */
 
-TokenSchema.pre('save', function(next){
-  this._id = this.userId;
-  this.userId=undefined;
-  next();
+TokenSchema.pre('save', function(next) {
+    this._id = this.userId;
+    this.userId = undefined;
+    next();
 });
 
 

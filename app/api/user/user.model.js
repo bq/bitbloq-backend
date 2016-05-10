@@ -36,7 +36,7 @@ var UserSchema = new mongoose.Schema({
                 lowercase: true,
                 trim: true,
                 default: ''
-            },
+            }
         },
         facebook: {
             email: {
@@ -44,7 +44,7 @@ var UserSchema = new mongoose.Schema({
                 lowercase: true,
                 trim: true,
                 default: ''
-            },
+            }
         }
     },
     role: {
@@ -58,7 +58,10 @@ var UserSchema = new mongoose.Schema({
         default: 'es-ES'
     },
     cookiePolicyAccepted: Boolean,
-    hasBeenAskedIfTeacher: Boolean,
+    hasBeenAskedIfTeacher: {
+        type: Boolean,
+        default: false
+    },
     hasBeenWarnedAboutChangeBloqsToCode: {
         type: Boolean,
         default: false
