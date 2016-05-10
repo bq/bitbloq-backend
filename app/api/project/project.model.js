@@ -39,6 +39,9 @@ var ProjectSchema = new mongoose.Schema({
     _createdAt: {
         type: Date,
         default: Date.now
+    },
+    _updatedAt: {
+        type: Date
     }
 });
 
@@ -66,6 +69,10 @@ ProjectSchema
  */
 ProjectSchema
     .pre('save', function(next) {
+        console.log('this.isModified()', this.isModified());
+        if (this.isModified()) {
+            this._updatedAt = Date.now();
+        }
         if (!thereIsAdmin(this)) {
             setUserAdmin(this, this.creatorId);
             next(this);

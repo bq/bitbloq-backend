@@ -3,16 +3,25 @@
 var Project = require('./project.model.js'),
     UserFunctions = require('../user/user.functions.js'),
     utils = require('../utils'),
-    async = require('async');
+    async = require('async'),
+    _ = require('lodash');
 
 var maxPerPage = 20;
 
 function updateProject(projectId, dataProject, res) {
-    Project.findByIdAndUpdate(projectId, dataProject, function(err) {
+
+    Project.findById(projectId, function(err, doc) {
         if (err) {
             res.status(500).send(err);
         } else {
-            res.sendStatus(200);
+            doc = _.extend(doc, dataProject);
+            doc.save(function(err, finalDoc) {
+                if (err) {
+                    res.status(500).send(err);
+                } else {
+                    res.sendStatus(200);
+                }
+            });
         }
     });
 }
