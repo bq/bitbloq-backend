@@ -51,12 +51,19 @@ var UserSchema = new mongoose.Schema({
         type: String,
         default: 'user'
     },
-    properties: {
-        newsletter: Boolean,
-        language: String,
-        cookiePolicyAccepted: Boolean,
-        hasBeenAskedIfTeacher: Boolean
+    newsletter: Boolean,
+    language: {
+        type: String,
+        lowercase: true,
+        default: 'es-ES'
     },
+    cookiePolicyAccepted: Boolean,
+    hasBeenAskedIfTeacher: Boolean,
+    hasBeenWarnedAboutChangeBloqsToCode: {
+        type: Boolean,
+        default: false
+    },
+    isTeacher: Boolean,
     password: String,
     provider: String,
     salt: String,
@@ -102,17 +109,14 @@ UserSchema
                     id: this.social.facebook.id
                 }
             },
-
             'googleEmail': this.googleEmail,
             'facebookEmail': this.facebookEmail,
             'bannedInForum': this.bannedInForum,
-            'properties': {
-                'avatar': this.properties.avatar,
-                'newsletter': this.properties.newsletter,
-                'language': this.properties.language,
-                'cookiePolicyAccepted': this.properties.cookiePolicyAccepted,
-                'hasBeenAskedIfTeacher': this.properties.hasBeenAskedIfTeacher
-            },
+            'newsletter': this.newsletter,
+            'isTeacher': this.isTeacher,
+            'language': this.language,
+            'cookiePolicyAccepted': this.cookiePolicyAccepted,
+            'hasBeenAskedIfTeacher': this.hasBeenAskedIfTeacher,
             'provider': this.provider
         };
     });

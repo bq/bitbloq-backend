@@ -8,7 +8,8 @@ var User = require('./user.model.js'),
     jwt = require('jsonwebtoken'),
     auth = require('../../components/auth/auth.service'),
     mailer = require('../../components/mailer'),
-    async = require('async');
+    async = require('async'),
+    _ = require('lodash');
 
 /**
  * Get list of users
@@ -552,69 +553,22 @@ exports.updateMe = function(req, res) {
         userId = req.user._id;
 
     async.waterfall([
-        function(userCallback) {
-            User.findById(userId, userCallback);
+        function(callback) {
+            User.findById(userId, callback)
         },
-        function(userToUpdate, userCallback) {
-            if (userToUpdate) {
-                userToUpdate.username = reqUser.username || userToUpdate.username || '';
-                userToUpdate.firstName = reqUser.firstName || userToUpdate.firstName || '';
-                userToUpdate.lastName = reqUser.lastName || userToUpdate.lastName || '';
-                userToUpdate.email = userToUpdate.email || '';
-                userToUpdate.googleEmail = reqUser.googleEmail || userToUpdate.googleEmail || '';
-                userToUpdate.facebookEmail = reqUser.facebookEmail || userToUpdate.facebookEmail || '';
-                userToUpdate.role = 'user';
-                userToUpdate.properties.avatar = reqUser.properties.avatar || userToUpdate.properties.avatar || '';
-                userToUpdate.properties.language = reqUser.properties.language || userToUpdate.properties.language || 'es-ES';
-                userToUpdate.properties.newsletter = reqUser.properties.newsletter || userToUpdate.properties.newsletter || '';
-                userToUpdate.properties.cookiePolicyAccepted = reqUser.properties.cookiePolicyAccepted || userToUpdate.properties.cookiePolicyAccepted || '';
-                userToUpdate.properties.hasBeenAskedIfTeacher = reqUser.properties.hasBeenAskedIfTeacher || userToUpdate.properties.hasBeenAskedIfTeacher || '';
-                User.update({_id: userId}, userToUpdate, userCallback);
-
-            } else {
-                userCallback(null, 204);
-            }
+        function(user, callback) {
+            user = _.extend(user, reqUser);
+            user.save(callback);
         }
     ], function(err, result) {
-        if (result) {
-            if (result === 204) {
-                res.sendStatus(204);
-            } else {
-                res.sendStatus(200);
-            }
-        } else {
-            res.status(500).send(err);
-        }
-    });
-};
-
-/**
- * Update my user properties
- */
-exports.updateMyProperties = function(req, res) {
-
-    var userProperties = req.body.properties,
-        userId = req.user._id;
-
-    // Prevent updating sensitive information
-    var userToUpdate = {
-        'properties': {
-            'newsletter': userProperties.newsletter,
-            'language': userProperties.language,
-            'cookiePolicyAccepted': userProperties.cookiePolicyAccepted,
-            'hasBeenAskedIfTeacher': userProperties.hasBeenAskedIfTeacher
-        }
-    };
-
-    User.findByIdAndUpdate(userId, userToUpdate, {
-        new: true
-    }, function(err, user) {
         if (err) {
             res.status(500).send(err);
+        } else {
+            res.sendStatus(200);
         }
-        res.status(200).json(user.owner);
     });
 };
+
 /**
  * Return a user id
  */
