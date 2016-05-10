@@ -26,8 +26,8 @@ exports.index = function(req, res) {
     sort[sortKey] = sortParam;
 
     return User.find(query, '-salt -password')
-        .skip(skip)
-        .limit(limit)
+        .skip(parseInt(skip))
+        .limit(parseInt(limit))
         .sort(sort)
         .exec(function(err, users) {
             if (err) {
