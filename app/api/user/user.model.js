@@ -86,7 +86,6 @@ UserSchema
     .get(function() {
         return {
             'username': this.username,
-            'avatar': this.properties.avatar,
             'role': this.role
         };
     });

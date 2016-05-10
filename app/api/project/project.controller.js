@@ -75,9 +75,15 @@ function getSearch(res, params) {
     var query = params.query ? JSON.parse(params.query) : {},
         page = params.page || 0,
         perPage = (query.perPage && (query.perPage <= maxPerPage)) ? query.perPage : maxPerPage,
-        sortFilter = JSON.parse(params.sort) || {
+        defaultSortFilter = {
             name: 'desc'
-        };
+        },
+        sortFilter;
+    if (params.sort) {
+        sortFilter = JSON.parse(params.sort) || defaultSortFilter;
+    } else {
+        sortFilter = defaultSortFilter;
+    }
 
     query = utils.extend(query, {
         '_acl.ALL.permission': 'READ'
