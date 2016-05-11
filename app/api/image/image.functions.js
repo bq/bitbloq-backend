@@ -1,23 +1,9 @@
 'use strict';
 
-var FUS3 = require('fetch-upload-s3'),
-    multer = require('multer'), //for handling multipart/form-data;
-    s3 = require('multer-storage-s3');
+var FUS3 = require('fetch-upload-s3');
 
-var fus3 = new FUS3('qa-bitbloq.com/api-images/avatar'),
-    storage = s3({
-        destination: function(req, file, cb) {
-            cb(null, 'api-images/' + req.params.collection);
 
-        },
-        filename: function(req, file, cb) {
-            cb(null, req.params.id);
-        }
-    });
-
-exports.multerObject = multer({
-    storage: storage
-});
+var fus3 = new FUS3('qa-bitbloq.com/api-images/avatar');
 
 
 exports.uploadToS3FromUrl = function(ImageUrl, s3ImageId) {
