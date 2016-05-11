@@ -14,7 +14,7 @@ module.exports = function(grunt) {
 
         grunt.task.run([
             'generateDevelopmentConfig:' + environment,
-            'generateS3Config:' + environment,
+            'generateS3Config:' + environment
         ]);
     });
 
@@ -35,7 +35,7 @@ module.exports = function(grunt) {
 
         }
 
-        var file = 'app/res/config/config.js';
+        var file = 'app/res/config/config.json';
 
         grunt.file.write(file, configJSON);
     });
