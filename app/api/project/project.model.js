@@ -73,6 +73,7 @@ ProjectSchema
         if (this.isModified()) {
             this._updatedAt = Date.now();
         }
+        delete this.__v;
         if (!thereIsAdmin(this)) {
             setUserAdmin(this, this.creatorId);
             next(this);

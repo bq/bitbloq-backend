@@ -19,7 +19,9 @@ module.exports = function(app) {
     app.use(bodyParser.urlencoded({
         extended: true
     }));
-    app.use(bodyParser.json());
+    app.use(bodyParser.json({
+        limit: '1mb'
+    }));
     app.use(cookieParser());
     app.use(passport.initialize());
     app.use(methodOverride());
@@ -36,7 +38,6 @@ module.exports = function(app) {
     var cors = require('cors');
 
     app.use(cors());
-
 
     if ('production' === env) {
         app.use(morgan('dev'));
