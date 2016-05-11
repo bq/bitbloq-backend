@@ -69,7 +69,6 @@ ProjectSchema
  */
 ProjectSchema
     .pre('save', function(next) {
-        console.log('this.isModified()', this.isModified());
         if (this.isModified()) {
             this._updatedAt = Date.now();
         }
