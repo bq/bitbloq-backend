@@ -58,6 +58,8 @@ module.exports = function(grunt) {
 
         var file = 'app/res/config/.env';
 
+        configJSON = configJSON.replace(/\\n\\r/g, '\n');
+
         grunt.file.write(file, configJSON);
     });
 };
