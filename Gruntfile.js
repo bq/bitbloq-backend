@@ -56,7 +56,7 @@ module.exports = function(grunt) {
                 configJSON = process.env.BITBLOQ_LOCAL_CONFIG_S3;
         }
 
-        var file = 'config/.env';
+        var file = 'app/res/config/.env';
 
         grunt.file.write(file, configJSON);
     });
