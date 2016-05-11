@@ -26,7 +26,7 @@ var ProjectSchema = new mongoose.Schema({
         board: String,
         components: Array,
         connections: Array,
-        robot: Array
+        robot: String
     },
     software: {
         vars: {},
