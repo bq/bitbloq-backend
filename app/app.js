@@ -14,6 +14,7 @@ var express = require('express'),
     config = require('./res/config/config'),
     http = require('http');
 
+
 // Connect to MongoDB
 mongoose.connect(config.mongo.uri, config.mongo.options);
 mongoose.connection.on('error', function(err) {
