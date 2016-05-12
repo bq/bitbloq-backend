@@ -113,8 +113,7 @@ var thereIsAdmin = function(project) {
 var setUserAdmin = function(project, userId) {
     project._acl = project._acl || {};
     project._acl['user:' + userId] = {
-        permission: 'ADMIN',
-        properties: {}
+        permission: 'ADMIN'
     };
 };
 
@@ -123,29 +122,6 @@ var setUserAdmin = function(project, userId) {
  */
 
 ProjectSchema.methods = {
-
-    /**
-     * SetPublic - set acl value to public access
-     *
-     * @api public
-     */
-    setPublic: function() {
-        this._acl.ALL = {
-            permission: 'READ',
-            properties: {
-                date: new Date()
-            }
-        }
-    },
-
-    /**
-     * setPrivate - set acl value to private access
-     *
-     * @api public
-     */
-    setPrivate: function() {
-        delete this._acl.ALL;
-    },
 
     /**
      * addView - add a visit to project

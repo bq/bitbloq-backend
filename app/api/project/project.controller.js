@@ -257,8 +257,20 @@ exports.publish = function(req, res) {
             res.status(500).send(err);
         } else {
             if (project.isOwner(userId)) {
-                project.setPublic();
-                updateProject(projectId, project, res);
+                Project.findByIdAndUpdate(projectId, {
+                    '_acl.ALL': {
+                        permission: 'READ',
+                        properties: {
+                            date: new Date()
+                        }
+                    }
+                }, function(err) {
+                    if (err) {
+                        res.sendStatus(500).send(err);
+                    } else {
+                        res.sendStatus(200);
+                    }
+                });
             } else {
                 res.sendStatus(401);
             }
@@ -277,8 +289,17 @@ exports.private = function(req, res) {
             res.status(500).send(err);
         } else {
             if (project.isOwner(userId)) {
-                project.setPrivate();
-                updateProject(projectId, project, res);
+                Project.findByIdAndUpdate(projectId, {
+                    $unset: {
+                        '_acl.ALL': 1
+                    }
+                }, function(err) {
+                    if (err) {
+                        res.sendStatus(500).send(err);
+                    } else {
+                        res.sendStatus(200);
+                    }
+                });
             } else {
                 res.sendStatus(401);
             }
