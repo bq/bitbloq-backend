@@ -165,7 +165,6 @@ exports.show = function(req, res) {
  * Get public project list
  */
 exports.getAll = function(req, res) {
-    res.send();
     if (req.query && !utils.isEmpty(req.query)) {
         if (req.query.count === '*') {
             getCountPublic(res, req.query);
