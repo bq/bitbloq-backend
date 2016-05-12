@@ -54,7 +54,6 @@ var UserSchema = new mongoose.Schema({
     newsletter: Boolean,
     language: {
         type: String,
-        lowercase: true,
         default: 'es-ES'
     },
     cookiePolicyAccepted: Boolean,
