@@ -2,6 +2,7 @@
 
 var Project = require('./project.model.js'),
     UserFunctions = require('../user/user.functions.js'),
+    ImageFunctions = require('../image/image.functions.js'),
     utils = require('../utils'),
     async = require('async'),
     _ = require('lodash');
@@ -15,7 +16,7 @@ function updateProject(projectId, dataProject, res) {
             res.status(500).send(err);
         } else {
             doc = _.extend(doc, dataProject);
-            doc.save(function(err, finalDoc) {
+            doc.save(function(err) {
                 if (err) {
                     res.status(500).send(err);
                 } else {
@@ -96,7 +97,6 @@ function getSearch(res, params) {
         .exec(function(err, projects) {
             if (err) {
                 res.status(500).send(err);
-                console.log('Error');
             } else {
                 completeProjects(res, projects)
             }
@@ -165,6 +165,7 @@ exports.show = function(req, res) {
  * Get public project list
  */
 exports.getAll = function(req, res) {
+    res.send();
     if (req.query && !utils.isEmpty(req.query)) {
         if (req.query.count === '*') {
             getCountPublic(res, req.query);
@@ -368,23 +369,31 @@ exports.share = function(req, res) {
 exports.destroy = function(req, res) {
     var userId = req.user._id,
         projectId = req.params.id;
-    Project.findById(projectId, function(err, project) {
+    async.waterfall([
+        Project.findById.bind(Project, projectId),
+        function(project, next) {
+            if (project) {
+                if (project.isOwner(userId)) {
+                    Project.findByIdAndRemove(projectId, next);
+                } else {
+                    res.sendStatus(401);
+                }
+            } else {
+                res.sendStatus(404);
+            }
+        },
+        function(project, next){
+
+            ImageFunctions.delete('project', projectId, function(){
+                next();
+            });
+        }
+
+    ], function(err) {
         if (err) {
             res.status(500).send(err)
-        } else if (project) {
-            if (project.isOwner(userId)) {
-                Project.findByIdAndRemove(projectId, function(err) {
-                    if (err) {
-                        res.status(500).send(err);
-                    } else {
-                        res.status(204).end();
-                    }
-                });
-            } else {
-                res.sendStatus(401);
-            }
         } else {
-            res.sendStatus(404);
+            res.status(204).end();
         }
     });
 };
