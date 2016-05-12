@@ -10,3 +10,4 @@ var router = express.Router();
 router.post('/:collection/:id', auth.isAuthenticated(), controller.multerObject.single('file'), controller.create);
 
 module.exports = router;
+

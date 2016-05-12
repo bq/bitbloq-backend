@@ -2,18 +2,17 @@
 
 
 var multer = require('multer'), //for handling multipart/form-data;
-    s3 = require('multer-storage-s3');
+    s3Storage = require('multer-storage-s3');
 
+var storage = s3Storage({
+    destination: function(req, file, cb) {
+        cb(null, 'api-images/' + req.params.collection);
 
-var storage = s3({
-        destination: function(req, file, cb) {
-            cb(null, 'api-images/' + req.params.collection);
-
-        },
-        filename: function(req, file, cb) {
-            cb(null, req.params.id);
-        }
-    });
+    },
+    filename: function(req, file, cb) {
+        cb(null, req.params.id);
+    }
+});
 
 exports.multerObject = multer({
     storage: storage
@@ -26,3 +25,5 @@ exports.multerObject = multer({
 exports.create = function(req, res) {
     res.sendStatus(200);
 };
+
+
