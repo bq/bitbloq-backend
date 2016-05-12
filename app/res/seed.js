@@ -10,6 +10,7 @@ var Project = require('./project/project.model');
 var Bloq = require('./bloq/bloq.model');
 var Category = require('./forum/models/category.model');
 var Property = require('./property/property.model');
+
 var Token = require('./recovery/token.model');
 
 User.find({}).removeAsync()
