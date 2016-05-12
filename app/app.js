@@ -10,6 +10,7 @@ require('dotenv').config({
     path: 'app/res/config/.env'
 });
 
+
 var express = require('express'),
     mongoose = require('mongoose'),
     config = require('./res/config/config'),
