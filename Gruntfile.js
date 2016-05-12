@@ -8,7 +8,6 @@
 // 'test/spec/**/*.js'
 
 module.exports = function(grunt) {
-
     grunt.registerTask('generateConfigFiles', 'Configure data files', function(env) {
         
         var environment = env || 'local';
