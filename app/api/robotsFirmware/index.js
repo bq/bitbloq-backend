@@ -1,7 +1,7 @@
 'use strict';
 
 var express = require('express'),
-    controller = require('./robotsFrimware.controller.js'),
+    controller = require('./robotsFirmware.controller.js'),
     auth = require('../../components/auth/auth.service'),
     router = express.Router();
 
