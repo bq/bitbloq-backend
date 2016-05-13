@@ -371,9 +371,9 @@ exports.destroy = function(req, res) {
                 res.sendStatus(404);
             }
         },
-        function(project, next){
+        function(project, next) {
 
-            ImageFunctions.delete('project', projectId, function(){
+            ImageFunctions.delete('project', projectId, function() {
                 next();
             });
         }
