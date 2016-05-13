@@ -15,6 +15,7 @@ function updateProject(projectId, dataProject, res) {
         if (err) {
             res.status(500).send(err);
         } else {
+            delete dataProject.__v;
             doc = _.extend(doc, dataProject);
             doc.save(function(err) {
                 if (err) {
@@ -381,9 +382,9 @@ exports.destroy = function(req, res) {
                 res.sendStatus(404);
             }
         },
-        function(project, next){
+        function(project, next) {
 
-            ImageFunctions.delete('project', projectId, function(){
+            ImageFunctions.delete('project', projectId, function() {
                 next();
             });
         }
