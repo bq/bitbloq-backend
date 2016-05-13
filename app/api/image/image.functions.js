@@ -4,14 +4,14 @@ var FUS3 = require('fetch-upload-s3'),
     AWS = require('aws-sdk');
 
 
-var fus3 = new FUS3('qa-bitbloq.com'),
+var fus3 = new FUS3('qa-bitbloq.com/api-images/avatar'),
     s3 = new AWS.S3();
 
 
 exports.uploadToS3FromUrl = function(ImageUrl, s3ImageId) {
     // For fetch url :
     fus3.init(function() {
-        fus3.do(ImageUrl, 'api-images/avatar/' + s3ImageId, function(err, data) {
+        fus3.do(ImageUrl, s3ImageId, function(err, data) {
             console.log('file uploaded to S3!');
             console.log("err");
             console.log(err);
