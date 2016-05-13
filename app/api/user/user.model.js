@@ -51,12 +51,22 @@ var UserSchema = new mongoose.Schema({
         type: String,
         default: 'user'
     },
-    newsletter: Boolean,
+    birthday: {
+        type: Date
+    },
+    newsletter: {
+        type: Boolean,
+        default: false
+    },
     language: {
         type: String,
         default: 'es-ES'
     },
     cookiePolicyAccepted: Boolean,
+    takeTour: {
+        type: Boolean,
+        default: false
+    },
     hasBeenAskedIfTeacher: {
         type: Boolean,
         default: false
@@ -102,12 +112,10 @@ UserSchema
             'role': this.role,
             'social': {
                 'google': {
-                    email: this.social.google.email,
-                    id: this.social.google.id
+                    email: this.social.google.email
                 },
                 'facebook': {
-                    email: this.social.facebook.email,
-                    id: this.social.facebook.id
+                    email: this.social.facebook.email
                 }
             },
             'googleEmail': this.googleEmail,
@@ -118,7 +126,9 @@ UserSchema
             'language': this.language,
             'cookiePolicyAccepted': this.cookiePolicyAccepted,
             'hasBeenAskedIfTeacher': this.hasBeenAskedIfTeacher,
-            'provider': this.provider
+            'provider': this.provider,
+            'hasBeenWarnedAboutChangeBloqsToCode': this.hasBeenWarnedAboutChangeBloqsToCode,
+            'takeTour': this.takeTour
         };
     });
 
