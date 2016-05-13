@@ -1,11 +1,7 @@
 'use strict';
 
-var Faq = require('./robotsFrimware.model.js');
-
-var perPage = 20;
-
 /**
- * Get public Faq list
+ * Get public a frimware
  */
 exports.get = function(req, res) {
 
