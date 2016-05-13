@@ -23,6 +23,7 @@ module.exports = function(app) {
     router.use('/faq', require('./api/faq/index'));
     router.use('/changelog', require('./api/changelog/index'));
     router.use('/feedback', require('./api/feedback/index'));
+    router.use('/robotsFrimware', require('./api/robotsFrimware/index'));
 
     // Set a prefix for all calls
     app.use('/bitbloq/v1', router);
