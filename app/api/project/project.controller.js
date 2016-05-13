@@ -9,24 +9,6 @@ var Project = require('./project.model.js'),
 
 var maxPerPage = 20;
 
-function updateProject(projectId, dataProject, res) {
-
-    Project.findById(projectId, function(err, doc) {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            doc = _.extend(doc, dataProject);
-            doc.save(function(err) {
-                if (err) {
-                    res.status(500).send(err);
-                } else {
-                    res.sendStatus(200);
-                }
-            });
-        }
-    });
-}
-
 function clearProject(project) {
     delete project._id;
     delete project.timesViewed;
@@ -238,7 +220,15 @@ exports.update = function(req, res) {
         } else {
             if (project.isOwner(req.user._id)) {
                 var projectObject = clearProject(req.body);
-                updateProject(projectId, projectObject, res);
+                project = _.extend(project, projectObject);
+                project.__v = undefined;
+                project.save(function(err) {
+                    if (err) {
+                        res.status(500).send(err);
+                    } else {
+                        res.sendStatus(200);
+                    }
+                });
             } else {
                 res.sendStatus(401);
             }
