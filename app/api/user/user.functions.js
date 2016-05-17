@@ -47,25 +47,31 @@ exports.generateToken = function(user, next) {
         expiresIn: 600 * 240
     });
 
-    next(null, {token:token, user:user.owner});
+    next(null, {
+        token: token,
+        user: user.owner
+    });
 }
 
 /**
  * Get google user data with token
  */
-exports.getGoogleSocialProfile = function(token) {
-    return request('https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=' + token);
-};
 
-/**
- * Get facebook user data with token
- */
-exports.getFacebookSocialProfile = function(token) {
-    return request('https://graph.facebook.com/me?access_token=' + token);
-};
+exports.getSocialProfile = function(provider, token) {
+    var socialRequest;
+    switch (provider) {
+        case 'google':
+            socialRequest = request('https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=' + token);
+            break;
+        case 'facebook':
+            socialRequest = request('https://graph.facebook.com/me?access_token=' + token);
+            break;
+    }
+    return socialRequest;
+}
 
-exports.getGoogleAvatar = function(userId){
-  return userId;
+exports.getGoogleAvatar = function(userId) {
+    return userId;
 }
 
 exports.getFacebookAvatar = function(userId) {

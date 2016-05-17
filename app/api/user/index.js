@@ -25,7 +25,7 @@ router.get('/:id', controller.show);
 
 // POST
 router.post('/', controller.create);
-router.post('/social', controller.socialLogin);
+router.post('/social', auth.getUser(),controller.socialLogin);
 router.post('/forgot', controller.emailToken);
 
 // PUT

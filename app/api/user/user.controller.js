@@ -70,6 +70,151 @@ exports.create = function(req, res) {
     }
 };
 
+function findUserBySocialNetwork(provider, token, socialCallback) {
+
+    UserFunctions.getSocialProfile(provider, token, socialCallback).then(function(response) {
+        response = JSON.parse(response);
+        User.findOne({
+            $or: [{
+                email: response.email
+            }, {
+                social: {
+                    facebook: {
+                        email: response.email
+                    }
+                }
+            }, {
+                social: {
+                    google: {
+                        email: response.email
+                    }
+                }
+            }]
+        }, function(err, user) {
+            if (!user) {
+                socialCallback(err, response);
+            } else {
+                socialCallback(err, user);
+            }
+        });
+    });
+}
+
+function existsSocialEmail(provider, user) {
+    var exists;
+    switch (provider) {
+        case 'facebook':
+            if (user.social.facebook.email !== '') {
+                exists = true;
+            } else {
+                exists = false;
+            }
+            break;
+        case 'google':
+            if (user.social.google.email !== '') {
+                exists = true;
+            } else {
+                exists = false;
+            }
+            break;
+    }
+    return exists;
+}
+
+function generateSocialUser(provider, user) {
+    var userData = {
+        firstName: '',
+        lastName: '',
+        email: '',
+        provider: 'social',
+        social: {
+            google: {
+                email: ''
+            },
+            facebook: {
+                email: ''
+            }
+        }
+
+    }
+
+    switch (provider) {
+        case 'google':
+            userData.firstName = user.given_name,
+                userData.lastName = user.family_name,
+                userData.email = user.email,
+                userData.social.google.email = user.email
+            break;
+        case 'facebook':
+            userData.firstName = user.first_name,
+                userData.lastName = user.last_name,
+                userData.email = user.email,
+                userData.social.facebook.email = user.email
+            break;
+    }
+
+    var newUser = new User(userData);
+    newUser.role = 'user';
+    return newUser;
+
+}
+
+function getSocialAvatar(provider, user, callback) {
+
+    switch (provider) {
+        case 'google':
+            callback(null, user.picture);
+            break;
+        case 'facebook':
+            UserFunctions.getFacebookAvatar(user.id).then(function(avatar) {
+
+                try {
+                    avatar = JSON.parse(avatar);
+
+                    if (avatar.data && !avatar.error) {
+                        callback(null, avatar.data.url);
+                    } else {
+                        callback(avatar.error);
+                    }
+
+                } catch (err) {
+                    callback(err);
+                    console.log('No avatar', err);
+                }
+            });
+            break;
+
+    }
+}
+
+function updateWithSocialNetwork(provider, user, userCallback) {
+    switch (provider) {
+        case 'google':
+            User.update({
+                _id: user._id
+            }, {
+                $set: {
+                    'social.google': {
+                        email: user.email,
+                    }
+                }
+            }, userCallback);
+            break;
+        case 'facebook':
+            User.update({
+                _id: user._id
+            }, {
+                $set: {
+                    'social.facebook': {
+                        email: user.email,
+                    }
+                }
+            }, userCallback);
+            break;
+    }
+
+}
+
 /**
  * Social login
  */
@@ -78,236 +223,84 @@ exports.create = function(req, res) {
 exports.socialLogin = function(req, res) {
     var provider = req.body.provider;
     var token = req.body.accessToken;
-    var responseSocial;
-    var avatarUrl;
-    switch (provider) {
-        case 'google':
-            async.waterfall([
-                function(socialCallback) {
-                    UserFunctions.getGoogleSocialProfile(token, socialCallback).then(function(response) {
-                        response = JSON.parse(response);
-                        responseSocial = response;
-                        User.findOne({
-                            $or: [{
-                                email: response.email
-                            }, {
-                                social: {
-                                    facebook: {
-                                        email: response.email
-                                    }
-                                }
-                            }, {
-                                social: {
-                                    google: {
-                                        email: response.email
-                                    }
-                                }
-                            }]
-                        }, socialCallback);
-                    });
-                }
 
-            ], function(err, user) {
-                if (err) {
-                    res.sendStatus(422);
-                }
-                if (user) {
-                    if (!user.social.google.email) {
-                        async.waterfall([
-                            function(userCallback) {
-                                User.update({
-                                    _id: user._id
-                                }, {
-                                    $set: {
-                                        'social.google': {
-                                            email: responseSocial.email,
-                                        }
-                                    }
-                                }, userCallback);
-                            },
-                            function(user, userCallback) {
-                                UserFunctions.generateToken(user, userCallback);
-                            }
-                        ], function(err, response) {
-                            if (response) {
-                                res.status(200).send(response);
-                            } else {
-                                res.status(500).send(err);
-                            }
-                        });
+    findUserBySocialNetwork(provider, token, function(err, user) {
+
+        if (user.provider) {
+            if (req.user) {
+                if (existsSocialEmail(provider, req.user)) {
+                    res.sendStatus(409);
+                } else {
+                    if (req.user.email !== user.email) {
+                        res.sendStatus(409);
                     } else {
-                        UserFunctions.generateToken(user, function(err, response) {
+                        updateWithSocialNetwork(provider, user, function(err) {
                             if (err) {
-                                res.status(500).send(err);
+                                res.sendStatus(500);
                             } else {
-                                if (response) {
-                                    res.status(200).send(response);
-                                }
+                                res.sendStatus(200);
                             }
                         });
                     }
-                } else {
-                    var userData = {
-                        firstName: responseSocial.given_name,
-                        lastName: responseSocial.family_name,
-                        email: responseSocial.email,
-                        social: {
-                            google: {
-                                email: responseSocial.email,
-                            }
-                        },
-                        provider: 'social'
-                    };
-
-                    avatarUrl = responseSocial.picture;
-                    var newUser = new User(userData);
-                    newUser.role = 'user';
-
-                    async.waterfall([
-                        function(saveCallback) {
-                            newUser.save(saveCallback);
-                        },
-                        function(user, saved, saveCallback) {
-                            ImageFunctions.uploadToS3FromUrl(avatarUrl, user._id.toString());
-                            UserFunctions.generateToken(user, saveCallback);
-                        }
-                    ], function(err, response) {
+                }
+            } else {
+                if (existsSocialEmail(provider, user)) {
+                    UserFunctions.generateToken(user, function(err, response) {
                         if (err) {
-                            res.status(422).json(err);
+                            res.status(500).send(err);
                         } else {
                             if (response) {
                                 res.status(200).send(response);
                             }
                         }
                     });
-                }
-
-            });
-            break;
-        case 'facebook':
-            async.waterfall([
-                function(socialCallback) {
-                    UserFunctions.getFacebookSocialProfile(token, socialCallback).then(function(response) {
-                        try {
-                            response = JSON.parse(response);
-                            responseSocial = response;
-                        } catch (err) {
-                            socialCallback(err);
-                        }
-                        User.findOne({
-                            $or: [{
-                                email: response.email
-                            }, {
-                                social: {
-                                    facebook: {
-                                        email: response.email
-                                    }
-                                }
-                            }, {
-                                social: {
-                                    google: {
-                                        email: response.email
-                                    }
-                                }
-                            }]
-                        }, socialCallback);
-                    });
-                }
-
-            ], function(err, user) {
-                if (err) {
-                    res.sendStatus(404);
-                }
-                if (user) {
-                    if (!user.social.facebook.email) {
-                        async.waterfall([
-                            function(userCallback) {
-                                User.update({
-                                    _id: user._id
-                                }, {
-                                    $set: {
-                                        'social.facebook': {
-                                            email: responseSocial.email,
-                                        }
-
-                                    }
-                                }, userCallback);
-                            },
-                            function(user, userCallback) {
-                                UserFunctions.generateToken(user, userCallback);
-                            }
-                        ], function(err, response) {
-                            if (response) {
-                                res.status(200).send(response);
-                            } else {
-                                res.status(500).send(err);
-                            }
-                        });
-
-                    } else {
-                        UserFunctions.generateToken(user, function(err, response) {
-                            if (err) {
-                                res.status(500).send(err);
-                            } else {
-                                if (response) {
-                                    res.status(200).send(response);
-                                }
-                            }
-                        });
-                    }
                 } else {
                     async.waterfall([
-                        function(socialCallback) {
-                            UserFunctions.getFacebookAvatar(responseSocial.id).then(function(avatar) {
-                                var userData = {
-                                    firstName: responseSocial.first_name,
-                                    lastName: responseSocial.last_name,
-                                    email: responseSocial.email,
-                                    social: {
-                                        facebook: {
-                                            email: responseSocial.email,
-                                        }
-                                    },
-                                    provider: 'social'
-                                };
-
-                                try {
-                                    avatar = JSON.parse(avatar);
-
-                                    if (avatar.data && !avatar.error) {
-                                        avatarUrl = avatar.data.url;
-                                    }
-
-                                } catch (err) {
-                                    console.log('No avatar', err);
-                                }
-
-                                var newUser = new User(userData);
-                                newUser.role = 'user';
-                                newUser.save(socialCallback);
-
-                            });
+                        function(userCallback) {
+                            updateWithSocialNetwork(provider, user, userCallback);
                         },
-
-                        function(user, saved, socialCallback) {
-                            ImageFunctions.uploadToS3FromUrl(avatarUrl, user._id.toString());
-                            UserFunctions.generateToken(user, socialCallback);
+                        function(userSocial, userCallback) {
+                            UserFunctions.generateToken(user, userCallback);
                         }
+
                     ], function(err, response) {
-                        if (err) {
-                            res.status(422).json(err);
+                        if (response) {
+                            res.status(200).send(response);
                         } else {
-                            if (response) {
-                                res.status(200).send(response);
-                            }
+                            res.status(500).send(err);
                         }
                     });
                 }
+            }
+
+        } else {
+            var newUser = generateSocialUser(provider, user);
+
+            async.waterfall([
+                function(saveCallback) {
+                    getSocialAvatar(provider, user, saveCallback);
+                },
+                function(avatarUrl, saveCallback) {
+                    newUser.save(function(err, user) {
+                        saveCallback(err, user, avatarUrl);
+                    });
+                },
+                function(user, avatarUrl, saveCallback) {
+                    ImageFunctions.uploadToS3FromUrl(avatarUrl, user._id.toString());
+                    UserFunctions.generateToken(user, saveCallback);
+                }
+            ], function(err, response) {
+                if (err) {
+                    res.status(422).json(err);
+                } else {
+                    if (response) {
+                        res.status(200).send(response);
+                    }
+                }
             });
-            break;
-        default:
-            throw 'Error: not a provider';
-    }
+        }
+    });
+
 };
 
 /**
