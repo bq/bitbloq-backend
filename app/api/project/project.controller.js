@@ -14,6 +14,7 @@ function clearProject(project) {
     delete project.timesViewed;
     delete project.timesAdded;
     delete project._acl;
+    delete project.__v;
     return project;
 }
 
@@ -57,16 +58,11 @@ function completeProjects(res, projects) {
 function getSearch(res, params) {
     var query = params.query ? JSON.parse(params.query) : {},
         page = params.page || 0,
-        perPage = (query.perPage && (query.perPage <= maxPerPage)) ? query.perPage : maxPerPage,
+        perPage = (params.pageSize && (params.pageSize <= maxPerPage)) ? params.pageSize : maxPerPage,
         defaultSortFilter = {
             name: 'desc'
         },
-        sortFilter;
-    if (params.sort) {
-        sortFilter = JSON.parse(params.sort) || defaultSortFilter;
-    } else {
-        sortFilter = defaultSortFilter;
-    }
+        sortFilter = params.sort ? JSON.parse(params.sort) : defaultSortFilter;
 
     query = utils.extend(query, {
         '_acl.ALL.permission': 'READ'
@@ -151,8 +147,10 @@ exports.getAll = function(req, res) {
         if (req.query.count === '*') {
             getCountPublic(res, req.query);
         } else if (req.query.query) {
+            console.log('ELSE IF');
             getSearch(res, req.query);
         } else {
+            console.log('ELSE');
             getSearch(res, req.query);
         }
     } else {
@@ -219,10 +217,9 @@ exports.update = function(req, res) {
             res.status(500).send(err);
         } else {
             if (project.isOwner(req.user._id)) {
-                var projectObject = clearProject(req.body);
-                project = _.extend(project, projectObject);
-                project.__v = undefined;
-                project.save(function(err) {
+                var projectBody = clearProject(req.body);
+                project = _.extend(project, projectBody);
+                project.save(function(err, project) {
                     if (err) {
                         res.status(500).send(err);
                     } else {

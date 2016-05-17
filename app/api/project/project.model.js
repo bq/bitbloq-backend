@@ -24,8 +24,8 @@ var ProjectSchema = new mongoose.Schema({
     },
     hardware: {
         board: String,
-        components: Array,
-        connections: Array,
+        components: [],
+        connections: [],
         robot: String
     },
     software: {
@@ -33,8 +33,8 @@ var ProjectSchema = new mongoose.Schema({
         setup: {},
         loop: {}
     },
-    hardwareTags: Array,
-    userTags: Array,
+    hardwareTags: [String],
+    userTags: [String],
     _acl: {},
     _createdAt: {
         type: Date,
