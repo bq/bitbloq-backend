@@ -157,7 +157,7 @@ exports.show = function(req, res) {
  * Get public project list
  */
 exports.getAll = function(req, res) {
-    
+
     if (req.query && !utils.isEmpty(req.query)) {
         completeQuery(req.query, function(err, query) {
             if (err) {
