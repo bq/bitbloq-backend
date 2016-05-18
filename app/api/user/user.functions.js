@@ -22,6 +22,23 @@ exports.getUserProfile = function(userId, next) {
 };
 
 /**
+ * Get users by username regex
+ * @param {String} username
+ * @return {Function} next
+ */
+exports.getUserIdsByName = function(username, next){
+    User.find({username: username}, '_id', function(err, user) {
+        if (err) {
+            next(err);
+        } else if (user) {
+            next(err, user);
+        } else {
+            next();
+        }
+    });
+};
+
+/**
  * Get a user id
  * @param {String} email
  * @return {Function} next
@@ -51,7 +68,7 @@ exports.generateToken = function(user, next) {
         token: token,
         user: user.owner
     });
-}
+};
 
 /**
  * Get google user data with token
@@ -68,11 +85,7 @@ exports.getSocialProfile = function(provider, token) {
             break;
     }
     return socialRequest;
-}
-
-exports.getGoogleAvatar = function(userId) {
-    return userId;
-}
+};
 
 exports.getFacebookAvatar = function(userId) {
     return request('http://graph.facebook.com/v2.5/' + userId + '/picture?type=large&redirect=false');

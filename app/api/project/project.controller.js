@@ -18,11 +18,7 @@ function clearProject(project) {
     return project;
 }
 
-function getCountPublic(res, params) {
-    var query = params.query ? JSON.parse(params.query) : {};
-    query = utils.extend(query, {
-        '_acl.ALL.permission': 'READ'
-    });
+function getCountPublic(res, query) {
     Project.count(query, function(err, counter) {
         if (err) {
             res.status(500).send(err);
@@ -55,20 +51,38 @@ function completeProjects(res, projects) {
     });
 }
 
+function completeQuery(params, next) {
+    var query = params.query ? JSON.parse(params.query) : {};
+    query = utils.extend(query, {
+        '_acl.ALL.permission': 'READ'
+    });
+
+    var queryUser = _.find(query.$or, 'creatorId');
+
+
+    if (queryUser) {
+        UserFunctions.getUserIdsByName(queryUser.creatorId, function(err, users) {
+            if (users) {
+                var userIds = _.map(users, '_id');
+                query.$or[1].creatorId = {$in: userIds};
+            }
+            next(err, query);
+        })
+    } else {
+        next(null, query);
+    }
+
+}
+
 function getSearch(res, params) {
-    var query = params.query ? JSON.parse(params.query) : {},
-        page = params.page || 0,
+    var page = params.page || 0,
         perPage = (params.pageSize && (params.pageSize <= maxPerPage)) ? params.pageSize : maxPerPage,
         defaultSortFilter = {
             name: 'desc'
         },
         sortFilter = params.sort ? JSON.parse(params.sort) : defaultSortFilter;
 
-    query = utils.extend(query, {
-        '_acl.ALL.permission': 'READ'
-    });
-
-    Project.find(query)
+    Project.find(params.query)
         .limit(parseInt(perPage))
         .skip(parseInt(perPage * page))
         .sort(sortFilter)
@@ -143,16 +157,20 @@ exports.show = function(req, res) {
  * Get public project list
  */
 exports.getAll = function(req, res) {
+    
     if (req.query && !utils.isEmpty(req.query)) {
-        if (req.query.count === '*') {
-            getCountPublic(res, req.query);
-        } else if (req.query.query) {
-            console.log('ELSE IF');
-            getSearch(res, req.query);
-        } else {
-            console.log('ELSE');
-            getSearch(res, req.query);
-        }
+        completeQuery(req.query, function(err, query) {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+                if (req.query.count === '*') {
+                    getCountPublic(res, query);
+                } else {
+                    req.query.query = query;
+                    getSearch(res, req.query);
+                }
+            }
+        });
     } else {
         getSearch(res);
     }
