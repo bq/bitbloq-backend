@@ -128,7 +128,9 @@ exports.show = function(req, res) {
                     if (req.query && req.query.profile) {
                         res.status(200).json(project.profile);
                     } else {
-                        project.addView();
+                        if (req.user && !project._acl['user:' + req.user._id]) {
+                            project.addView();
+                        }
                         Project.findByIdAndUpdate(projectId, project, function(err, project) {
                             if (err) {
                                 res.status(500).send(err);
