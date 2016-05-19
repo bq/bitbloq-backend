@@ -60,7 +60,8 @@ ProjectSchema
             'imageUrl': this.imageUrl,
             'videoUrl': this.videoUrl,
             'timesViewed': this.timesViewed || 0,
-            'timesAdded': this.timesAdded || 0
+            'timesAdded': this.timesAdded || 0,
+            '_acl': this._acl
         };
     });
 
