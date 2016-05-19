@@ -61,6 +61,7 @@ ProjectSchema
             'videoUrl': this.videoUrl,
             'timesViewed': this.timesViewed || 0,
             'timesAdded': this.timesAdded || 0,
+            'codeProject': this.codeProject,
             '_acl': this._acl
         };
     });
