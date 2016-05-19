@@ -351,6 +351,7 @@ exports.share = function(req, res) {
                         if (err) {
                             res.status(500).send(err);
                         } else {
+                            response.project = project;
                             Project.findByIdAndUpdate(projectId, project, function(err) {
                                 if (err) {
                                     res.status(500).send(err);
