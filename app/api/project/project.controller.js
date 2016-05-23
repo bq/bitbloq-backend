@@ -412,3 +412,25 @@ exports.destroy = function(req, res) {
 exports.authCallback = function(req, res) {
     res.redirect('/');
 };
+
+exports.createAll = function(req, res) {
+    Project.collection.insert(req.body, function(err) {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.sendStatus(200);
+        }
+    });
+};
+
+exports.deleteAll = function(req, res) {
+    console.log('delete all projects');
+    Project.remove({}, function(err) {
+        if (err) {
+            console.log(err);
+            res.status(500).send(err);
+        } else {
+            res.sendStatus(200);
+        }
+    });
+};
