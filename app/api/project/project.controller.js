@@ -332,6 +332,7 @@ exports.share = function(req, res) {
             if (project.isOwner(userId)) {
                 project.resetShare();
                 async.map(emails, function(email, done) {
+                        email = email.toLowerCase();
                         if (email === req.user.email) {
                             done();
                         } else {
