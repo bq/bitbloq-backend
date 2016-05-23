@@ -1,10 +1,8 @@
 'use strict';
 
-
 var express = require('express'),
     controller = require('./project.controller.js'),
     auth = require('../../components/auth/auth.service');
-
 
 var router = express.Router();
 
@@ -20,7 +18,9 @@ router.put('/:id/publish', auth.isAuthenticated(), controller.publish);
 router.put('/:id/share', auth.isAuthenticated(), controller.share);
 router.put('/:id', auth.isAuthenticated(), controller.update);
 
-router.delete('/:id', auth.isAuthenticated(), controller.destroy);
+router.post('/all', auth.hasRole('admin'), controller.createAll);
+router.delete('/all', auth.hasRole('admin'), controller.deleteAll);
 
+router.delete('/:id', auth.isAuthenticated(), controller.destroy);
 
 module.exports = router;
