@@ -371,6 +371,52 @@ exports.share = function(req, res) {
     });
 };
 
+
+/**
+ * Clone a public project
+ */
+exports.clone = function(req, res) {
+    var projectId = req.params.id,
+        userId = req.user._id;
+    async.waterfall([
+            Project.findById.bind(Project, projectId),
+            function(project, next) {
+                if (project._acl['user:' + userId] && project._acl['user:' + userId].permission === 'ADMIN') {
+                    next(null, project);
+                } else {
+                    project.addAdded();
+                    Project.findByIdAndUpdate(projectId, project, next);
+                }
+            },
+            function(project, next) {
+                var newProject = new Project({
+                    creatorId: userId,
+                    name: req.body.name || project.name,
+                    description: project.description,
+                    videoUrl: project.videoUrl,
+                    code: project.code,
+                    codeProject: project.codeProject,
+                    defaultTheme: project.defaultTheme,
+                    hardware: project.hardware,
+                    software: project.software,
+                    hardwareTags: project.hardwareTags,
+                    userTags: project.userTags
+                });
+
+                //todo clonar imagen
+
+                newProject.save(next);
+            }
+        ], function(err, newProject) {
+            if (err) {
+                res.status(500).send(err)
+            } else {
+                res.status(200).json(newProject.id);
+            }
+        }
+    );
+};
+
 /**
  * Deletes a Project
  */
@@ -424,10 +470,8 @@ exports.createAll = function(req, res) {
 };
 
 exports.deleteAll = function(req, res) {
-    console.log('delete all projects');
     Project.remove({}, function(err) {
         if (err) {
-            console.log(err);
             res.status(500).send(err);
         } else {
             res.sendStatus(200);

@@ -6,7 +6,6 @@ var ProjectSchema = new mongoose.Schema({
     creatorId: String,
     name: String,
     description: String,
-    imageUrl: String,
     videoUrl: String,
     code: String,
     codeProject: Boolean,
@@ -138,6 +137,20 @@ ProjectSchema.methods = {
         }
     },
 
+
+    /**
+     * addAdded - increases the number of times added
+     *
+     * @api public
+     */
+    addAdded: function() {
+        if (this.timesAdded) {
+            this.timesAdded++;
+        } else {
+            this.timesAdded = 1;
+        }
+    },
+
     /**
      * share - project is shared with users
      *
@@ -182,7 +195,7 @@ ProjectSchema.methods = {
      */
     isOwner: function(userId) {
         var owner = false;
-        if (this._acl['user:' + userId].permission === 'ADMIN') {
+        if (this._acl['user:' + userId] && this._acl['user:' + userId].permission === 'ADMIN') {
             owner = true;
         }
         return owner;
