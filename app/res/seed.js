@@ -5,14 +5,10 @@
 /*jshint -W109 */
 
 'use strict';
-var User = require('./user/user.model');
-var Project = require('./project/project.model');
-var Bloq = require('./bloq/bloq.model');
-var Category = require('./forum/models/category.model');
+var User = require('../api/user/user.model');
+var Project = require('../api/project/project.model');
 
-var Property = require('./property/property.model');
-
-var Token = require('./recovery/token.model');
+var Token = require('../api/recovery/token.model');
 
 User.find({}).removeAsync()
     .then(function() {
