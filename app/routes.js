@@ -19,6 +19,7 @@ module.exports = function(app) {
     router.use('/forum', require('./api/forum/index'));
     router.use('/bloq', require('./api/bloq/index'));
     router.use('/property', require('./api/property/index'));
+    router.use('/version', require('./api/version/index'));
     router.use('/image', require('./api/image/index'));
     router.use('/faq', require('./api/faq/index'));
     router.use('/changelog', require('./api/changelog/index'));
