@@ -10,7 +10,6 @@ var ForumThreadSchema = new mongoose.Schema({
         trim: true,
         required: true
     },
-    lastAnswer: {},
     numberOfViews: {
         type: Number,
         default: 0
@@ -21,17 +20,10 @@ var ForumThreadSchema = new mongoose.Schema({
         trim: true,
         required: true
     },
-    creator: {
-        _id: String,
-        name: String
-    },
-    _createdAt: {
-        type: Date,
-        default: Date.now
-    },
-    _updatedAt: {
-        type: Date,
-        default: Date.now
+    creatorId: {
+        type: String,
+        trim: false,
+        required: true
     }
 }, {
     timestamps: true

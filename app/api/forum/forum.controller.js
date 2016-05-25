@@ -2,8 +2,9 @@
 var Answer = require('./models/forumanswer.model.js'),
     Category = require('./models/forumcategory.model.js'),
     Thread = require('./models/forumthread.model.js'),
+    UserFunctions = require('../user/user.functions.js'),
     async = require('async'),
-	mailer = require('../../components/mailer'),
+    mailer = require('../../components/mailer'),
     config = require('../../res/config/config');
 
 
@@ -82,6 +83,33 @@ function getThreadsInCategory(category, next) {
     });
 }
 
+function completeWithUserName(collection, next) {
+    UserFunctions.getUserProfile(collection.creatorId, function(err, user) {
+        var object;
+        if (user) {
+            object = collection.toObject();
+            object.creatorUsername = user.username;
+        }
+        next(err, object);
+    });
+}
+
+function getCompletedThread(id, next) {
+    async.waterfall([
+        Thread.findById.bind(Thread, id),
+        completeWithUserName
+    ], next);
+}
+
+function getCompletedAnswer(themeId, next) {
+    async.waterfall([
+        Answer.find.bind(Answer, {threadId: themeId}),
+        function(anwers, next) {
+            async.map(anwers, completeWithUserName, next);
+        }
+    ], next);
+}
+
 
 /**
  * Create Category
@@ -101,14 +129,20 @@ exports.createCategory = function(req, res) {
  * Create Thread
  */
 exports.createThread = function(req, res) {
+
+    var userId = req.user._id;
+
     var newThread = new Thread(req.body.thread),
         newAnswer = new Answer(req.body.answer);
+
+    newThread.creatorId = userId;
 
     async.waterfall([
         newThread.save,
         function(thread, saved, next) {
             newAnswer.threadId = newThread._id;
             newAnswer.categoryId = newThread.categoryId;
+            newAnswer.creatorId = userId;
             // Save the answer
             newAnswer.save(next);
         },
@@ -124,7 +158,7 @@ exports.createThread = function(req, res) {
             var locals = {
                 email: config.supportEmail,
                 subject: 'Nuevo tema en el foro de Bitbloq',
-                username: answer.owner.username,
+                //username: answer.owner.username,
                 forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.threadId,
                 threadTitle: newThread.title,
                 threadContent: answer.content
@@ -144,11 +178,14 @@ exports.createThread = function(req, res) {
  * Create Answer
  */
 exports.createAnswer = function(req, res) {
+    var userId = req.user._id;
+
     async.waterfall([
         Thread.findByIdAndUpdate.bind(Thread, req.body.threadId, {'_updatedAt': Date.now()}),
         function(thread, next) {
             var newAnswer = new Answer(req.body);
             newAnswer.categoryId = thread.categoryId;
+            newAnswer.creatorId = userId;
             newAnswer.save(next)
         },
         function(answer, saved, next) {
@@ -169,7 +206,7 @@ exports.createAnswer = function(req, res) {
             var locals = {
                 email: config.supportEmail,
                 subject: 'Nueva respuesta en el foro de Bitbloq',
-                username: answer.owner.username,
+                // username: answer.owner.username,
                 forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.threadId,
                 answerTitle: thread.title,
                 answerContent: answer.content
@@ -230,17 +267,16 @@ exports.getThread = function(req, res) {
     var themeId = req.params.id;
 
     async.parallel([
-        Thread.findById.bind(Thread, themeId),
-        Answer.find.bind(Answer, {threadId: themeId})
-
+        getCompletedThread.bind(null, themeId),
+        getCompletedAnswer.bind(null, themeId)
     ], function(err, results) {
         if (err) {
             res.status(500).send(err);
         } else {
-            var threadObject = results[0].toObject();
+            var threadObject = results[0];
             threadObject.numberOfAnswers = results[1].length - 1;
-            if (req.user && threadObject.creator._id != req.user._id) {
-                var thread = results[0];
+            if (req.user && threadObject.creatorId != req.user._id) {
+                var thread = new Thread(threadObject);
                 thread.addView();
                 Thread.findByIdAndUpdate(thread._id, thread, function(err, thread) {
                     if (err) {
