@@ -286,7 +286,7 @@ exports.socialLogin = function(req, res) {
                     });
                 },
                 function(user, avatarUrl, saveCallback) {
-                    ImageFunctions.uploadToS3FromUrl(avatarUrl, user._id.toString());
+                    ImageFunctions.downloadAndUploadImage(avatarUrl, 'images/avatar/' + user._id.toString());
                     UserFunctions.generateToken(user, saveCallback);
                 }
             ], function(err, response) {
