@@ -5,14 +5,15 @@ var Answer = require('./models/forumanswer.model.js'),
     UserFunctions = require('../user/user.functions.js'),
     async = require('async'),
     mailer = require('../../components/mailer'),
-    config = require('../../res/config/config');
+    config = require('../../res/config/config'),
+    _ = require('lodash');
 
 
 function completeCategory(category, next) {
     async.parallel([
         Answer.count.bind(Answer, {categoryId: category.uuid, main: false}),
         Thread.count.bind(Thread, {categoryId: category.uuid}),
-        Thread.findOne.bind(Thread, {}, null, {sort: {'updatedAt': -1}})
+        Thread.findOne.bind(Thread, {categoryId: category.uuid}, null, {sort: {'updatedAt': -1}})
     ], function(err, results) {
         if (err) {
             next(err);
@@ -21,28 +22,20 @@ function completeCategory(category, next) {
             categoryObject.numberOfAnswers = results[0];
             categoryObject.numberOfThreads = results[1];
             categoryObject.lastThread = results[2];
-            next(null, categoryObject);
-        }
-    });
-}
+            if (categoryObject.lastThread) {
+                completeWithUserName(categoryObject.lastThread, function(err, threadObject) {
+                    if (err) {
+                        next(err);
+                    } else {
+                        categoryObject.lastThread = threadObject;
+                        next(null, categoryObject);
+                    }
+                });
+            } else {
+                next(null, categoryObject);
+            }
 
-function countThreads(category, next) {
-    Thread.count({categoryId: category._id}, function(err, counter) {
-        if (err) {
-            next(err);
-        } else {
-            var categoryObject = category.toObject();
-            categoryObject.numberOfTreads = counter;
-            next(null, categoryObject);
         }
-    });
-}
-
-function getLastThread(category, next) {
-    Thread.findOne().sort('-updatedAt').exec(function(err, lastThread) {
-        var categoryObject = category.toObject();
-        categoryObject.lastThread = lastThread;
-        next(err, categoryObject);
     });
 }
 
@@ -59,25 +52,29 @@ function countAnswersThread(thread, next) {
     });
 }
 
-function countAnswersCategory(threads) {
-    var counter = 0;
-    threads.forEach(function(thread) {
-        counter += thread.numberOfAnswers;
-    });
-    return counter;
-}
-
 function getThreadsInCategory(category, next) {
     Thread.find({categoryId: category.uuid}).sort('-updatedAt').exec(function(err, threads) {
         if (err) {
             next(err);
         } else {
-            async.map(threads, countAnswersThread, function(err, completedThreads) {
-                var categoryObject = category.toObject();
-                categoryObject.numberOfThreads = completedThreads.length;
-                categoryObject.numberOfAnswers = countAnswersCategory(completedThreads);
-                categoryObject.lastThread = completedThreads[0];
-                next(err, {category: categoryObject, threads: completedThreads})
+            async.map(threads, function(thread, callback) {
+                async.parallel([
+                    countAnswersThread.bind(null, thread),
+                    completeWithUserName.bind(null, thread),
+                    Answer.findOne.bind(Answer, {threadId: thread._id}, null, {sort: {'updatedAt': -1}})
+                ], function(err, results) {
+                    if (results) {
+                        var thread = _.extend(results[0], results[1]);
+                        completeWithUserName(results[2], function(err, completedAnswer) {
+                            thread.lastAnswer = completedAnswer;
+                            callback(err, thread);
+                        });
+                    } else {
+                        callback(err, []);
+                    }
+                });
+            }, function(err, completedThreads) {
+                next(err, {category: category, threads: completedThreads});
             })
         }
     });

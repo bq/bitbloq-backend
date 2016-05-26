@@ -19,7 +19,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('generateDevelopmentConfig', 'Configure data files', function(env) {
 
-        var environment = env || 'local',
+        var environment = env || 'qa',
             configJSON;
 
         switch (environment) {
@@ -27,10 +27,8 @@ module.exports = function(grunt) {
                 configJSON = process.env.BITBLOQ_PROD_CONFIG_API;
                 break;
             case 'qa':
-                configJSON = process.env.BITBLOQ_QA_CONFIG_API;
-                break;
             default:
-                configJSON = process.env.BITBLOQ_LOCAL_CONFIG_API;
+                configJSON = process.env.BITBLOQ_QA_CONFIG_API;
 
         }
 
@@ -39,25 +37,22 @@ module.exports = function(grunt) {
         grunt.file.write(file, configJSON);
     });
 
-    grunt.registerTask('generateS3Config', 'Configure data files', function(env) {
+    grunt.registerTask('generateGCSConfig', 'Configure data files', function(env) {
 
-        var environment = env || 'local',
-            configJSON;
+        var environment = env || 'qa',
+            configJSON,
+            file;
 
         switch (environment) {
             case 'production':
-                configJSON = process.env.BITBLOQ_PROD_CONFIG_S3;
+                configJSON = process.env.BITBLOQ_PROD_CONFIG_GCS;
+                file = 'app/res/config/bitbloq-bq-contacts.json';
                 break;
             case 'qa':
-                configJSON = process.env.BITBLOQ_QA_CONFIG_S3;
-                break;
             default:
-                configJSON = process.env.BITBLOQ_LOCAL_CONFIG_S3;
+                configJSON = process.env.BITBLOQ_QA_CONFIG_GCS;
+                file = 'app/res/config/bitbloq-dev-bq-contacts.json';
         }
-
-        var file = 'app/res/config/.env';
-
-        configJSON = configJSON.replace(/\\n\\r/g, '\n');
 
         grunt.file.write(file, configJSON);
     });

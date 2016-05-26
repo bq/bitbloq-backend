@@ -3,6 +3,7 @@
 var mongoose = require('mongoose');
 
 var ProjectSchema = new mongoose.Schema({
+    corbelId: String,
     creatorId: String,
     name: String,
     description: String,
@@ -81,7 +82,6 @@ ProjectSchema
         }
     });
 
-
 /**
  * Private functions
  */
@@ -136,7 +136,6 @@ ProjectSchema.methods = {
             this.timesViewed = 1;
         }
     },
-
 
     /**
      * addAdded - increases the number of times added
