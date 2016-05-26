@@ -5,6 +5,7 @@ var Project = require('./project.model.js'),
     ImageFunctions = require('../image/image.functions.js'),
     utils = require('../utils'),
     async = require('async'),
+    ObjectID = require('mongodb').ObjectID,
     _ = require('lodash');
 
 var maxPerPage = 20;
@@ -41,11 +42,11 @@ function getUserProject(item, next) {
 }
 
 function completeProjects(res, projects) {
+
     async.map(projects, getUserProject, function(err, completedProjects) {
         if (err) {
             res.status(500).send(err)
         } else {
-
             res.status(200).json(completedProjects);
         }
     });
@@ -59,12 +60,13 @@ function completeQuery(params, next) {
 
     var queryUser = _.find(query.$or, 'creatorId');
 
-
     if (queryUser) {
         UserFunctions.getUserIdsByName(queryUser.creatorId, function(err, users) {
             if (users) {
                 var userIds = _.map(users, '_id');
-                query.$or[1].creatorId = {$in: userIds};
+                query.$or[1].creatorId = {
+                    $in: userIds
+                };
             }
             next(err, query);
         })
@@ -75,6 +77,7 @@ function completeQuery(params, next) {
 }
 
 function getSearch(res, params) {
+
     var page = params.page || 0,
         perPage = (params.pageSize && (params.pageSize <= maxPerPage)) ? params.pageSize : maxPerPage,
         defaultSortFilter = {
@@ -115,44 +118,56 @@ exports.create = function(req, res) {
  * Get a single project
  */
 exports.show = function(req, res) {
-    var projectId = req.params.id;
-    Project.findById(projectId, function(err, project) {
+    var query;
+    if (ObjectID.isValid(req.params.id)) {
+        query = {
+            _id: new ObjectID(req.params.id)
+        };
+    } else {
+        query = {
+            corbelId: req.params.id
+        };
+    }
+    Project.findOne(query, function(err, project) {
         if (err) {
+            console.log(err);
             res.status(500).send(err);
+        } else if (!project) {
+            res.sendStatus(404);
         } else {
-            if (!project) {
-                res.sendStatus(404);
-            } else {
-                if (project._acl.ALL && project._acl.ALL.permission === 'READ') {
-                    //it is public
-                    if (req.query && req.query.profile) {
-                        res.status(200).json(project.profile);
-                    } else {
-                        if (req.user && !project._acl['user:' + req.user._id]) {
-                            project.addView();
-                        }
-                        Project.findByIdAndUpdate(projectId, project, function(err, project) {
-                            if (err) {
-                                res.status(500).send(err);
-                            } else {
-                                res.status(200).json(project);
-                            }
-                        });
-                    }
-                } else if (req.user && project._acl['user:' + req.user._id] && (project._acl['user:' + req.user._id].permission === 'READ' || project._acl['user:' + req.user._id].permission === 'ADMIN')) {
-                    //it is a shared project
-                    if (req.query && req.query.profile) {
-                        res.status(200).json(project.profile);
-                    } else {
-                        res.status(200).json(project);
-                    }
-                } else {
-                    //it is a private project
-                    res.sendStatus(401);
-                }
-            }
+            returnProject(req, res, project);
         }
     });
+};
+
+function returnProject(req, res, project) {
+    if (project._acl.ALL && project._acl.ALL.permission === 'READ') {
+        //it is public
+        if (req.query && req.query.profile) {
+            res.status(200).json(project.profile);
+        } else {
+            if (req.user && !project._acl['user:' + req.user._id]) {
+                project.addView();
+            }
+            Project.findByIdAndUpdate(project.id, project, function(err, project) {
+                if (err) {
+                    res.status(500).send(err);
+                } else {
+                    res.status(200).json(project);
+                }
+            });
+        }
+    } else if (req.user && project._acl['user:' + req.user._id] && (project._acl['user:' + req.user._id].permission === 'READ' || project._acl['user:' + req.user._id].permission === 'ADMIN')) {
+        //it is a shared project
+        if (req.query && req.query.profile) {
+            res.status(200).json(project.profile);
+        } else {
+            res.status(200).json(project);
+        }
+    } else {
+        //it is a private project
+        res.sendStatus(401);
+    }
 };
 
 /**
@@ -371,7 +386,6 @@ exports.share = function(req, res) {
     });
 };
 
-
 /**
  * Clone a public project
  */
@@ -379,42 +393,41 @@ exports.clone = function(req, res) {
     var projectId = req.params.id,
         userId = req.user._id;
     async.waterfall([
-            Project.findById.bind(Project, projectId),
-            function(project, next) {
-                if (project._acl['user:' + userId] && project._acl['user:' + userId].permission === 'ADMIN') {
-                    next(null, project);
-                } else {
-                    project.addAdded();
-                    Project.findByIdAndUpdate(projectId, project, next);
-                }
-            },
-            function(project, next) {
-                var newProject = new Project({
-                    creatorId: userId,
-                    name: req.body.name || project.name,
-                    description: project.description,
-                    videoUrl: project.videoUrl,
-                    code: project.code,
-                    codeProject: project.codeProject,
-                    defaultTheme: project.defaultTheme,
-                    hardware: project.hardware,
-                    software: project.software,
-                    hardwareTags: project.hardwareTags,
-                    userTags: project.userTags
-                });
-
-                //todo clonar imagen
-
-                newProject.save(next);
-            }
-        ], function(err, newProject) {
-            if (err) {
-                res.status(500).send(err)
+        Project.findById.bind(Project, projectId),
+        function(project, next) {
+            if (project._acl['user:' + userId] && project._acl['user:' + userId].permission === 'ADMIN') {
+                next(null, project);
             } else {
-                res.status(200).json(newProject.id);
+                project.addAdded();
+                Project.findByIdAndUpdate(projectId, project, next);
             }
+        },
+        function(project, next) {
+            var newProject = new Project({
+                creatorId: userId,
+                name: req.body.name || project.name,
+                description: project.description,
+                videoUrl: project.videoUrl,
+                code: project.code,
+                codeProject: project.codeProject,
+                defaultTheme: project.defaultTheme,
+                hardware: project.hardware,
+                software: project.software,
+                hardwareTags: project.hardwareTags,
+                userTags: project.userTags
+            });
+
+            //todo clonar imagen
+
+            newProject.save(next);
         }
-    );
+    ], function(err, newProject) {
+        if (err) {
+            res.status(500).send(err)
+        } else {
+            res.status(200).json(newProject.id);
+        }
+    });
 };
 
 /**
@@ -458,12 +471,23 @@ exports.destroy = function(req, res) {
 exports.authCallback = function(req, res) {
     res.redirect('/');
 };
+var num = 0,
+    numOK = 0,
+    numKO = 0;
 
 exports.createAll = function(req, res) {
+    num++;
+    console.log('num', num);
+
     Project.collection.insert(req.body, function(err) {
         if (err) {
+            numKO++;
+            console.log('error', num, numOK, numKO);
+            console.log(err);
             res.status(500).send(err);
         } else {
+            numOK++;
+            console.log('done', num, numOK, numKO);
             res.sendStatus(200);
         }
     });
@@ -472,6 +496,8 @@ exports.createAll = function(req, res) {
 exports.deleteAll = function(req, res) {
     Project.remove({}, function(err) {
         if (err) {
+
+            console.log(err);
             res.status(500).send(err);
         } else {
             res.sendStatus(200);

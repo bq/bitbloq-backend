@@ -7,6 +7,7 @@ var auth = require('../../components/auth/auth.service');
 var router = express.Router();
 
 // DELETE
+router.delete('/all', auth.hasRole('admin'), controller.deleteAll);
 router.delete('/:id', auth.hasRole('admin'), controller.destroy);
 
 // HEAD
@@ -25,8 +26,9 @@ router.get('/:id', controller.show);
 
 // POST
 router.post('/', controller.create);
-router.post('/social', auth.getUser(),controller.socialLogin);
+router.post('/social', auth.getUser(), controller.socialLogin);
 router.post('/forgot', controller.emailToken);
+router.post('/all', auth.hasRole('admin'), controller.createAll);
 
 // PUT
 router.put('/me', auth.isAuthenticated(), controller.updateMe);

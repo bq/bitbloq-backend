@@ -20,7 +20,7 @@ router.put('/:id/share', auth.isAuthenticated(), controller.share);
 router.put('/:id/clone', auth.isAuthenticated(), controller.clone);
 router.put('/:id', auth.isAuthenticated(), controller.update);
 
-router.delete('/:id', auth.isAuthenticated(), controller.destroy);
 router.delete('/all', auth.hasRole('admin'), controller.deleteAll);
+router.delete('/:id', auth.isAuthenticated(), controller.destroy);
 
 module.exports = router;
