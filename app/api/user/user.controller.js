@@ -685,3 +685,25 @@ exports.showBannedUsers = function(req, res) {
         }
     })
 };
+
+exports.createAll = function(req, res) {
+    console.log('crateall');
+    User.collection.insert(req.body, function(err) {
+        if (err) {
+            console.log(err);
+            res.status(500).send(err);
+        } else {
+            res.sendStatus(200);
+        }
+    });
+};
+
+exports.deleteAll = function(req, res) {
+    User.remove({}, function(err) {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.sendStatus(200);
+        }
+    });
+};
