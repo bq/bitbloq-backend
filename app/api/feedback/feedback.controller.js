@@ -2,7 +2,7 @@
 
 var Feedback = require('./feedback.model.js'),
     mailer = require('../../components/mailer'),
-    config = require('../../res/config/config');
+    config = require('../../res/config.js');
 
 /**
  * Create a new feedback

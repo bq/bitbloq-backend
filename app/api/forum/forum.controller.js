@@ -5,7 +5,7 @@ var Answer = require('./models/forumanswer.model.js'),
     UserFunctions = require('../user/user.functions.js'),
     async = require('async'),
     mailer = require('../../components/mailer'),
-    config = require('../../res/config/config'),
+    config = require('../../res/config.js'),
     _ = require('lodash');
 
 

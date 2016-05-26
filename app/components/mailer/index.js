@@ -1,7 +1,7 @@
 'use strict';
 var nodemailer = require('nodemailer'),
     smtpTransport = require('nodemailer-smtp-transport'),
-    config = require('../../res/config/config'),
+    config = require('../../res/config.js'),
     emailTemplates = require('email-templates'),
     path = require('path'),
     templatesDir = path.resolve('app/components/mailer/');
