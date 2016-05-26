@@ -5,14 +5,15 @@ var Answer = require('./models/forumanswer.model.js'),
     UserFunctions = require('../user/user.functions.js'),
     async = require('async'),
     mailer = require('../../components/mailer'),
-    config = require('../../res/config/config');
+    config = require('../../res/config/config'),
+    _ = require('lodash');
 
 
 function completeCategory(category, next) {
     async.parallel([
         Answer.count.bind(Answer, {categoryId: category.uuid, main: false}),
         Thread.count.bind(Thread, {categoryId: category.uuid}),
-        Thread.findOne.bind(Thread, {}, null, {sort: {'updatedAt': -1}})
+        Thread.findOne.bind(Thread, {categoryId: category.uuid}, null, {sort: {'updatedAt': -1}})
     ], function(err, results) {
         if (err) {
             next(err);
@@ -21,7 +22,19 @@ function completeCategory(category, next) {
             categoryObject.numberOfAnswers = results[0];
             categoryObject.numberOfThreads = results[1];
             categoryObject.lastThread = results[2];
-            next(null, categoryObject);
+            if (categoryObject.lastThread) {
+                completeWithUserName(categoryObject.lastThread, function(err, threadObject) {
+                    if (err) {
+                        next(err);
+                    } else {
+                        categoryObject.lastThread = threadObject;
+                        next(null, categoryObject);
+                    }
+                });
+            } else {
+                next(null, categoryObject);
+            }
+
         }
     });
 }
@@ -72,12 +85,23 @@ function getThreadsInCategory(category, next) {
         if (err) {
             next(err);
         } else {
-            async.map(threads, countAnswersThread, function(err, completedThreads) {
+            async.map(threads, function(thread, callback) {
+                async.parallel([
+                    countAnswersThread.bind(null, thread),
+                    completeWithUserName.bind(null, thread)
+                ], function(err, results) {
+                    var thread;
+                    if (results) {
+                        thread = _.extend(results[0], results[1]);
+                    }
+                    callback(err, thread);
+                });
+            }, function(err, completedThreads) {
                 var categoryObject = category.toObject();
                 categoryObject.numberOfThreads = completedThreads.length;
                 categoryObject.numberOfAnswers = countAnswersCategory(completedThreads);
                 categoryObject.lastThread = completedThreads[0];
-                next(err, {category: categoryObject, threads: completedThreads})
+                next(err, {category: categoryObject, threads: completedThreads});
             })
         }
     });
