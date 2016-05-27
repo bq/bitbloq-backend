@@ -76,11 +76,9 @@ var UserSchema = new mongoose.Schema({
     isTeacher: Boolean,
     password: String,
     provider: String,
-    salt: String,
-    _createdAt: {
-        type: Date,
-        default: Date.now
-    }
+    salt: String
+}, {
+    timestamps: true
 });
 
 /**

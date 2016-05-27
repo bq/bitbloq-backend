@@ -8,11 +8,9 @@ var BloqSchema = new mongoose.Schema({
     connectors: Array,
     bloqClass: String,
     content: Array,
-    code: String,
-    _createdAt: {
-        type: Date,
-        default: Date.now
-    }
+    code: String
+}, {
+    timestamps: true
 });
 
 module.exports = mongoose.model('Bloq', BloqSchema);

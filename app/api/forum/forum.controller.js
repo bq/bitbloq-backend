@@ -178,7 +178,7 @@ exports.createAnswer = function(req, res) {
     var userId = req.user._id;
 
     async.waterfall([
-        Thread.findByIdAndUpdate.bind(Thread, req.body.threadId, {'_updatedAt': Date.now()}),
+        Thread.findByIdAndUpdate.bind(Thread, req.body.threadId, {'updatedAt': Date.now()}),
         function(thread, next) {
             var newAnswer = new Answer(req.body);
             newAnswer.categoryId = thread.categoryId;

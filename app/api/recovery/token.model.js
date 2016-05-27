@@ -6,7 +6,7 @@ var TokenSchema = new mongoose.Schema({
     _id: String,
     userId: String,
     token: String,
-    _createdAt: {
+    createdAt: {
         type: Date,
         expires: 7200,
         default: Date.now

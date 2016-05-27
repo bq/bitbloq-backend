@@ -35,14 +35,9 @@ var ProjectSchema = new mongoose.Schema({
     },
     hardwareTags: [String],
     userTags: [String],
-    _acl: {},
-    _createdAt: {
-        type: Date,
-        default: Date.now
-    },
-    _updatedAt: {
-        type: Date
-    }
+    _acl: {}
+}, {
+    timestamps: true
 });
 
 /**
@@ -71,9 +66,6 @@ ProjectSchema
  */
 ProjectSchema
     .pre('save', function(next) {
-        if (this.isModified()) {
-            this._updatedAt = Date.now();
-        }
         if (!thereIsAdmin(this)) {
             setUserAdmin(this, this.creatorId);
             next(this);

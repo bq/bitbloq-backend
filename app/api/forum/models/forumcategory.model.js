@@ -29,10 +29,6 @@ var ForumCategorySchema = new mongoose.Schema({
         type: Number,
         min: 0,
         max: 1000
-    },
-    _createdAt: {
-        type: Date,
-        default: Date.now
     }
 }, {
     timestamps: true

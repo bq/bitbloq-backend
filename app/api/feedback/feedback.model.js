@@ -7,11 +7,9 @@ var FeedbackSchema = new mongoose.Schema({
     os: String,
     browser: String,
     userAgent: String,
-    userInfo: {},
-    _createdAt: {
-        type: Date,
-        default: Date.now
-    }
+    userInfo: {}
+}, {
+    timestamps: true
 });
 
 
