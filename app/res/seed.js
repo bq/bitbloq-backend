@@ -7,8 +7,21 @@
 'use strict';
 var User = require('../api/user/user.model');
 var Project = require('../api/project/project.model');
-
+var Version = require('../api/version/version.model');
 var Token = require('../api/recovery/token.model');
+
+
+Version.find({}).removeAsync()
+    .then(function() {
+        return Version.createAsync({
+            backend: '0.0.1',
+            frontend: '3.0.0'
+        })
+            .then(function() {
+                console.log('finished populating version');
+            });
+    });
+
 
 User.find({}).removeAsync()
     .then(function() {
