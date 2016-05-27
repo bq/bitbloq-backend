@@ -4,7 +4,7 @@ var request = require('request'),
     gcloud = require('gcloud'),
     config = require('../../res/config/config'),
     storage = gcloud.storage(config.gcloud),
-      bucket = storage.bucket(config.cloudStorageBucket);
+    bucket = storage.bucket(config.cloudStorageBucket);
 
 
 exports.downloadAndUploadImage = function(sourceUrl, destFileName){

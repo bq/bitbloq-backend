@@ -3,10 +3,7 @@
 var gcloud = require('gcloud'),
     ImageFunctions = require('./image.functions.js'),
     config = require('../../res/config/config'),
-    storage = gcloud.storage({
-        projectId: 'bq-contacts',
-        keyFilename: 'app/res/config/bitbloq-dev-bq-contacts.json'
-    }),
+    storage = gcloud.storage(config.gcloud),
     bucket = storage.bucket(config.cloudStorageBucket);
 
 exports.multerObject = require('multer')({

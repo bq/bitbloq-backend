@@ -79,7 +79,6 @@
     "mongoose": "^4.4.4",
     "morgan": "^1.7.0",
     "multer": "^1.1.0",
-    "multer-storage-s3": "^1.1.1",
     "node-sass": "^3.6.0",
     "nodemailer": "^2.3.0",
     "nodemailer-smtp-transport": "^2.4.1",
