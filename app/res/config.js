@@ -1,6 +1,6 @@
 'use strict';
 
-var configJson = require('./config.json');
+var configJson = require('./config/config.json');
 
 // Development specific configuration
 // ==================================

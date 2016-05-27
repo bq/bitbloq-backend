@@ -1,7 +1,7 @@
 'use strict';
 
 var express = require('express'),
-    config = require('../../res/config/config'),
+    config = require('../../res/config.js'),
     User = require('../../api/user/user.model');
 
 // Passport Configuration
