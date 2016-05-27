@@ -8,35 +8,6 @@
 // 'test/spec/**/*.js'
 
 module.exports = function(grunt) {
-    grunt.registerTask('generateConfigFiles', 'Configure data files', function(env) {
-        var environment = env || 'local';
-
-        grunt.task.run([
-            'generateDevelopmentConfig:' + environment,
-            'generateS3Config:' + environment
-        ]);
-    });
-
-    grunt.registerTask('generateDevelopmentConfig', 'Configure data files', function(env) {
-
-        var environment = env || 'qa',
-            configJSON;
-
-        switch (environment) {
-            case 'production':
-                configJSON = process.env.BITBLOQ_PROD_CONFIG_API;
-                break;
-            case 'qa':
-            default:
-                configJSON = process.env.BITBLOQ_QA_CONFIG_API;
-
-        }
-
-        var file = 'app/res/config/config.json';
-
-        grunt.file.write(file, configJSON);
-    });
-
     grunt.registerTask('generateGCSConfig', 'Configure data files', function(env) {
 
         var environment = env || 'qa',

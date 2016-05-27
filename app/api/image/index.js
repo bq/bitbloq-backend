@@ -7,7 +7,7 @@ var express = require('express'),
 
 var router = express.Router();
 
-router.post('/:collection/:id', auth.isAuthenticated(), controller.multerObject.single('file'), controller.create);
+//router.post('/:collection/:id', auth.isAuthenticated(), controller.multerObject.single('file'), controller.create);
+router.post('/:collection/:id', auth.isAuthenticated(), controller.multerObject.single('file'), controller.sendUploadToGCS);
 
 module.exports = router;
-
