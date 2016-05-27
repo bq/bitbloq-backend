@@ -64,7 +64,7 @@
     "express-jwt": "^3.3.0",
     "express-session": "^1.13.0",
     "express-winston": "^1.2.0",
-    "fetch-upload-s3": "^0.3.0",
+    "protobuf": "0.11.0",
     "gcloud": "^0.27.0",
     "googleapis": "^2.1.7",
     "grunt": "^0.4.5",
