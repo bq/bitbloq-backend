@@ -471,27 +471,61 @@ exports.destroy = function(req, res) {
 exports.authCallback = function(req, res) {
     res.redirect('/');
 };
-var num = 0,
-    numOK = 0,
-    numKO = 0;
+var numRequests = 0,
+    numRequestsOK = 0,
+    numRequestsKO = 0,
+    numRepeatedItems = 0,
+    numItems = 0;
 
 exports.createAll = function(req, res) {
-    num++;
-    console.log('num', num);
-
-    Project.collection.insert(req.body, function(err) {
+    numRequests++;
+    console.log('numRequest', numRequests);
+    async.each(req.body, function(item, done) {
+        // console.log('item.corbelId');
+        // console.log(item.corbelId);
+        // console.log(item.name);
+        Project.findOne({
+            'corbelId': item.corbelId
+        }, function(err, response) {
+            if (err) {
+                done(err);
+            } else if (!response) {
+                numItems++;
+                var newProject = new Project(item);
+                newProject.save(done);
+            } else {
+                console.log(response);
+                numRepeatedItems++;
+                done();
+            }
+        });
+    }, function(err) {
+        console.log('Finish request');
+        console.log('numRequests:', numRequests, 'numRequestsOK:', numRequestsOK, 'numRequestsKO:', numRequestsKO);
+        console.log('Items', numItems, 'Repeated', numRepeatedItems);
         if (err) {
-            numKO++;
-            console.log('error', num, numOK, numKO);
-            console.log(err);
+            numRequestsKO++;
             res.status(500).send(err);
         } else {
-            numOK++;
-            console.log('done', num, numOK, numKO);
+            numRequestsOK++;
             res.sendStatus(200);
         }
     });
+
 };
+
+// Project.collection.insert(req.body, function(err) {
+//     if (err) {
+//         numRequestsKO++;
+//         console.log('error', numRequests, numRequestsOK, numRequestsKO, numRepeatedRequests);
+//         console.log(err);
+//         res.status(500).send(err);
+//     } else {
+//         numRequestsOK++;
+//         console.log('done', numRequests, numRequestsOK, numRequestsKO, numRepeatedRequests);
+//         res.sendStatus(200);
+//     }
+// });
 
 exports.deleteAll = function(req, res) {
     Project.remove({}, function(err) {
