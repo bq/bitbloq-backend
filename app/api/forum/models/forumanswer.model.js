@@ -30,4 +30,30 @@ var ForumAnswerSchema = new mongoose.Schema({
     timestamps: true
 });
 
+
+
+
+/**
+ * Methods
+ */
+
+ForumAnswerSchema.methods = {
+
+    /**
+     * isOnwer - user is answer onwer
+     *
+     * @param {String} userId
+     * @return {Boolean}
+     * @api public
+     */
+    isOwner: function(userId) {
+        var owner = false;
+        if (this.creatorId === userId) {
+            owner = true;
+        }
+        return owner;
+    }
+};
+
+
 module.exports = mongoose.model('ForumAnswer', ForumAnswerSchema);

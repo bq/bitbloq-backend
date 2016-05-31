@@ -213,7 +213,7 @@ exports.createAnswer = function(req, res) {
                 if (err) {
                     res.status(500).send(err);
                 }
-                res.status(200).send();
+                res.status(200).send(answer._id);
             });
         }
     });
@@ -327,12 +327,22 @@ exports.updateThreadViews = function(req, res) {
  */
 exports.updateAnswer = function(req, res) {
     var answerId = req.params.id;
-    var answerData = req.body;
-    Thread.findByIdAndUpdateAsync(answerId, answerData, function(err) {
+    Answer.findById(answerId, function(err, answer) {
         if (err) {
             res.status(500).send(err);
         } else {
-            res.sendStatus(200);
+            if (answer.isOwner(req.user._id)) {
+                answer = _.extend(project, req.body);
+                answer.save(function(err) {
+                    if (err) {
+                        res.status(500).send(err);
+                    } else {
+                        res.sendStatus(200);
+                    }
+                });
+            } else {
+                res.sendStatus(401);
+            }
         }
     });
 };
