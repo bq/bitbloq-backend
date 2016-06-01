@@ -29,3 +29,11 @@ exports.getPublicUrl = function(filename) {
   return 'https://storage.googleapis.com/' +
     config.cloudStorageBucket + '/' + filename;
 };
+
+exports.delete = function(folder, projectId, next){
+    bucket.deleteFiles({
+        prefix: 'images/'+folder+'/'+projectId
+    }, function (err){
+        next(err);
+    });
+};
