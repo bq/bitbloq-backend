@@ -1,6 +1,6 @@
 'use strict';
 
-var mongoose = require('bluebird').promisifyAll(require('mongoose'));
+var mongoose = require('mongoose');
 
 var TokenSchema = new mongoose.Schema({
     _id: String,
