@@ -332,7 +332,7 @@ exports.updateAnswer = function(req, res) {
             res.status(500).send(err);
         } else {
             if (answer.isOwner(req.user._id)) {
-                answer = _.extend(project, req.body);
+                answer = _.extend(answer, req.body);
                 answer.save(function(err) {
                     if (err) {
                         res.status(500).send(err);

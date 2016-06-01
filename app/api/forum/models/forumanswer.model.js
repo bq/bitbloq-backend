@@ -47,8 +47,9 @@ ForumAnswerSchema.methods = {
      * @api public
      */
     isOwner: function(userId) {
+
         var owner = false;
-        if (this.creatorId === userId) {
+        if (this.creatorId.toString() === userId.toString()) {
             owner = true;
         }
         return owner;
