@@ -228,7 +228,17 @@ exports.socialLogin = function(req, res) {
         if (user.provider) {
             if (req.user) {
                 if (existsSocialEmail(provider, req.user)) {
-                    res.sendStatus(409);
+                    UserFunctions.generateToken(user, function(err, response) {
+                        if (err) {
+                            res.status(500).send(err);
+                        } else {
+                            if (response) {
+                                res.status(200).send(response);
+                            } else {
+                                res.sendStatus(409);
+                            }
+                        }
+                    });
                 } else {
                     if (req.user.email !== user.email) {
                         res.sendStatus(409);
