@@ -46,7 +46,6 @@ exports.create = function(req, res) {
 
     if (req.body.email && req.body.password) {
         var newUser = new User(req.body);
-        newUser.provider = 'local';
         newUser.role = 'user';
 
         newUser.save(function(err, user) {
@@ -615,9 +614,9 @@ exports.emailToken = function(req, res) {
                 email: req.body.email
             }, userCallback);
         },
-        function(user, userCallback){
-            Token.findByIdAndRemove(user._id, function(err){
-               userCallback(err, user);
+        function(user, userCallback) {
+            Token.findByIdAndRemove(user._id, function(err) {
+                userCallback(err, user);
             });
         },
         function(user, userCallback) {
@@ -700,14 +699,35 @@ exports.showBannedUsers = function(req, res) {
     })
 };
 
+var numRequests = 0,
+    numRequestsOK = 0,
+    numRequestsKO = 0,
+    numItems = 0;
+
 exports.createAll = function(req, res) {
-    User.collection.insert(req.body, function(err) {
+    numRequests++;
+    console.log('numRequest', numRequests);
+    async.each(req.body, function(item, done) {
+        // console.log('item');
+        // console.log(item);
+        // console.log(item._id);
+        User.findByIdAndUpdate(item._id, item, {
+            upsert: true
+        }, done);
+    }, function(err) {
+        console.log('Finish request');
+        console.log('numRequests:', numRequests, 'numRequestsOK:', numRequestsOK, 'numRequestsKO:', numRequestsKO);
         if (err) {
+            numRequestsKO++;
+            console.log('err');
+            console.log(err);
             res.status(500).send(err);
         } else {
+            numRequestsOK++;
             res.sendStatus(200);
         }
     });
+
 };
 
 exports.deleteAll = function(req, res) {

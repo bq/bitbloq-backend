@@ -495,7 +495,7 @@ exports.createAll = function(req, res) {
             } else {
                 console.log(response);
                 numRepeatedItems++;
-                done();
+                response.update(item, done);
             }
         });
     }, function(err) {
