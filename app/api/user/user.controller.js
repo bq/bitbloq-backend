@@ -179,7 +179,6 @@ function getSocialAvatar(provider, user, callback) {
 
                 } catch (err) {
                     callback(err);
-                    console.log('No avatar', err);
                 }
             });
             break;
@@ -606,6 +605,11 @@ exports.emailToken = function(req, res) {
                 email: req.body.email
             }, userCallback);
         },
+        function(user, userCallback){
+            Token.findByIdAndRemove(user._id, function(err){
+               userCallback(err, user);
+            });
+        },
         function(user, userCallback) {
             var token = jwt.sign({
                     _id: user._id
@@ -687,10 +691,8 @@ exports.showBannedUsers = function(req, res) {
 };
 
 exports.createAll = function(req, res) {
-    console.log('crateall');
     User.collection.insert(req.body, function(err) {
         if (err) {
-            console.log(err);
             res.status(500).send(err);
         } else {
             res.sendStatus(200);
