@@ -450,7 +450,6 @@ exports.destroy = function(req, res) {
             }
         },
         function(project, next) {
-
             ImageFunctions.delete('project', projectId, function() {
                 next();
             });
