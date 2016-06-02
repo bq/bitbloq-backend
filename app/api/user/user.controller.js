@@ -125,7 +125,6 @@ function generateSocialUser(provider, user) {
         firstName: '',
         lastName: '',
         email: '',
-        provider: 'social',
         social: {
             google: {
                 email: ''
@@ -135,20 +134,20 @@ function generateSocialUser(provider, user) {
             }
         }
 
-    }
+    };
 
     switch (provider) {
         case 'google':
-            userData.firstName = user.given_name,
-                userData.lastName = user.family_name,
-                userData.email = user.email,
-                userData.social.google.email = user.email
+            userData.firstName = user.given_name;
+            userData.lastName = user.family_name;
+            userData.email = user.email;
+            userData.social.google.email = user.email;
             break;
         case 'facebook':
-            userData.firstName = user.first_name,
-                userData.lastName = user.last_name,
-                userData.email = user.email,
-                userData.social.facebook.email = user.email
+            userData.firstName = user.first_name;
+            userData.lastName = user.last_name;
+            userData.email = user.email;
+            userData.social.facebook.email = user.email;
             break;
     }
 
@@ -193,7 +192,7 @@ function updateWithSocialNetwork(provider, user, userCallback) {
             }, {
                 $set: {
                     'social.google': {
-                        email: user.email,
+                        email: user.email
                     }
                 }
             }, userCallback);
@@ -204,7 +203,7 @@ function updateWithSocialNetwork(provider, user, userCallback) {
             }, {
                 $set: {
                     'social.facebook': {
-                        email: user.email,
+                        email: user.email
                     }
                 }
             }, userCallback);
@@ -224,7 +223,7 @@ exports.socialLogin = function(req, res) {
 
     findUserBySocialNetwork(provider, token, function(err, user) {
 
-        if (user.provider) {
+        if (user) {
             if (req.user) {
                 if (existsSocialEmail(provider, req.user)) {
                     UserFunctions.generateToken(user, function(err, response) {
@@ -387,7 +386,6 @@ exports.turnToLocal = function(req, res) {
             function(user, userCallback) {
                 if (!user.password) {
                     user.password = newPass;
-                    user.provider = 'local';
 
                     user.save(userCallback);
                 } else {

@@ -26,7 +26,7 @@ exports.getUserProfile = function(userId, next) {
  * @param {String} username
  * @return {Function} next
  */
-exports.getUserIdsByName = function(username, next){
+exports.getUserIdsByName = function(username, next) {
     User.find({username: username}, '_id', function(err, user) {
         if (err) {
             next(err);
