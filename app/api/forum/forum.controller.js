@@ -3,6 +3,7 @@ var Answer = require('./models/forumanswer.model.js'),
     Category = require('./models/forumcategory.model.js'),
     Thread = require('./models/forumthread.model.js'),
     UserFunctions = require('../user/user.functions.js'),
+    ImageFunctions = require('../image/image.functions.js'),
     async = require('async'),
     mailer = require('../../components/mailer'),
     config = require('../../res/config.js'),
@@ -348,21 +349,33 @@ exports.updateAnswer = function(req, res) {
 };
 
 /**
- * Deletes an answer
+ * Delete an answer
  */
 exports.destroyAnswer = function(req, res) {
-    Answer.findByIdAndRemove(req.params.id, function(err) {
+    Answer.findById(req.params.id, function(err, answer){
         if (err) {
             res.status(500).send(err);
         } else {
-            //Todo destroy images in answer
-            res.sendStatus(200);
+            if(answer) {
+                if (answer.images && answer.images.length > 0) {
+                    ImageFunctions.delete('forum', req.params.id);
+                }
+                Answer.remove(answer, function(err, answer){
+                    if(err){
+                        res.status(500).send(err);
+                    } else {
+                        res.sendStatus(200);
+                    }
+                });
+            } else {
+                res.sendStatus(404);
+            }
         }
     });
 };
 
 /**
- * Deletes a thread
+ * Delete a thread
  */
 exports.destroyThread = function(req, res) {
     var threadId = req.params.id;

@@ -7,33 +7,39 @@ var request = require('request'),
     bucket = storage.bucket(config.cloudStorageBucket);
 
 
-exports.downloadAndUploadImage = function(sourceUrl, destFileName){
+exports.downloadAndUploadImage = function(sourceUrl, destFileName) {
 
-var file = bucket.file(destFileName);
-var opts = { metadata: { cacheControl: 'private, max-age=0, no-transform' } };
-request
-  .get(sourceUrl)
-  .on('error', function(err){
-    console.log('Could not fetch image ' + sourceUrl, err);
-  })
-  .pipe(file.createWriteStream(opts))
-  .on('finish', function(){
-    console.log('Upload image ' + destFileName);
-  })
-  .on('error', function(err){
-    console.log('Could not upload image', err);
-  })
+    var file = bucket.file(destFileName);
+    var opts = {metadata: {cacheControl: 'private, max-age=0, no-transform'}};
+    request
+    .get(sourceUrl)
+    .on('error', function(err) {
+        console.log('Could not fetch image ' + sourceUrl, err);
+    })
+    .pipe(file.createWriteStream(opts))
+    .on('finish', function() {
+        console.log('Upload image ' + destFileName);
+    })
+    .on('error', function(err) {
+        console.log('Could not upload image', err);
+    })
 };
 
 exports.getPublicUrl = function(filename) {
-  return 'https://storage.googleapis.com/' +
-    config.cloudStorageBucket + '/' + filename;
+    return 'https://storage.googleapis.com/' +
+        config.cloudStorageBucket + '/' + filename;
 };
 
-exports.delete = function(folder, projectId, next){
+exports.delete = function(folder, imageId, next) {
     bucket.deleteFiles({
-        prefix: 'images/'+folder+'/'+projectId
-    }, function (err){
-        next(err);
+        prefix: 'images/' + folder + '/' + imageId
+    }, function(err) {
+        if (err) {
+            console.log('Error: delete image');
+            console.log(err);
+        }
+        if (next) {
+            next();
+        }
     });
 };

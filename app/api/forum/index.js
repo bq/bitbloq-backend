@@ -7,7 +7,7 @@ var express = require('express'),
 var router = express.Router();
 
 // DELETE
-router.delete('/answer/:id/:threadid/:categoryid', auth.hasRole('admin'), controller.destroyAnswer);
+router.delete('/answer/:id', auth.hasRole('admin'), controller.destroyAnswer);
 router.delete('/thread/:id', auth.hasRole('admin'), controller.destroyThread);
 router.delete('/category/all', auth.hasRole('admin'), controller.deleteAllCategories);
 
