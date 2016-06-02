@@ -100,22 +100,20 @@ function findUserBySocialNetwork(provider, token, socialCallback) {
 }
 
 function existsSocialEmail(provider, user) {
-    var exists;
-    switch (provider) {
-        case 'facebook':
-            if (user.social.facebook.email !== '') {
-                exists = true;
-            } else {
-                exists = false;
-            }
-            break;
-        case 'google':
-            if (user.social.google.email !== '') {
-                exists = true;
-            } else {
-                exists = false;
-            }
-            break;
+    var exists = false;
+    if (user.social) {
+        switch (provider) {
+            case 'facebook':
+                if (user.social.facebook && user.social.facebook.email !== '') {
+                    exists = true;
+                }
+                break;
+            case 'google':
+                if (user.social.google && user.social.google.email !== '') {
+                    exists = true;
+                }
+                break;
+        }
     }
     return exists;
 }
