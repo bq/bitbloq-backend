@@ -220,8 +220,7 @@ exports.socialLogin = function(req, res) {
     var token = req.body.accessToken;
 
     findUserBySocialNetwork(provider, token, function(err, user) {
-
-        if (user) {
+        if (user.role) {
             if (req.user) {
                 if (existsSocialEmail(provider, req.user)) {
                     UserFunctions.generateToken(user, function(err, response) {
@@ -513,26 +512,24 @@ exports.resetPassword = function(req, res) {
  * Get my info
  */
 exports.me = function(req, res) {
-    if (req) {
-        var userReq = req.user;
-        if (userReq) {
-            var userId = userReq.id;
-            User.findOne({
-                    _id: userId
-                },
-                '-salt -password',
-                function(err, user) {
-                    if (err) {
-                        res.status(400).send(err);
+    var userReq = req.user;
+    if (userReq) {
+        var userId = userReq.id;
+        User.findOne({
+                _id: userId
+            },
+            '-salt -password',
+            function(err, user) {
+                if (err) {
+                    res.status(400).send(err);
+                } else {
+                    if (!user) {
+                        res.sendStatus(401);
                     } else {
-                        if (!user) {
-                            res.sendStatus(401);
-                        } else {
-                            res.status(200).json(user.owner)
-                        }
+                        res.status(200).json(user.owner)
                     }
-                })
-        }
+                }
+            })
     } else {
         res.sendStatus(404);
     }
