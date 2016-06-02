@@ -11,70 +11,62 @@ var Version = require('../api/version/version.model');
 var Token = require('../api/recovery/token.model');
 
 
-Version.find({}).removeAsync()
-    .then(function() {
-        return Version.createAsync({
-            backend: '0.0.1',
-            frontend: '3.0.0'
-        })
-            .then(function() {
-                console.log('finished populating version');
-            });
+Version.find({}).remove(function() {
+    return Version.create({
+        backend: '0.0.1',
+        frontend: '3.0.0'
+    }, function() {
+        console.log('finished populating version');
     });
+});
 
 
-User.find({}).removeAsync()
-    .then(function() {
-        return User.createAsync({
-                provider: 'local',
-                name: 'Test User',
-                email: 'test@example.com',
-                password: 'test'
-            }, {
-                provider: 'local',
-                role: 'admin',
-                name: 'Admin',
-                email: 'admin@example.com',
-                password: 'admin'
-            })
-            .then(function() {
-                console.log('finished populating users');
-            });
+User.find({}).remove(function() {
+    return User.create({
+        provider: 'local',
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'test'
+    }, {
+        provider: 'local',
+        role: 'admin',
+        name: 'Admin',
+        email: 'admin@example.com',
+        password: 'admin'
+    }, function() {
+        console.log('finished populating users');
     });
+});
 
-Token.find({}).removeAsync()
-    .then(function() {
-        return Token.createAsync({
-                "userId": "123456",
-                "token": "987654"
-            })
-            .then(function() {
-                console.log('finished populating tokens');
-            });
+Token.find({}).remove(function() {
+    return Token.create({
+        "userId": "123456",
+        "token": "987654"
+    }, function() {
+        console.log('finished populating tokens');
     });
+});
 
-Project.find({}).removeAsync()
-    .then(function() {
-        return Project.createAsync({
-                "name": "proyecto1",
-                "description": "mi descripcion",
-                "code": "mi code",
-                "_acl": {
-                    'user:57164392527b27df52dbe734': {
-                        permission: 'ADMIN'
-                    }
-                }
-            }, {
-                "name": "proyecto2",
-                "description": "otra mas",
-                "code": "codecodecodecode",
-                "_acl": {
-                    'user:57164392527b27df52dbe734': {
-                        permission: 'READ'
-                    }
-                }
-            })
-            .then(function() {
-                console.log('finished populating projects');
-            });
+Project.find({}).remove(function() {
+    return Project.create({
+        "name": "proyecto1",
+        "description": "mi descripcion",
+        "code": "mi code",
+        "_acl": {
+            'user:57164392527b27df52dbe734': {
+                permission: 'ADMIN'
+            }
+        }
+    }, {
+        "name": "proyecto2",
+        "description": "otra mas",
+        "code": "codecodecodecode",
+        "_acl": {
+            'user:57164392527b27df52dbe734': {
+                permission: 'READ'
+            }
+        }
+    }, function() {
+        console.log('finished populating projects');
     });
+});
