@@ -1,6 +1,7 @@
 'use strict';
 
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    ImageFunctions = require('../../image/image.functions.js');
 
 var ForumAnswerSchema = new mongoose.Schema({
     content: {
@@ -31,6 +32,16 @@ var ForumAnswerSchema = new mongoose.Schema({
 });
 
 
+/**
+ * Pre-save hook
+ */
+ForumAnswerSchema
+    .pre('remove', function(next) {
+        if (this.images && this.images.length > 0) {
+            ImageFunctions.delete('forum', this._id);
+        }
+        next();
+    });
 
 
 /**

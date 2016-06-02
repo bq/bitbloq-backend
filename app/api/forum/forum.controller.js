@@ -352,16 +352,13 @@ exports.updateAnswer = function(req, res) {
  * Delete an answer
  */
 exports.destroyAnswer = function(req, res) {
-    Answer.findById(req.params.id, function(err, answer){
+    Answer.findById(req.params.id, function(err, answer) {
         if (err) {
             res.status(500).send(err);
         } else {
-            if(answer) {
-                if (answer.images && answer.images.length > 0) {
-                    ImageFunctions.delete('forum', req.params.id);
-                }
-                Answer.remove(answer, function(err, answer){
-                    if(err){
+            if (answer) {
+                answer.remove(function(err) {
+                    if (err) {
                         res.status(500).send(err);
                     } else {
                         res.sendStatus(200);
@@ -380,7 +377,12 @@ exports.destroyAnswer = function(req, res) {
 exports.destroyThread = function(req, res) {
     var threadId = req.params.id;
     async.waterfall([
-        Answer.remove.bind(Answer, {threadId: threadId}),
+        Answer.find.bind(Answer, {threadId: threadId}),
+        function(answers, next) {
+            async.each(answers, function(answer, done) {
+                answer.remove(done);
+            }, next);
+        },
         Thread.findByIdAndRemove.bind(Thread, threadId)
     ], function(err) {
         if (err) {
