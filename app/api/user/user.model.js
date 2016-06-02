@@ -75,7 +75,6 @@ var UserSchema = new mongoose.Schema({
     },
     isTeacher: Boolean,
     password: String,
-    provider: String,
     salt: String
 }, {
     timestamps: true
@@ -122,7 +121,6 @@ UserSchema
             'language': this.language,
             'cookiePolicyAccepted': this.cookiePolicyAccepted,
             'hasBeenAskedIfTeacher': this.hasBeenAskedIfTeacher,
-            'provider': this.provider,
             'hasBeenWarnedAboutChangeBloqsToCode': this.hasBeenWarnedAboutChangeBloqsToCode,
             'takeTour': this.takeTour
         };
@@ -260,6 +258,8 @@ UserSchema.methods = {
 
     authenticate: function(password, callback) {
         if (!callback) {
+            console.log(this.password);
+            console.log(this.encryptPassword(password));
             return this.password === this.encryptPassword(password);
         }
 
@@ -323,22 +323,32 @@ UserSchema.methods = {
         if (!password || !this.salt) {
             return null;
         }
+        if (this.corbelHash) {
+            console.log('corbelHash');
+            if (callback) {
+                callback(null, crypto.createHash('md5').update(password + this.salt).digest('hex'));
+            } else {
+                return crypto.createHash('md5').update(password + this.salt).digest('hex');
+            }
 
-        var defaultIterations = 10000;
-        var defaultKeyLength = 64;
-        var salt = new Buffer(this.salt, 'base64');
+        } else {
+            var defaultIterations = 10000;
+            var defaultKeyLength = 64;
+            var salt = new Buffer(this.salt, 'base64');
 
-        if (!callback) {
-            return crypto.pbkdf2Sync(password, salt, defaultIterations, defaultKeyLength)
-                .toString('base64');
+            if (!callback) {
+                return crypto.pbkdf2Sync(password, salt, defaultIterations, defaultKeyLength)
+                    .toString('base64');
+            }
+
+            return crypto.pbkdf2(password, salt, defaultIterations, defaultKeyLength, function(err, key) {
+                if (err) {
+                    callback(err);
+                }
+                return callback(null, key.toString('base64'));
+            });
         }
 
-        return crypto.pbkdf2(password, salt, defaultIterations, defaultKeyLength, function(err, key) {
-            if (err) {
-                callback(err);
-            }
-            return callback(null, key.toString('base64'));
-        });
     }
 };
 
