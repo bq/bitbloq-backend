@@ -75,7 +75,8 @@ var UserSchema = new mongoose.Schema({
     },
     isTeacher: Boolean,
     password: String,
-    salt: String
+    salt: String,
+    corbelHash: Boolean
 }, {
     timestamps: true
 });
@@ -243,26 +244,25 @@ UserSchema
         }
     });
 
+UserSchema
+    .pre('validate', function(next) {
+        // Handle new/update role
+        if (this.role !== 'user' && this.isModified('role')) {
+            this.invalidate('role');
+        } else {
+            next();
+        }
+    });
 
-    UserSchema
-        .pre('validate', function(next) {
-            // Handle new/update role
-            if (this.role !== 'user' && this.isModified('role')) {
-              this.invalidate('role');
-            } else {
-                next();
-            }
-        });
-
-        UserSchema
-            .pre('validate', function(next) {
-                // Handle new/update passwords
-                if (this.isModified('bannedInForum')) {
-                  this.invalidate('bannedInForum');
-                } else {
-                    next();
-                }
-            });
+UserSchema
+    .pre('validate', function(next) {
+        // Handle new/update passwords
+        if (this.isModified('bannedInForum')) {
+            this.invalidate('bannedInForum');
+        } else {
+            next();
+        }
+    });
 /**
  * Methods
  */
