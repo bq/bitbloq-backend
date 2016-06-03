@@ -246,8 +246,8 @@ UserSchema
 
     UserSchema
         .pre('validate', function(next) {
-            // Handle new/update passwords
-            if (this.isModified('role')) {
+            // Handle new/update role
+            if (this.role !== 'user' && this.isModified('role')) {
               this.invalidate('role');
             } else {
                 next();
