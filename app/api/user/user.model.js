@@ -243,6 +243,26 @@ UserSchema
         }
     });
 
+
+    UserSchema
+        .pre('validate', function(next) {
+            // Handle new/update passwords
+            if (this.isModified('role')) {
+              this.invalidate('role');
+            } else {
+                next();
+            }
+        });
+
+        UserSchema
+            .pre('validate', function(next) {
+                // Handle new/update passwords
+                if (this.isModified('bannedInForum')) {
+                  this.invalidate('bannedInForum');
+                } else {
+                    next();
+                }
+            });
 /**
  * Methods
  */
