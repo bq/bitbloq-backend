@@ -293,6 +293,27 @@ exports.getThread = function(req, res) {
 /**
  * Update a thread
  */
+exports.moveThread = function(req, res) {
+    var threadId = req.params.id;
+    var categoryName = req.params.categoryName;
+    Category.findOne({name: categoryName}, function(err, category) {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            Thread.findByIdAndUpdate(threadId, {categoryId: category._id}, function(err) {
+                if (err) {
+                    res.status(500).send(err);
+                } else {
+                    res.sendStatus(200);
+                }
+            });
+        }
+    });
+};
+
+/**
+ * Update a thread
+ */
 exports.updateThread = function(req, res) {
     var threadId = req.params.id;
     var threadData = req.body;

@@ -27,6 +27,7 @@ router.post('/answer', auth.isAuthenticated(), controller.createAnswer);
 
 // PUT
 router.put('/thread/:id', auth.isAuthenticated(), controller.updateThread);
+router.put('/thread/:id/moveTo/:categoryName', auth.hasRole('admin'), controller.moveThread);
 router.put('/answer/:id', auth.isAuthenticated(), controller.updateAnswer);
 
 module.exports = router;
