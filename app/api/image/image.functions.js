@@ -12,17 +12,17 @@ exports.downloadAndUploadImage = function(sourceUrl, destFileName) {
     var file = bucket.file(destFileName);
     var opts = {metadata: {cacheControl: 'private, max-age=0, no-transform'}};
     request
-    .get(sourceUrl)
-    .on('error', function(err) {
-        console.log('Could not fetch image ' + sourceUrl, err);
-    })
-    .pipe(file.createWriteStream(opts))
-    .on('finish', function() {
-        console.log('Upload image ' + destFileName);
-    })
-    .on('error', function(err) {
-        console.log('Could not upload image', err);
-    })
+        .get(sourceUrl)
+        .on('error', function(err) {
+            console.log('Could not fetch image ' + sourceUrl, err);
+        })
+        .pipe(file.createWriteStream(opts))
+        .on('finish', function() {
+            console.log('Upload image ' + destFileName);
+        })
+        .on('error', function(err) {
+            console.log('Could not upload image', err);
+        })
 };
 
 exports.getPublicUrl = function(filename) {
@@ -36,6 +36,19 @@ exports.delete = function(folder, imageId, next) {
     }, function(err) {
         if (err) {
             console.log('Error: delete image');
+            console.log(err);
+        }
+        if (next) {
+            next();
+        }
+    });
+};
+
+exports.cloneImages = function(oldId, newId, next) {
+    var file = bucket.file('images/project/' + oldId);
+    file.copy('images/project/' + newId, function(err) {
+        if (err) {
+            console.log('Error: clone image');
             console.log(err);
         }
         if (next) {

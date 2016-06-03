@@ -417,15 +417,18 @@ exports.clone = function(req, res) {
                 userTags: project.userTags
             });
 
-            //todo clonar imagen
-
             newProject.save(next);
+        },
+        function(newProject, count, next) {
+            ImageFunctions.cloneImages(projectId, newProject._id, function(err) {
+                next(err, newProject);
+            })
         }
     ], function(err, newProject) {
         if (err) {
             res.status(500).send(err)
         } else {
-            res.status(200).json(newProject.id);
+            res.status(200).json(newProject._id);
         }
     });
 };
@@ -480,9 +483,6 @@ exports.createAll = function(req, res) {
     numRequests++;
     console.log('numRequest', numRequests);
     async.each(req.body, function(item, done) {
-        // console.log('item.corbelId');
-        // console.log(item.corbelId);
-        // console.log(item.name);
         Project.findOne({
             'corbelId': item.corbelId
         }, function(err, response) {
