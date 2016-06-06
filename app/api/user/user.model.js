@@ -29,18 +29,14 @@ var UserSchema = new mongoose.Schema({
     },
     social: {
         google: {
-            email: {
+            id: {
                 type: String,
-                lowercase: true,
-                trim: true,
                 default: ''
             }
         },
         facebook: {
-            email: {
+            id: {
                 type: String,
-                lowercase: true,
-                trim: true,
                 default: ''
             }
         }
@@ -108,10 +104,10 @@ UserSchema
             'role': this.role,
             'social': {
                 'google': {
-                    email: this.social.google.email
+                    id: this.social.google.id
                 },
                 'facebook': {
-                    email: this.social.facebook.email
+                    id: this.social.facebook.id
                 }
             },
             'googleEmail': this.googleEmail,

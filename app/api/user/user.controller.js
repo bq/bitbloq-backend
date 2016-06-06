@@ -72,20 +72,21 @@ exports.create = function(req, res) {
 function findUserBySocialNetwork(provider, token, socialCallback) {
 
     UserFunctions.getSocialProfile(provider, token, socialCallback).then(function(response) {
+        console.log(response);
         response = JSON.parse(response);
         User.findOne({
             $or: [{
-                email: response.email
+                id: response.id
             }, {
                 social: {
                     facebook: {
-                        email: response.email
+                        id: response.id
                     }
                 }
             }, {
                 social: {
                     google: {
-                        email: response.email
+                        id: response.id
                     }
                 }
             }]
@@ -104,12 +105,12 @@ function existsSocialEmail(provider, user) {
     if (user.social) {
         switch (provider) {
             case 'facebook':
-                if (user.social.facebook && user.social.facebook.email !== '') {
+                if (user.social.facebook && user.social.facebook.id !== '') {
                     exists = true;
                 }
                 break;
             case 'google':
-                if (user.social.google && user.social.google.email !== '') {
+                if (user.social.google && user.social.google.id !== '') {
                     exists = true;
                 }
                 break;
@@ -125,10 +126,10 @@ function generateSocialUser(provider, user) {
         email: '',
         social: {
             google: {
-                email: ''
+                id: ''
             },
             facebook: {
-                email: ''
+                id: ''
             }
         }
 
@@ -139,13 +140,13 @@ function generateSocialUser(provider, user) {
             userData.firstName = user.given_name;
             userData.lastName = user.family_name;
             userData.email = user.email;
-            userData.social.google.email = user.email;
+            userData.social.google.id = user.id;
             break;
         case 'facebook':
             userData.firstName = user.first_name;
             userData.lastName = user.last_name;
             userData.email = user.email;
-            userData.social.facebook.email = user.email;
+            userData.social.facebook.id = user.id;
             break;
     }
 
@@ -190,7 +191,7 @@ function updateWithSocialNetwork(provider, user, userCallback) {
             }, {
                 $set: {
                     'social.google': {
-                        email: user.email
+                        id: user.id
                     }
                 }
             }, userCallback);
@@ -201,7 +202,7 @@ function updateWithSocialNetwork(provider, user, userCallback) {
             }, {
                 $set: {
                     'social.facebook': {
-                        email: user.email
+                        id: user.id
                     }
                 }
             }, userCallback);
