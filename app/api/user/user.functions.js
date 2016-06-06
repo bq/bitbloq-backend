@@ -4,6 +4,24 @@ var request = require('request-promise'),
     config = require('../../res/config.js'),
     jwt = require('jsonwebtoken');
 
+
+
+/**
+ * Return if user is banned
+ * @param {String} userId
+ * @return {Function} next
+ */
+exports.isBanned = function(userId, next) {
+    User.findById(userId, function(err, user) {
+        if(user && user.bannedInForum){
+            next(err, true);
+        } else {
+            next(err, false);
+        }
+    });
+};
+
+
 /**
  * Get a single profile user
  * @param {String} userId

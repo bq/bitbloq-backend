@@ -3,7 +3,6 @@ var Answer = require('./models/forumanswer.model.js'),
     Category = require('./models/forumcategory.model.js'),
     Thread = require('./models/forumthread.model.js'),
     UserFunctions = require('../user/user.functions.js'),
-    ImageFunctions = require('../image/image.functions.js'),
     async = require('async'),
     mailer = require('../../components/mailer'),
     config = require('../../res/config.js'),
@@ -130,43 +129,51 @@ exports.createThread = function(req, res) {
 
     var userId = req.user._id;
 
-    var newThread = new Thread(req.body.thread),
-        newAnswer = new Answer(req.body.answer);
-
-    newThread.creatorId = userId;
-
-    async.waterfall([
-        newThread.save,
-        function(thread, saved, next) {
-            newAnswer.threadId = newThread._id;
-            newAnswer.categoryId = newThread.categoryId;
-            newAnswer.creatorId = userId;
-            // Save the answer
-            newAnswer.save(next);
-        },
-        function(answer, saved, next) {
-            Category.findOne({uuid: answer.categoryId}, 'name', function(err, category) {
-                next(err, answer, category.name);
-            })
-        }
-    ], function(err, answer, categoryName) {
+    UserFunctions.isBanned(userId, function(err, banned) {
         if (err) {
             res.status(500).send(err);
+        } else if (banned) {
+            res.sendStatus(401);
         } else {
-            var locals = {
-                email: config.supportEmail,
-                subject: 'Nuevo tema en el foro de Bitbloq',
-                //username: answer.owner.username,
-                forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.threadId,
-                threadTitle: newThread.title,
-                threadContent: answer.content
-            };
+            var newThread = new Thread(req.body.thread),
+                newAnswer = new Answer(req.body.answer);
 
-            mailer.sendOne('newForumThread', locals, function(err) {
+            newThread.creatorId = userId;
+
+            async.waterfall([
+                newThread.save,
+                function(thread, saved, next) {
+                    newAnswer.threadId = newThread._id;
+                    newAnswer.categoryId = newThread.categoryId;
+                    newAnswer.creatorId = userId;
+                    // Save the answer
+                    newAnswer.save(next);
+                },
+                function(answer, saved, next) {
+                    Category.findOne({uuid: answer.categoryId}, 'name', function(err, category) {
+                        next(err, answer, category.name);
+                    })
+                }
+            ], function(err, answer, categoryName) {
                 if (err) {
                     res.status(500).send(err);
+                } else {
+                    var locals = {
+                        email: config.supportEmail,
+                        subject: 'Nuevo tema en el foro de Bitbloq',
+                        //username: answer.owner.username,
+                        forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.threadId,
+                        threadTitle: newThread.title,
+                        threadContent: answer.content
+                    };
+
+                    mailer.sendOne('newForumThread', locals, function(err) {
+                        if (err) {
+                            res.status(500).send(err);
+                        }
+                        res.status(200).send(newThread._id);
+                    });
                 }
-                res.status(200).send(newThread._id);
             });
         }
     });
@@ -178,43 +185,51 @@ exports.createThread = function(req, res) {
 exports.createAnswer = function(req, res) {
     var userId = req.user._id;
 
-    async.waterfall([
-        Thread.findByIdAndUpdate.bind(Thread, req.body.threadId, {'updatedAt': Date.now()}),
-        function(thread, next) {
-            var newAnswer = new Answer(req.body);
-            newAnswer.categoryId = thread.categoryId;
-            newAnswer.creatorId = userId;
-            newAnswer.save(next)
-        },
-        function(answer, saved, next) {
-            Category.findOne({uuid: answer.categoryId}, 'name', function(err, category) {
-                next(err, answer, category.name);
-            })
-        },
-        function(answer, categoryName, next) {
-            Thread.findById(req.body.threadId, function(err, thread) {
-                next(err, answer, thread, categoryName);
-            })
-        }
-
-    ], function(err, answer, thread, categoryName) {
+    UserFunctions.isBanned(userId, function(err, banned) {
         if (err) {
             res.status(500).send(err);
+        } else if (banned) {
+            res.sendStatus(401);
         } else {
-            var locals = {
-                email: config.supportEmail,
-                subject: 'Nueva respuesta en el foro de Bitbloq',
-                // username: answer.owner.username,
-                forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.threadId,
-                answerTitle: thread.title,
-                answerContent: answer.content
-            };
+            async.waterfall([
+                Thread.findByIdAndUpdate.bind(Thread, req.body.threadId, {'updatedAt': Date.now()}),
+                function(thread, next) {
+                    var newAnswer = new Answer(req.body);
+                    newAnswer.categoryId = thread.categoryId;
+                    newAnswer.creatorId = userId;
+                    newAnswer.save(next)
+                },
+                function(answer, saved, next) {
+                    Category.findOne({uuid: answer.categoryId}, 'name', function(err, category) {
+                        next(err, answer, category.name);
+                    })
+                },
+                function(answer, categoryName, next) {
+                    Thread.findById(req.body.threadId, function(err, thread) {
+                        next(err, answer, thread, categoryName);
+                    })
+                }
 
-            mailer.sendOne('newForumAnswer', locals, function(err) {
+            ], function(err, answer, thread, categoryName) {
                 if (err) {
                     res.status(500).send(err);
+                } else {
+                    var locals = {
+                        email: config.supportEmail,
+                        subject: 'Nueva respuesta en el foro de Bitbloq',
+                        // username: answer.owner.username,
+                        forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.threadId,
+                        answerTitle: thread.title,
+                        answerContent: answer.content
+                    };
+
+                    mailer.sendOne('newForumAnswer', locals, function(err) {
+                        if (err) {
+                            res.status(500).send(err);
+                        }
+                        res.status(200).send(answer._id);
+                    });
                 }
-                res.status(200).send(answer._id);
             });
         }
     });
