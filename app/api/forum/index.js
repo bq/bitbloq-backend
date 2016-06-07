@@ -20,9 +20,11 @@ router.get('/thread/:id', auth.getUser(), controller.getThread);
 router.head('/threadStats/views/:id', auth.isAuthenticated(), controller.updateThreadViews);
 
 // POST
-router.post('/category', auth.hasRole('admin'), controller.createCategory);
 router.post('/category/all', auth.hasRole('admin'), controller.createAllCategories);
+router.post('/category', auth.hasRole('admin'), controller.createCategory);
+router.post('/thread/all', auth.hasRole('admin'), controller.createAllThreads);
 router.post('/thread', auth.isAuthenticated(), controller.createThread);
+router.post('/answer/all', auth.hasRole('admin'), controller.createAllAnswers);
 router.post('/answer', auth.isAuthenticated(), controller.createAnswer);
 
 // PUT
