@@ -72,23 +72,13 @@ exports.create = function(req, res) {
 function findUserBySocialNetwork(provider, token, socialCallback) {
 
     UserFunctions.getSocialProfile(provider, token, socialCallback).then(function(response) {
-        console.log(response);
         response = JSON.parse(response);
         User.findOne({
             $or: [{
-                id: response.id
+                'social.facebook.id': response.id
+
             }, {
-                social: {
-                    facebook: {
-                        id: response.id
-                    }
-                }
-            }, {
-                social: {
-                    google: {
-                        id: response.id
-                    }
-                }
+                'social.google.id': response.id
             }]
         }, function(err, user) {
             if (!user) {
@@ -157,14 +147,12 @@ function generateSocialUser(provider, user) {
 }
 
 function getSocialAvatar(provider, user, callback) {
-
     switch (provider) {
         case 'google':
             callback(null, user.picture);
             break;
         case 'facebook':
             UserFunctions.getFacebookAvatar(user.id).then(function(avatar) {
-
                 try {
                     avatar = JSON.parse(avatar);
 
@@ -183,32 +171,46 @@ function getSocialAvatar(provider, user, callback) {
     }
 }
 
-function updateWithSocialNetwork(provider, user, userCallback) {
+function updateWithSocialNetwork(provider, userId, socialId, userCallback) {
+
     switch (provider) {
         case 'google':
             User.update({
-                _id: user._id
+                _id: userId
             }, {
                 $set: {
                     'social.google': {
-                        id: user.id
+                        id: socialId
                     }
                 }
             }, userCallback);
             break;
         case 'facebook':
             User.update({
-                _id: user._id
+                _id: userId
             }, {
                 $set: {
                     'social.facebook': {
-                        id: user.id
+                        id: socialId
                     }
                 }
             }, userCallback);
             break;
     }
 
+}
+
+function searchSocialByEmail(user, socialCallback) {
+
+    User.findOne({
+        'email': user.email
+    }, function(err, user) {
+        if (!user) {
+            socialCallback(err);
+        } else {
+            socialCallback(err, user);
+        }
+    });
 }
 
 /**
@@ -279,30 +281,70 @@ exports.socialLogin = function(req, res) {
             }
 
         } else {
-            var newUser = generateSocialUser(provider, user);
-
-            async.waterfall([
-                function(saveCallback) {
-                    getSocialAvatar(provider, user, saveCallback);
-                },
-                function(avatarUrl, saveCallback) {
-                    newUser.save(function(err, user) {
-                        saveCallback(err, user, avatarUrl);
+            if (req.user) {
+                if (!user.role) {
+                    updateWithSocialNetwork(provider, req.user._id, user.id, function(err) {
+                        if (err) {
+                            res.sendStatus(500);
+                        } else {
+                            res.sendStatus(200);
+                        }
                     });
-                },
-                function(user, avatarUrl, saveCallback) {
-                    ImageFunctions.downloadAndUploadImage(avatarUrl, 'images/avatar/' + user._id.toString());
-                    UserFunctions.generateToken(user, saveCallback);
-                }
-            ], function(err, response) {
-                if (err) {
-                    res.status(422).json(err);
+
                 } else {
-                    if (response) {
-                        res.status(200).send(response);
-                    }
+                    res.sendStatus(404);
                 }
-            });
+            } else {
+                searchSocialByEmail(user, function(err, localUser) {
+                    if (err) {
+                        res.status(500).send(err);
+                    }
+                    if (!localUser) {
+                        var newUser = generateSocialUser(provider, user);
+                        async.waterfall([
+                            function(saveCallback) {
+                                getSocialAvatar(provider, user, saveCallback);
+                            },
+                            function(avatarUrl, saveCallback) {
+                                newUser.save(function(err, user) {
+                                    saveCallback(err, user, avatarUrl);
+                                });
+                            },
+                            function(user, avatarUrl, saveCallback) {
+                                ImageFunctions.downloadAndUploadImage(avatarUrl, 'images/avatar/' + user._id.toString());
+                                UserFunctions.generateToken(user, saveCallback);
+                            }
+                        ], function(err, response) {
+                            if (err) {
+                                res.status(422).json(err);
+                            } else {
+                                if (response) {
+                                    res.status(200).send(response);
+                                }
+                            }
+                        });
+                    } else {
+                        updateWithSocialNetwork(provider, localUser._id, user.id, function(err,response){
+                          if(err){
+                            res.status(500).send(err);
+                          }else{
+                            UserFunctions.generateToken(localUser, function(err, responseToken){
+                              if(err){
+                                res.status(500).send(err);
+                              } else {
+                                  if (response) {
+                                      res.status(200).send(responseToken);
+                                  }
+                              }
+                            });
+                          }
+                        });
+
+                    }
+
+                })
+
+            }
         }
     });
 
