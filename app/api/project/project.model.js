@@ -41,27 +41,6 @@ var ProjectSchema = new mongoose.Schema({
 });
 
 /**
- * Virtuals
- */
-
-// Public profile information
-ProjectSchema
-    .virtual('profile')
-    .get(function() {
-        return {
-            '_id': this._id,
-            'name': this.name,
-            'description': this.description,
-            'imageUrl': this.imageUrl,
-            'videoUrl': this.videoUrl,
-            'timesViewed': this.timesViewed || 0,
-            'timesAdded': this.timesAdded || 0,
-            'codeProject': this.codeProject,
-            '_acl': this._acl
-        };
-    });
-
-/**
  * Pre-save hook
  */
 ProjectSchema

@@ -144,7 +144,7 @@ function returnProject(req, res, project) {
     if (project._acl.ALL && project._acl.ALL.permission === 'READ') {
         //it is public
         if (req.query && req.query.profile) {
-            res.status(200).json(project.profile);
+            res.status(200).json(project);
         } else {
             if (req.user && !project._acl['user:' + req.user._id]) {
                 project.addView();
@@ -160,7 +160,7 @@ function returnProject(req, res, project) {
     } else if (req.user && project._acl['user:' + req.user._id] && (project._acl['user:' + req.user._id].permission === 'READ' || project._acl['user:' + req.user._id].permission === 'ADMIN')) {
         //it is a shared project
         if (req.query && req.query.profile) {
-            res.status(200).json(project.profile);
+            res.status(200).json(project);
         } else {
             res.status(200).json(project);
         }
