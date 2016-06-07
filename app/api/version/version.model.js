@@ -3,8 +3,8 @@
 var mongoose = require('mongoose');
 
 var VersionSchema = new mongoose.Schema({
-    backEnd : String,
-    frontEnd: String
+    backend : String,
+    frontend: String
 }, {
     timestamps: true
 });
