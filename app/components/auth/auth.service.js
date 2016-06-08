@@ -29,7 +29,7 @@ function normalizeToken(req, res, next) {
  */
 function isAuthenticated() {
     return compose()
-        // normalize access token
+    // normalize access token
         .use(normalizeToken)
         // Validate jwt if available
         .use(function(req, res, next) {
@@ -37,18 +37,23 @@ function isAuthenticated() {
         })
         // Attach user to request
         .use(function(req, res, next) {
-            User.findById(req.user && req.user._id, function(err, user) {
-                if (err) {
-                    next(err);
-                } else {
-                    if (!user) {
-                        res.sendStatus(401);
+            if (req.user) {
+                User.findById(req.user._id, function(err, user) {
+                    if (err) {
+                        next(err);
                     } else {
-                        req.user = user;
-                        next();
+                        if (!user) {
+                            res.sendStatus(401);
+                        } else {
+                            req.user = user;
+                            next();
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                next();
+            }
+
         });
 }
 
@@ -101,7 +106,7 @@ function setTokenCookie(req, res) {
  */
 function getUser() {
     return compose()
-        // normalize access token
+    // normalize access token
         .use(normalizeToken)
         // Validate jwt if available
         .use(function(req, res, next) {
