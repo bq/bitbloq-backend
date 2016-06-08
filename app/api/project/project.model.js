@@ -56,6 +56,7 @@ ProjectSchema
             '_id': this._id,
             'name': this.name,
             'description': this.description,
+            'creatorId': this.creatorId,
             'imageUrl': this.imageUrl,
             'videoUrl': this.videoUrl,
             'timesViewed': this.timesViewed || 0,

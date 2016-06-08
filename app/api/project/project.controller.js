@@ -102,7 +102,14 @@ function updateProjectAndReturn(res, project) {
         if (err) {
             res.status(500).send(err);
         } else {
-            res.status(200).json(project);
+            getUserProject(project, function(err, completedProject){
+                if (err) {
+                    res.status(500).send(err);
+                } else {
+                    res.status(200).json(completedProject);
+                }
+            });
+
         }
     });
 }
@@ -111,7 +118,14 @@ function returnProject(req, res, project) {
     if (project._acl.ALL && project._acl.ALL.permission === 'READ') {
         //it is public
         if (req.query && req.query.profile) {
-            res.status(200).json(project.profile);
+            getUserProject(project.profile, function(err, completedProject){
+                if (err) {
+                    res.status(500).send(err);
+                } else {
+                    res.status(200).json(completedProject);
+                }
+            });
+
         } else if (req.query && req.query.download) {
             if (req.user && !project._acl['user:' + req.user._id]) {
                 project.addDownload();
