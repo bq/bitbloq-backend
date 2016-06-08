@@ -85,6 +85,7 @@ function getSearch(res, params) {
         sortFilter = params.sort ? JSON.parse(params.sort) : defaultSortFilter;
 
     Project.find(params.query)
+        .select('_id name creatorId timesViewed timesAdded codeProject')
         .limit(parseInt(perPage))
         .skip(parseInt(perPage * page))
         .sort(sortFilter)
