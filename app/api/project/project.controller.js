@@ -77,7 +77,6 @@ function completeQuery(params, next) {
 }
 
 function getSearch(res, params) {
-
     var page = params.page || 0,
         perPage = (params.pageSize && (params.pageSize <= maxPerPage)) ? params.pageSize : maxPerPage,
         defaultSortFilter = {

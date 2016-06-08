@@ -239,7 +239,7 @@ exports.socialLogin = function(req, res) {
                     });
                 } else {
                     if (req.user.email !== user.email) {
-                        res.sendStatus(409);
+                        res.status(500).end();
                     } else {
                         updateWithSocialNetwork(provider, user, function(err) {
                             if (err) {
