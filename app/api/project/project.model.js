@@ -18,6 +18,10 @@ var ProjectSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    timesDownload: {
+        type: Number,
+        default: 0
+    },
     defaultTheme: {
         type: String,
         default: 'infotab_option_colorTheme'
@@ -39,6 +43,29 @@ var ProjectSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
+
+/**
+ * Virtuals
+ */
+
+// Public profile information
+ProjectSchema
+    .virtual('profile')
+    .get(function() {
+        return {
+            '_id': this._id,
+            'name': this.name,
+            'description': this.description,
+            'imageUrl': this.imageUrl,
+            'videoUrl': this.videoUrl,
+            'timesViewed': this.timesViewed || 0,
+            'timesAdded': this.timesAdded || 0,
+            'codeProject': this.codeProject,
+            'hardwareTags': this.hardwareTags,
+            'userTags': this.userTags,
+            '_acl': this._acl
+        };
+    });
 
 /**
  * Pre-save hook
@@ -118,6 +145,19 @@ ProjectSchema.methods = {
             this.timesAdded++;
         } else {
             this.timesAdded = 1;
+        }
+    },
+
+    /**
+     * addDownload - increases the number of times download
+     *
+     * @api public
+     */
+    addDownload: function() {
+        if (this.timesDownload) {
+            this.timesDownload++;
+        } else {
+            this.timesDownload = 1;
         }
     },
 

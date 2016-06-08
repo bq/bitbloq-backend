@@ -97,6 +97,51 @@ function getSearch(res, params) {
         });
 }
 
+function updateProjectAndReturn(res, project) {
+    Project.findByIdAndUpdate(project.id, project, function(err, project) {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.status(200).json(project);
+        }
+    });
+}
+
+function returnProject(req, res, project) {
+    if (project._acl.ALL && project._acl.ALL.permission === 'READ') {
+        //it is public
+        if (req.query && req.query.profile) {
+            res.status(200).json(project.profile);
+        } else if (req.query && req.query.download) {
+            if (req.user && !project._acl['user:' + req.user._id]) {
+                project.addDownload();
+                updateProjectAndReturn(res, project);
+            }else {
+                res.status(200).json(project);
+            }
+
+        } else {
+            if (req.user && !project._acl['user:' + req.user._id]) {
+                project.addView();
+                updateProjectAndReturn(res, project);
+            } else {
+                res.status(200).json(project);
+            }
+        }
+    }
+    else if (req.user && project._acl['user:' + req.user._id] && (project._acl['user:' + req.user._id].permission === 'READ' || project._acl['user:' + req.user._id].permission === 'ADMIN')) {
+        //it is a shared project
+        if (req.query && req.query.profile) {
+            res.status(200).json(project.profile);
+        } else {
+            res.status(200).json(project);
+        }
+    } else {
+        //it is a private project
+        res.sendStatus(401);
+    }
+}
+
 /**
  * Create a new project
  */
@@ -137,36 +182,6 @@ exports.show = function(req, res) {
             returnProject(req, res, project);
         }
     });
-};
-
-function returnProject(req, res, project) {
-    if (project._acl.ALL && project._acl.ALL.permission === 'READ') {
-        //it is public
-        if (req.query && req.query.profile) {
-            res.status(200).json(project);
-        } else {
-            if (req.user && !project._acl['user:' + req.user._id]) {
-                project.addView();
-            }
-            Project.findByIdAndUpdate(project.id, project, function(err, project) {
-                if (err) {
-                    res.status(500).send(err);
-                } else {
-                    res.status(200).json(project);
-                }
-            });
-        }
-    } else if (req.user && project._acl['user:' + req.user._id] && (project._acl['user:' + req.user._id].permission === 'READ' || project._acl['user:' + req.user._id].permission === 'ADMIN')) {
-        //it is a shared project
-        if (req.query && req.query.profile) {
-            res.status(200).json(project);
-        } else {
-            res.status(200).json(project);
-        }
-    } else {
-        //it is a private project
-        res.sendStatus(401);
-    }
 };
 
 /**
