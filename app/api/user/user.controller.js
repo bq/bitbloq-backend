@@ -221,6 +221,11 @@ function searchSocialByEmail(user, socialCallback) {
 exports.socialLogin = function(req, res) {
     var provider = req.body.provider;
     var token = req.body.accessToken;
+    var register = req.body.register;
+    var username = req.body.username;
+    var hasBeenAskedIfTeacher = req.body.hasBeenAskedIfTeacher;
+
+    console.log("entroooooooooooo");
 
     findUserBySocialNetwork(provider, token, function(err, user) {
         if (user.role) {
@@ -300,50 +305,61 @@ exports.socialLogin = function(req, res) {
                         res.status(500).send(err);
                     }
                     if (!localUser) {
-                        var newUser = generateSocialUser(provider, user);
-                        async.waterfall([
-                            function(saveCallback) {
-                                getSocialAvatar(provider, user, saveCallback);
-                            },
-                            function(avatarUrl, saveCallback) {
-                                newUser.save(function(err, user) {
-                                    saveCallback(err, user, avatarUrl);
-                                });
-                            },
-                            function(user, avatarUrl, saveCallback) {
-                                ImageFunctions.downloadAndUploadImage(avatarUrl, 'images/avatar/' + user._id.toString());
-                                UserFunctions.generateToken(user, saveCallback);
-                            }
-                        ], function(err, response) {
-                            if (err) {
-                                res.status(422).json(err);
-                            } else {
-                                if (response) {
-                                    res.status(200).send(response);
+                        if (register) {
+                            var newUser = generateSocialUser(provider, user);
+                            _.extend(newUser, {
+                                'username': username
+                            }, {
+                                'hasBeenAskedIfTeacher': hasBeenAskedIfTeacher
+                            })
+                            async.waterfall([
+                                function(saveCallback) {
+                                    getSocialAvatar(provider, user, saveCallback);
+                                },
+                                function(avatarUrl, saveCallback) {
+                                    newUser.save(function(err, user) {
+                                        saveCallback(err, user, avatarUrl);
+                                    });
+                                },
+                                function(user, avatarUrl, saveCallback) {
+                                    ImageFunctions.downloadAndUploadImage(avatarUrl, 'images/avatar/' + user._id.toString(), function(err) {
+                                        saveCallback(err, user);
+                                    });
+                                },
+                                function(user, saveCallback) {
+                                    UserFunctions.generateToken(user, saveCallback);
                                 }
+
+                            ], function(err, response) {
+                                if (err) {
+                                    res.status(422).json(err);
+                                } else {
+                                    if (response) {
+                                        res.status(200).send(response);
+                                    }
+                                }
+                            });
+                        } else {
+                            res.sendStatus(204);
+                        }
+                    } else {
+                        updateWithSocialNetwork(provider, localUser._id, user.id, function(err, response) {
+                            if (err) {
+                                res.status(500).send(err);
+                            } else {
+                                UserFunctions.generateToken(localUser, function(err, responseToken) {
+                                    if (err) {
+                                        res.status(500).send(err);
+                                    } else {
+                                        if (response) {
+                                            res.status(200).send(responseToken);
+                                        }
+                                    }
+                                });
                             }
                         });
-                    } else {
-                        updateWithSocialNetwork(provider, localUser._id, user.id, function(err,response){
-                          if(err){
-                            res.status(500).send(err);
-                          }else{
-                            UserFunctions.generateToken(localUser, function(err, responseToken){
-                              if(err){
-                                res.status(500).send(err);
-                              } else {
-                                  if (response) {
-                                      res.status(200).send(responseToken);
-                                  }
-                              }
-                            });
-                          }
-                        });
-
                     }
-
                 })
-
             }
         }
     });

@@ -6,11 +6,14 @@ var request = require('request'),
     storage = gcloud.storage(config.gcloud),
     bucket = storage.bucket(config.cloudStorageBucket);
 
-
-exports.downloadAndUploadImage = function(sourceUrl, destFileName) {
+exports.downloadAndUploadImage = function(sourceUrl, destFileName, next) {
 
     var file = bucket.file(destFileName);
-    var opts = {metadata: {cacheControl: 'private, max-age=0, no-transform'}};
+    var opts = {
+        metadata: {
+            cacheControl: 'private, max-age=0, no-transform'
+        }
+    };
     request
         .get(sourceUrl)
         .on('error', function(err) {
@@ -19,6 +22,9 @@ exports.downloadAndUploadImage = function(sourceUrl, destFileName) {
         .pipe(file.createWriteStream(opts))
         .on('finish', function() {
             console.log('Upload image ' + destFileName);
+            if (next) {
+                next();
+            }
         })
         .on('error', function(err) {
             console.log('Could not upload image', err);
