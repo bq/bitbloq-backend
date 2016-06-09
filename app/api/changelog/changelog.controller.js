@@ -16,7 +16,7 @@ exports.get = function(req, res) {
         .limit(parseInt(pageSize))
         .skip(parseInt(pageSize * page))
         .sort({
-            name: 'asc'
+            order: 'asc'
         }).exec(function(err, projects) {
             if (err) {
                 res.status(500).send(err);
