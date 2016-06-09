@@ -85,7 +85,6 @@ function getThreadsInCategory(category, next) {
                 ], function(err, results) {
                     if (results) {
                         var completeThread = _.extend(results[0], results[1]);
-                        console.log(results[2]);
                         if (results[2]) {
                             completeWithUserName(results[2], function(err, completedAnswer) {
                                 completeThread.lastAnswer = completedAnswer;
@@ -351,23 +350,30 @@ exports.getThread = function(req, res) {
  * Update a thread
  */
 exports.moveThread = function(req, res) {
-    var threadId = req.params.id;
-    var categoryName = req.params.categoryName;
-    Category.findOne({
-        name: categoryName
-    }, function(err, category) {
+    var threadId = req.params.id,
+        categoryName = req.params.categoryName;
+    async.waterfall([
+        Category.findOne.bind(Category, {
+            name: categoryName
+        }),
+        function(category, next) {
+            Thread.findById(threadId, function(err, thread) {
+                next(err, category, thread);
+            });
+        },
+        function(category, thread, next) {
+            Answer.update({threadId: thread._id}, {categoryId: category._id}, {multi: true}, function(err, answer) {
+                next(err, category);
+            })
+        },
+        function(category, next) {
+            Thread.findByIdAndUpdate(threadId, {categoryId: category._id}, next);
+        }
+    ], function(err, result) {
         if (err) {
             res.status(500).send(err);
         } else {
-            Thread.findByIdAndUpdate(threadId, {
-                categoryId: category._id
-            }, function(err) {
-                if (err) {
-                    res.status(500).send(err);
-                } else {
-                    res.sendStatus(200);
-                }
-            });
+            res.sendStatus(200);
         }
     });
 };
