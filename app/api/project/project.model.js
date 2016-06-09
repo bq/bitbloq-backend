@@ -63,6 +63,7 @@ ProjectSchema
             'codeProject': this.codeProject,
             'hardwareTags': this.hardwareTags,
             'userTags': this.userTags,
+            'updatedAt': this.updatedAt,
             '_acl': this._acl
         };
     });
