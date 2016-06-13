@@ -8,49 +8,6 @@ var Answer = require('./models/forumanswer.model.js'),
     config = require('../../res/config.js'),
     _ = require('lodash');
 
-var mongoose = require('mongoose');
-
-
-function completeCategory(category, next) {
-    async.parallel([
-        Answer.count.bind(Answer, {
-            categoryId: category._id,
-            main: false
-        }),
-        Thread.count.bind(Thread, {
-            categoryId: category._id
-        }),
-        Thread.findOne.bind(Thread, {
-            categoryId: category._id
-        }, null, {
-            sort: {
-                'updatedAt': -1
-            }
-        })
-    ], function(err, results) {
-        if (err) {
-            next(err);
-        } else {
-            var categoryObject = category.toObject();
-            categoryObject.numberOfAnswers = results[0];
-            categoryObject.numberOfThreads = results[1];
-            categoryObject.lastThread = results[2];
-            if (categoryObject.lastThread) {
-                completeWithUserName(categoryObject.lastThread, function(err, threadObject) {
-                    if (err) {
-                        next(err);
-                    } else {
-                        categoryObject.lastThread = threadObject;
-                        next(null, categoryObject);
-                    }
-                });
-            } else {
-                next(null, categoryObject);
-            }
-
-        }
-    });
-}
 
 function countAnswersThread(thread, next) {
     Answer.count({
@@ -138,6 +95,93 @@ function getCompletedAnswer(themeId, next) {
             async.map(anwers, completeWithUserName, next);
         }
     ], next);
+}
+
+
+function getCategoriesWithThreadCounter(next) {
+    Thread.aggregate([{
+            $lookup: {
+                from: 'forumcategories',
+                localField: 'categoryId',
+                foreignField: '_id',
+                as: 'category'
+            }
+        }, {
+            $group: {
+                _id: '$category._id',
+                name: {$first: '$category.name'},
+                description: {$first: '$category.description'},
+                section: {$first: '$category.section'},
+                order: {$first: '$category.order'},
+                numberOfThreads: {$sum: 1}
+            }
+        }], function(err, result) {
+            if (result) {
+                result.forEach(function(item) {
+                    item._id = _.toString(item._id);
+                    item.name = _.toString(item.name);
+                    item.description = _.toString(item.description);
+                    item.section = _.toString(item.section);
+                    item.order = _.toString(item.order);
+                });
+            }
+            next(err, result);
+        }
+    );
+}
+
+function countAnswerInCategories(next) {
+    Answer.aggregate([{
+            $lookup: {
+                from: 'forumthreads',
+                localField: 'threadId',
+                foreignField: '_id',
+                as: 'thread'
+            }
+        }, {
+            $group: {
+                _id: '$thread.categoryId',
+                numberOfAnswers: {$sum: 1}
+            }
+        }], function(err, result) {
+            if (result) {
+                result.forEach(function(item) {
+                    item._id = _.toString(item._id);
+                });
+            }
+            next(err, result);
+        }
+    );
+
+}
+
+function getLastThreads(next) {
+    Thread.aggregate([{
+        $lookup: {
+            from: 'users',
+            localField: 'creatorId',
+            foreignField: '_id',
+            as: 'user'
+        }
+    }, {
+        $group: {
+            _id: '$_id',
+            title: {$first: '$title'},
+            creatorUsername: {$first: '$user.username'},
+            numberOfViews: {$first: '$numberOfViews'},
+            categoryId: {$first: '$categoryId'},
+            updatedAt: {$first: '$numberOfViews'}
+        }
+    }, {
+        $sort: {updatedAt: 1}
+    }], function(err, result) {
+        if (result) {
+            result.forEach(function(item) {
+                item.creatorUsername = _.toString(item.creatorUsername) || 'Anonimo';
+            });
+        }
+        next(err, result);
+    });
 }
 
 /**
@@ -277,20 +321,28 @@ exports.createAnswer = function(req, res) {
  * Gets Main forum section
  */
 exports.getForumIndex = function(req, res) {
-    Category.find({}, function(err, categories) {
+
+    async.parallel([
+        getCategoriesWithThreadCounter,
+        countAnswerInCategories,
+        getLastThreads
+    ], function(err, result) {
         if (err) {
             res.status(500).send(err);
         } else {
-            async.map(categories, completeCategory, function(err, mainForumCategories) {
-                if (err) {
-                    res.status(500).send(err);
-                } else {
-                    res.status(200).json(mainForumCategories);
-                }
+            var answers = _.groupBy(result[1], '_id'),
+                lastTheads = _.groupBy(result[2], 'categoryId'),
+                categories = result[0];
+            categories.forEach(function(category) {
+                category.numberOfAnswers = answers[category._id] ? answers[category._id][0].numberOfAnswers : 0;
+                category.lastThread = lastTheads[category._id] ? lastTheads[category._id][0] : [];
             });
+            res.status(200).json(categories);
         }
     });
 };
+
+//exports.getForumIndex();
 
 /**
  * Get info category and all threads in a category
@@ -324,26 +376,28 @@ exports.getThread = function(req, res) {
         if (err) {
             res.status(500).send(err);
         } else {
-            var threadObject = results[0];
-            threadObject.numberOfAnswers = results[1].length - 1;
-            if (req.user && threadObject.creatorId != req.user._id) {
-                var thread = new Thread(threadObject);
-                thread.addView();
-                Thread.findByIdAndUpdate(thread._id, thread, function(err, thread) {
-                    if (err) {
-                        res.status(500).send(err);
-                    } else {
-                        res.status(200).json({
-                            thread: thread,
-                            answers: results[1]
-                        });
-                    }
-                });
-            } else {
-                res.status(200).json({
-                    thread: threadObject,
-                    answers: results[1]
-                });
+            if (results) {
+                var threadObject = results[0];
+                threadObject.numberOfAnswers = results[1].length - 1;
+                if (req.user && threadObject.creatorId != req.user._id) {
+                    var thread = new Thread(threadObject);
+                    thread.addView();
+                    Thread.findByIdAndUpdate(thread._id, thread, function(err, thread) {
+                        if (err) {
+                            res.status(500).send(err);
+                        } else {
+                            res.status(200).json({
+                                thread: thread,
+                                answers: results[1]
+                            });
+                        }
+                    });
+                } else {
+                    res.status(200).json({
+                        thread: threadObject,
+                        answers: results[1]
+                    });
+                }
             }
         }
     });
