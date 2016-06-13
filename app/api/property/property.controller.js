@@ -26,7 +26,7 @@ exports.getAll = function(req, res) {
 };
 
 exports.createAll = function(req, res) {
-    Property.collection.insert(req.body, function(err) {
+    Property.create(req.body, function(err) {
         if (err) {
             res.status(500).send(err);
         } else {

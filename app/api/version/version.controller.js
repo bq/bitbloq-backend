@@ -26,7 +26,7 @@ exports.getAll = function(req, res) {
 };
 
 exports.createAll = function(req, res) {
-    Version.collection.insert(req.body, function(err) {
+    Version.create(req.body, function(err) {
         if (err) {
             res.status(500).send(err);
         } else {

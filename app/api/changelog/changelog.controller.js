@@ -27,7 +27,7 @@ exports.get = function(req, res) {
 };
 
 exports.createAll = function(req, res) {
-    Changelog.collection.insert(req.body, function(err) {
+    Changelog.create(req.body, function(err) {
         if (err) {
             res.status(500).send(err);
         } else {

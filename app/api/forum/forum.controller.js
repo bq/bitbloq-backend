@@ -407,31 +407,21 @@ exports.getThread = function(req, res) {
  * Update a thread
  */
 exports.moveThread = function(req, res) {
-    var threadId = req.params.id,
-        categoryName = req.params.categoryName;
-    async.waterfall([
-        Category.findOne.bind(Category, {
-            name: categoryName
-        }),
-        function(category, next) {
-            Thread.findById(threadId, function(err, thread) {
-                next(err, category, thread);
-            });
-        },
-        function(category, thread, next) {
-            Answer.update({threadId: thread._id}, {categoryId: category._id}, {multi: true}, function(err, answer) {
-                next(err, category);
-            })
-        },
-        function(category, next) {
-            Thread.findByIdAndUpdate(threadId, {categoryId: category._id}, next);
-        }
-    ], function(err, result) {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.sendStatus(200);
-        }
+
+    var threadId = req.params.id;
+    var categoryName = req.params.categoryName;
+    Category.findOne({
+        name: categoryName
+    }, function(err, category) {
+        Thread.findByIdAndUpdate(threadId, {
+            categoryId: category._id
+        }, function(err) {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+                res.sendStatus(200);
+            }
+        });
     });
 };
 
@@ -541,7 +531,7 @@ exports.destroyThread = function(req, res) {
 };
 
 exports.createAllCategories = function(req, res) {
-    Category.collection.insert(req.body, function(err) {
+    Category.create(req.body, function(err) {
         if (err) {
             res.status(500).send(err);
         } else {
@@ -561,7 +551,7 @@ exports.deleteAllCategories = function(req, res) {
 };
 
 exports.createAllThreads = function(req, res) {
-    Thread.collection.insert(req.body, function(err) {
+    Thread.create(req.body, function(err) {
         if (err) {
             console.log(err);
             res.status(500).send(err);
@@ -571,7 +561,7 @@ exports.createAllThreads = function(req, res) {
     });
 };
 exports.createAllAnswers = function(req, res) {
-    Answer.collection.insert(req.body, function(err) {
+    Answer.create(req.body, function(err) {
         if (err) {
             console.log(err);
             res.status(500).send(err);

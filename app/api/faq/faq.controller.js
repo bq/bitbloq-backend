@@ -27,7 +27,7 @@ exports.get = function(req, res) {
 };
 
 exports.createAll = function(req, res) {
-    Faq.collection.insert(req.body, function(err) {
+    Faq.create(req.body, function(err) {
         if (err) {
             res.status(500).send(err);
         } else {

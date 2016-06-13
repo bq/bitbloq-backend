@@ -542,7 +542,7 @@ exports.createAll = function(req, res) {
 
 };
 
-// Project.collection.insert(req.body, function(err) {
+// Project.create(req.body, function(err) {
 //     if (err) {
 //         numRequestsKO++;
 //         console.log('error', numRequests, numRequestsOK, numRequestsKO, numRepeatedRequests);
