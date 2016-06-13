@@ -16,12 +16,13 @@ var ForumThreadSchema = new mongoose.Schema({
     },
     categoryId: {
         type: String,
-        lowercase: true,
-        trim: true,
+        ref: 'ForumCategory',
+        trim: false,
         required: true
     },
     creatorId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         trim: false,
         required: true
     }

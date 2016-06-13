@@ -4,7 +4,12 @@ var mongoose = require('mongoose');
 
 var ProjectSchema = new mongoose.Schema({
     corbelId: String,
-    creatorId: String,
+    creatorId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        trim: false,
+        required: true
+    },
     name: String,
     description: String,
     videoUrl: String,

@@ -10,19 +10,16 @@ var ForumAnswerSchema = new mongoose.Schema({
         required: true
     },
     creatorId: {
-        type: String,
-        trim: false
-    },
-    threadId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "forumthread",
+        ref: 'User',
         trim: false,
         required: true
     },
-    categoryId: {
-        type: String,
-        ref: "forumcategory",
-        trim: false
+    threadId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ForumThread',
+        trim: false,
+        required: true
     },
     main: {
         type: Boolean,
