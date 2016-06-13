@@ -15,11 +15,6 @@ var ForumCategorySchema = new mongoose.Schema({
         trim: true,
         required: true
     },
-    uuid: {
-        type: String,
-        lowercase: true,
-        trim: true
-    },
     section: {
         type: String,
         lowercase: true,

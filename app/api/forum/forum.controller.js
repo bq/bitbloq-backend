@@ -8,17 +8,20 @@ var Answer = require('./models/forumanswer.model.js'),
     config = require('../../res/config.js'),
     _ = require('lodash');
 
+var mongoose = require('mongoose');
+
+
 function completeCategory(category, next) {
     async.parallel([
         Answer.count.bind(Answer, {
-            categoryId: category.uuid,
+            categoryId: category._id,
             main: false
         }),
         Thread.count.bind(Thread, {
-            categoryId: category.uuid
+            categoryId: category._id
         }),
         Thread.findOne.bind(Thread, {
-            categoryId: category.uuid
+            categoryId: category._id
         }, null, {
             sort: {
                 'updatedAt': -1
@@ -66,7 +69,7 @@ function countAnswersThread(thread, next) {
 
 function getThreadsInCategory(category, next) {
     Thread.find({
-        categoryId: category.uuid
+        categoryId: category._id
     }).sort('-updatedAt').exec(function(err, threads) {
         if (err) {
             next(err);
@@ -180,7 +183,7 @@ exports.createThread = function(req, res) {
                 },
                 function(answer, saved, next) {
                     Category.findOne({
-                        uuid: answer.categoryId
+                        _id: answer.categoryId
                     }, 'name', function(err, category) {
                         next(err, answer, category.name);
                     })
@@ -234,7 +237,7 @@ exports.createAnswer = function(req, res) {
                 },
                 function(answer, saved, next) {
                     Category.findOne({
-                        uuid: answer.categoryId
+                        _id: answer.categoryId
                     }, 'name', function(err, category) {
                         next(err, answer, category.name);
                     })

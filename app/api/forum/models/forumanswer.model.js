@@ -14,12 +14,14 @@ var ForumAnswerSchema = new mongoose.Schema({
         trim: false
     },
     threadId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "forumthread",
         trim: false,
         required: true
     },
     categoryId: {
         type: String,
+        ref: "forumcategory",
         trim: false
     },
     main: {
