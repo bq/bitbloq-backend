@@ -80,7 +80,7 @@ function getSearch(res, params) {
     var page = params.page || 0,
         perPage = (params.pageSize && (params.pageSize <= maxPerPage)) ? params.pageSize : maxPerPage,
         defaultSortFilter = {
-            name: 'desc'
+            createdAt: 'desc'
         },
         sortFilter = params.sort ? JSON.parse(params.sort) : defaultSortFilter;
 
@@ -103,7 +103,7 @@ function updateProjectAndReturn(res, project) {
         if (err) {
             res.status(500).send(err);
         } else {
-            getUserProject(project, function(err, completedProject){
+            getUserProject(project, function(err, completedProject) {
                 if (err) {
                     res.status(500).send(err);
                 } else {
@@ -119,7 +119,7 @@ function returnProject(req, res, project) {
     if (project._acl.ALL && project._acl.ALL.permission === 'READ') {
         //it is public
         if (req.query && req.query.profile) {
-            getUserProject(project.profile, function(err, completedProject){
+            getUserProject(project.profile, function(err, completedProject) {
                 if (err) {
                     res.status(500).send(err);
                 } else {
@@ -131,7 +131,7 @@ function returnProject(req, res, project) {
             if (req.user && !project._acl['user:' + req.user._id]) {
                 project.addDownload();
                 updateProjectAndReturn(res, project);
-            }else {
+            } else {
                 res.status(200).json(project);
             }
 
