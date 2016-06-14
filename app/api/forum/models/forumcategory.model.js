@@ -5,13 +5,11 @@ var mongoose = require('mongoose');
 var ForumCategorySchema = new mongoose.Schema({
     _id: {
         type: String,
-        lowercase: false,
         trim: true,
         required: true
     },
     name: {
         type: String,
-        lowercase: false,
         trim: true,
         required: true
     },
@@ -23,7 +21,6 @@ var ForumCategorySchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        lowercase: false,
         trim: false
     },
     order: {

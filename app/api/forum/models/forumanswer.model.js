@@ -15,7 +15,7 @@ var ForumAnswerSchema = new mongoose.Schema({
         trim: false,
         required: true
     },
-    threadId: {
+    thread: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'ForumThread',
         trim: false,

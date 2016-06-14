@@ -4,12 +4,7 @@ var mongoose = require('mongoose');
 
 var TokenSchema = new mongoose.Schema({
     _id: String,
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        trim: false,
-        required: true
-    },
+    userId: String,
     token: String,
     createdAt: {
         type: Date,

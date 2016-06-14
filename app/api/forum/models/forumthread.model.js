@@ -6,7 +6,6 @@ var ForumThreadSchema = new mongoose.Schema({
 
     title: {
         type: String,
-        lowercase: false,
         trim: true,
         required: true
     },
@@ -14,7 +13,7 @@ var ForumThreadSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    categoryId: {
+    category: {
         type: String,
         ref: 'ForumCategory',
         trim: false,

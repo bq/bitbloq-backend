@@ -11,7 +11,7 @@ var Answer = require('./models/forumanswer.model.js'),
 
 function countAnswersThread(thread, next) {
     Answer.count({
-        threadId: thread._id,
+        thread: thread._id,
         main: false
     }, function(err, counter) {
         if (err) {
@@ -27,7 +27,7 @@ function countAnswersThread(thread, next) {
 function getThreadsInCategory(category, next) {
     Thread
         .find({
-            categoryId: category._id
+            category: category._id
         })
         .populate('creator', 'username')
         .sort('-updatedAt').exec(function(err, threads) {
@@ -39,7 +39,7 @@ function getThreadsInCategory(category, next) {
                     countAnswersThread.bind(null, thread),
                     function(next) {
                         Answer.findOne({
-                            threadId: thread._id
+                            thread: thread._id
                         }, null, {
                             sort: {
                                 'updatedAt': -1
@@ -89,7 +89,7 @@ function getCompletedThread(id, next) {
 function getCompletedAnswer(themeId, next) {
     async.waterfall([
         Answer.find.bind(Answer, {
-            threadId: themeId
+            thread: themeId
         }),
         function(anwers, next) {
             async.map(anwers, completeWithUserName, next);
@@ -102,7 +102,7 @@ function countThreadsInCategories(next) {
     Thread.aggregate([{
         $lookup: {
             from: 'forumcategories',
-            localField: 'categoryId',
+            localField: 'category',
             foreignField: '_id',
             as: 'category'
         }
@@ -118,7 +118,7 @@ function countAnswersInCategories(next) {
     Answer.aggregate([{
         $lookup: {
             from: 'forumthreads',
-            localField: 'threadId',
+            localField: 'thread',
             foreignField: '_id',
             as: 'thread'
         }
@@ -128,7 +128,7 @@ function countAnswersInCategories(next) {
         }
     }, {
         $group: {
-            _id: '$thread.categoryId',
+            _id: '$thread.category',
             numberOfAnswers: {$sum: 1}
         }
     }], next);
@@ -148,7 +148,7 @@ function getLastThreads(next) {
             title: {$first: '$title'},
             creatorUsername: {$first: '$user.username'},
             numberOfViews: {$first: '$numberOfViews'},
-            categoryId: {$first: '$categoryId'},
+            category: {$first: '$category'},
             updatedAt: {$first: '$numberOfViews'}
         }
     }, {
@@ -194,19 +194,18 @@ exports.createThread = function(req, res) {
                 newAnswer = new Answer(req.body.answer);
 
             newThread.creator = userId;
-
             async.waterfall([
                 newThread.save,
                 function(thread, saved, next) {
-                    newAnswer.threadId = newThread._id;
-                    newAnswer.categoryId = newThread.categoryId;
+                    newAnswer.thread = newThread._id;
+                    newAnswer.category = newThread.category;
                     newAnswer.creator = userId;
                     // Save the answer
                     newAnswer.save(next);
                 },
                 function(answer, saved, next) {
                     Category.findOne({
-                        _id: answer.categoryId
+                        _id: answer.category
                     }, 'name', function(err, category) {
                         next(err, answer, category.name);
                     })
@@ -219,7 +218,7 @@ exports.createThread = function(req, res) {
                         email: config.supportEmail,
                         subject: 'Nuevo tema en el foro de Bitbloq',
                         //username: answer.owner.username,
-                        forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.threadId,
+                        forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.thread,
                         threadTitle: newThread.title,
                         threadContent: answer.content
                     };
@@ -249,24 +248,24 @@ exports.createAnswer = function(req, res) {
             res.sendStatus(401);
         } else {
             async.waterfall([
-                Thread.findByIdAndUpdate.bind(Thread, req.body.threadId, {
+                Thread.findByIdAndUpdate.bind(Thread, req.body.thread, {
                     'updatedAt': Date.now()
                 }),
                 function(thread, next) {
                     var newAnswer = new Answer(req.body);
-                    newAnswer.categoryId = thread.categoryId;
+                    newAnswer.category = thread.category;
                     newAnswer.creator = userId;
                     newAnswer.save(next)
                 },
                 function(answer, saved, next) {
                     Category.findOne({
-                        _id: answer.categoryId
+                        _id: answer.category
                     }, 'name', function(err, category) {
                         next(err, answer, category.name);
                     })
                 },
                 function(answer, categoryName, next) {
-                    Thread.findById(req.body.threadId, function(err, thread) {
+                    Thread.findById(req.body.thread, function(err, thread) {
                         next(err, answer, thread, categoryName);
                     })
                 }
@@ -279,7 +278,7 @@ exports.createAnswer = function(req, res) {
                         email: config.supportEmail,
                         subject: 'Nueva respuesta en el foro de Bitbloq',
                         // username: answer.owner.username,
-                        forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.threadId,
+                        forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.thread,
                         answerTitle: thread.title,
                         answerContent: answer.content
                     };
@@ -313,7 +312,7 @@ exports.getForumIndex = function(req, res) {
             var categories = result[0],
                 threadsCounter = _.groupBy(result[1], '_id[0]'),
                 answersCounter = _.groupBy(result[2], '_id[0]'),
-                lastTheads = _.groupBy(result[3], 'categoryId'),
+                lastTheads = _.groupBy(result[3], 'category'),
                 completedCategories = [];
 
             categories.forEach(function(category) {
@@ -401,7 +400,7 @@ exports.moveThread = function(req, res) {
         name: categoryName
     }, function(err, category) {
         Thread.findByIdAndUpdate(threadId, {
-            categoryId: category._id
+            category: category._id
         }, function(err) {
             if (err) {
                 res.status(500).send(err);
@@ -500,7 +499,7 @@ exports.destroyThread = function(req, res) {
     var threadId = req.params.id;
     async.waterfall([
         Answer.find.bind(Answer, {
-            threadId: threadId
+            thread: threadId
         }),
         function(answers, next) {
             async.each(answers, function(answer, done) {

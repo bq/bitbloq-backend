@@ -225,8 +225,6 @@ exports.socialLogin = function(req, res) {
     var username = req.body.username;
     var hasBeenAskedIfTeacher = req.body.hasBeenAskedIfTeacher;
 
-    console.log("entroooooooooooo");
-
     findUserBySocialNetwork(provider, token, function(err, user) {
         if (user.role) {
             if (req.user) {
