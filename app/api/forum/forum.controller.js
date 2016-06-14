@@ -25,34 +25,34 @@ function countAnswersThread(thread, next) {
 }
 
 function getThreadsInCategory(category, next) {
-    Thread.find({
-        categoryId: category._id
-    }).sort('-updatedAt').exec(function(err, threads) {
+    Thread
+        .find({
+            categoryId: category._id
+        })
+        .populate('creator', 'username')
+        .sort('-updatedAt').exec(function(err, threads) {
         if (err) {
             next(err);
         } else {
             async.map(threads, function(thread, callback) {
                 async.parallel([
                     countAnswersThread.bind(null, thread),
-                    completeWithUserName.bind(null, thread),
-                    Answer.findOne.bind(Answer, {
-                        threadId: thread._id
-                    }, null, {
-                        sort: {
-                            'updatedAt': -1
-                        }
-                    })
+                    function(next) {
+                        Answer.findOne({
+                            threadId: thread._id
+                        }, null, {
+                            sort: {
+                                'updatedAt': -1
+                            }
+                        })
+                            .populate('creator', 'username')
+                            .exec(next);
+                    }
                 ], function(err, results) {
                     if (results) {
-                        var completeThread = _.extend(results[0], results[1]);
-                        if (results[2]) {
-                            completeWithUserName(results[2], function(err, completedAnswer) {
-                                completeThread.lastAnswer = completedAnswer;
-                                callback(err, completeThread);
-                            });
-                        } else {
-                            callback(err, completeThread);
-                        }
+                        var completeThread = results[0];
+                        completeThread.lastAnswer = results[1] || {};
+                        callback(err, completeThread);
 
                     } else {
                         callback(err, []);
@@ -69,7 +69,7 @@ function getThreadsInCategory(category, next) {
 }
 
 function completeWithUserName(collection, next) {
-    UserFunctions.getUserProfile(collection.creatorId, function(err, user) {
+    UserFunctions.getUserProfile(collection.creator, function(err, user) {
         var object;
         if (user) {
             object = collection.toObject();
@@ -138,7 +138,7 @@ function getLastThreads(next) {
     Thread.aggregate([{
         $lookup: {
             from: 'users',
-            localField: 'creatorId',
+            localField: 'creator',
             foreignField: '_id',
             as: 'user'
         }
@@ -193,14 +193,14 @@ exports.createThread = function(req, res) {
             var newThread = new Thread(req.body.thread),
                 newAnswer = new Answer(req.body.answer);
 
-            newThread.creatorId = userId;
+            newThread.creator = userId;
 
             async.waterfall([
                 newThread.save,
                 function(thread, saved, next) {
                     newAnswer.threadId = newThread._id;
                     newAnswer.categoryId = newThread.categoryId;
-                    newAnswer.creatorId = userId;
+                    newAnswer.creator = userId;
                     // Save the answer
                     newAnswer.save(next);
                 },
@@ -255,7 +255,7 @@ exports.createAnswer = function(req, res) {
                 function(thread, next) {
                     var newAnswer = new Answer(req.body);
                     newAnswer.categoryId = thread.categoryId;
-                    newAnswer.creatorId = userId;
+                    newAnswer.creator = userId;
                     newAnswer.save(next)
                 },
                 function(answer, saved, next) {
@@ -366,7 +366,7 @@ exports.getThread = function(req, res) {
             if (results) {
                 var threadObject = results[0];
                 threadObject.numberOfAnswers = results[1].length - 1;
-                if (req.user && threadObject.creatorId != req.user._id) {
+                if (req.user && threadObject.creator != req.user._id) {
                     var thread = new Thread(threadObject);
                     thread.addView();
                     Thread.findByIdAndUpdate(thread._id, thread, function(err, thread) {

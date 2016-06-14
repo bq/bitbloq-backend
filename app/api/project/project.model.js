@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 
 var ProjectSchema = new mongoose.Schema({
     corbelId: String,
-    creatorId: {
+    creator: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         trim: false,
@@ -61,7 +61,7 @@ ProjectSchema
             '_id': this._id,
             'name': this.name,
             'description': this.description,
-            'creatorId': this.creatorId,
+            'creator': this.creator,
             'videoUrl': this.videoUrl,
             'timesViewed': this.timesViewed || 0,
             'timesAdded': this.timesAdded || 0,
@@ -79,7 +79,7 @@ ProjectSchema
 ProjectSchema
     .pre('save', function(next) {
         if (!thereIsAdmin(this)) {
-            setUserAdmin(this, this.creatorId);
+            setUserAdmin(this, this.creator);
             next(this);
         } else {
             next();
@@ -199,7 +199,7 @@ ProjectSchema.methods = {
             }
         }
         this._acl = newAcl;
-        setUserAdmin(this, this.creatorId);
+        setUserAdmin(this, this.creator);
     },
 
     /**

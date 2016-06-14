@@ -20,7 +20,7 @@ var ForumThreadSchema = new mongoose.Schema({
         trim: false,
         required: true
     },
-    creatorId: {
+    creator: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         trim: false,

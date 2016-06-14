@@ -33,7 +33,7 @@ function getCountPublic(res, query) {
 
 function getUserProject(item, next) {
     var project = JSON.parse(JSON.stringify(item));
-    UserFunctions.getUserProfile(project.creatorId, function(err, user) {
+    UserFunctions.getUserProfile(project.creator, function(err, user) {
         if (user) {
             project.creatorUsername = user.username;
         }
@@ -58,13 +58,13 @@ function completeQuery(params, next) {
         '_acl.ALL.permission': 'READ'
     });
 
-    var queryUser = _.find(query.$or, 'creatorId');
+    var queryUser = _.find(query.$or, 'creator');
 
     if (queryUser) {
-        UserFunctions.getUserIdsByName(queryUser.creatorId, function(err, users) {
+        UserFunctions.getUserIdsByName(queryUser.creator, function(err, users) {
             if (users) {
                 var userIds = _.map(users, '_id');
-                query.$or[1].creatorId = {
+                query.$or[1].creator = {
                     $in: userIds
                 };
             }
@@ -85,7 +85,7 @@ function getSearch(res, params) {
         sortFilter = params.sort ? JSON.parse(params.sort) : defaultSortFilter;
 
     Project.find(params.query)
-        .select('_id name creatorId timesViewed timesAdded codeProject')
+        .select('_id name creator timesViewed timesAdded codeProject')
         .limit(parseInt(perPage))
         .skip(parseInt(perPage * page))
         .sort(sortFilter)
@@ -162,7 +162,7 @@ function returnProject(req, res, project) {
  */
 exports.create = function(req, res) {
     var projectObject = clearProject(req.body);
-    projectObject.creatorId = req.user._id;
+    projectObject.creator = req.user._id;
     var newProject = new Project(projectObject);
     newProject.save(function(err, project) {
         if (err) {
@@ -433,7 +433,7 @@ exports.clone = function(req, res) {
         },
         function(project, next) {
             var newProject = new Project({
-                creatorId: userId,
+                creator: userId,
                 name: req.body.name || project.name,
                 description: project.description,
                 videoUrl: project.videoUrl,

@@ -9,7 +9,7 @@ var ForumAnswerSchema = new mongoose.Schema({
         trim: false,
         required: true
     },
-    creatorId: {
+    creator: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         trim: false,
@@ -59,7 +59,7 @@ ForumAnswerSchema.methods = {
     isOwner: function(userId) {
 
         var owner = false;
-        if (this.creatorId.toString() === userId.toString()) {
+        if (this.creator.toString() === userId.toString()) {
             owner = true;
         }
         return owner;
