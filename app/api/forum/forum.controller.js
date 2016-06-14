@@ -98,61 +98,36 @@ function getCompletedAnswer(themeId, next) {
 }
 
 
-function getCategoriesWithThreadCounter(next) {
+function countThreadsInCategories(next) {
     Thread.aggregate([{
-            $lookup: {
-                from: 'forumcategories',
-                localField: 'categoryId',
-                foreignField: '_id',
-                as: 'category'
-            }
-        }, {
-            $group: {
-                _id: '$category._id',
-                name: {$first: '$category.name'},
-                description: {$first: '$category.description'},
-                section: {$first: '$category.section'},
-                order: {$first: '$category.order'},
-                numberOfThreads: {$sum: 1}
-            }
-        }], function(err, result) {
-            if (result) {
-                result.forEach(function(item) {
-                    item._id = _.toString(item._id);
-                    item.name = _.toString(item.name);
-                    item.description = _.toString(item.description);
-                    item.section = _.toString(item.section);
-                    item.order = _.toString(item.order);
-                });
-            }
-            next(err, result);
+        $lookup: {
+            from: 'forumcategories',
+            localField: 'categoryId',
+            foreignField: '_id',
+            as: 'category'
         }
-    );
+    }, {
+        $group: {
+            _id: '$category._id',
+            numberOfThreads: {$sum: 1}
+        }
+    }], next);
 }
 
-function countAnswerInCategories(next) {
+function countAnswersInCategories(next) {
     Answer.aggregate([{
-            $lookup: {
-                from: 'forumthreads',
-                localField: 'threadId',
-                foreignField: '_id',
-                as: 'thread'
-            }
-        }, {
-            $group: {
-                _id: '$thread.categoryId',
-                numberOfAnswers: {$sum: 1}
-            }
-        }], function(err, result) {
-            if (result) {
-                result.forEach(function(item) {
-                    item._id = _.toString(item._id);
-                });
-            }
-            next(err, result);
+        $lookup: {
+            from: 'forumthreads',
+            localField: 'threadId',
+            foreignField: '_id',
+            as: 'thread'
         }
-    );
-
+    }, {
+        $group: {
+            _id: '$thread.categoryId',
+            numberOfAnswers: {$sum: 1}
+        }
+    }], next);
 }
 
 function getLastThreads(next) {
@@ -323,21 +298,29 @@ exports.createAnswer = function(req, res) {
 exports.getForumIndex = function(req, res) {
 
     async.parallel([
-        getCategoriesWithThreadCounter,
-        countAnswerInCategories,
+        Category.find.bind(Category, {}),
+        countThreadsInCategories,
+        countAnswersInCategories,
         getLastThreads
     ], function(err, result) {
         if (err) {
             res.status(500).send(err);
         } else {
-            var answers = _.groupBy(result[1], '_id'),
-                lastTheads = _.groupBy(result[2], 'categoryId'),
-                categories = result[0];
+            var categories = result[0],
+                threadsCounter = _.groupBy(result[1], '_id[0]'),
+                answersCounter = _.groupBy(result[2], '_id[0]'),
+                lastTheads = _.groupBy(result[3], 'categoryId'),
+                completedCategories = [];
+
             categories.forEach(function(category) {
-                category.numberOfAnswers = answers[category._id] ? answers[category._id][0].numberOfAnswers : 0;
-                category.lastThread = lastTheads[category._id] ? lastTheads[category._id][0] : [];
+                var categoryObject = category.toObject();
+                categoryObject.numberOfThreads = threadsCounter[categoryObject._id] ? threadsCounter[categoryObject._id][0].numberOfThreads : 0;
+                categoryObject.numberOfAnswers = answersCounter[categoryObject._id] ? answersCounter[categoryObject._id][0].numberOfAnswers : 0;
+                categoryObject.lastThread = lastTheads[categoryObject._id] ? lastTheads[categoryObject._id][0] : {};
+                completedCategories.push(categoryObject);
             });
-            res.status(200).json(categories);
+
+            res.status(200).json(completedCategories);
         }
     });
 };
