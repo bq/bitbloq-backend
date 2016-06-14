@@ -13,15 +13,19 @@ function countAnswersThread(thread, next) {
     Answer.count({
         thread: thread._id,
         main: false
-    }, function(err, counter) {
-        if (err) {
-            next(err);
-        } else {
-            var threadObject = thread.toObject();
-            threadObject.numberOfAnswers = counter;
-            next(null, threadObject);
+    }, next);
+}
+
+function getLastAnswer(thread, next) {
+    Answer.findOne({
+        thread: thread._id
+    }, null, {
+        sort: {
+            'updatedAt': -1
         }
-    });
+    })
+        .populate('creator', 'username')
+        .exec(next);
 }
 
 function getThreadsInCategory(category, next) {
@@ -29,33 +33,24 @@ function getThreadsInCategory(category, next) {
         .find({
             category: category._id
         })
+        .lean()
         .populate('creator', 'username')
         .sort('-updatedAt').exec(function(err, threads) {
         if (err) {
             next(err);
         } else {
-            async.map(threads, function(thread, callback) {
+            async.map(threads, function(thread, next) {
                 async.parallel([
                     countAnswersThread.bind(null, thread),
-                    function(next) {
-                        Answer.findOne({
-                            thread: thread._id
-                        }, null, {
-                            sort: {
-                                'updatedAt': -1
-                            }
-                        })
-                            .populate('creator', 'username')
-                            .exec(next);
-                    }
+                    getLastAnswer.bind(null, thread)
                 ], function(err, results) {
                     if (results) {
-                        var completeThread = results[0];
-                        completeThread.lastAnswer = results[1] || {};
-                        callback(err, completeThread);
+                        thread.numberOfAnswers = results[0];
+                        thread.lastAnswer = results[1] || {};
+                        next(err, thread);
 
                     } else {
-                        callback(err, []);
+                        next(err, []);
                     }
                 });
             }, function(err, completedThreads) {
@@ -68,33 +63,18 @@ function getThreadsInCategory(category, next) {
     });
 }
 
-function completeWithUserName(collection, next) {
-    UserFunctions.getUserProfile(collection.creator, function(err, user) {
-        var object;
-        if (user) {
-            object = collection.toObject();
-            object.creatorUsername = user.username;
-        }
-        next(err, object);
-    });
-}
-
 function getCompletedThread(id, next) {
-    async.waterfall([
-        Thread.findById.bind(Thread, id),
-        completeWithUserName
-    ], next);
+    Thread.findById(id)
+        .populate('creator', '_id username')
+        .exec(next);
 }
 
 function getCompletedAnswer(themeId, next) {
-    async.waterfall([
-        Answer.find.bind(Answer, {
-            thread: themeId
-        }),
-        function(anwers, next) {
-            async.map(anwers, completeWithUserName, next);
-        }
-    ], next);
+    Answer.find({
+        thread: themeId
+    })
+        .populate('creator', 'username')
+        .exec(next);
 }
 
 
@@ -253,20 +233,16 @@ exports.createAnswer = function(req, res) {
                 }),
                 function(thread, next) {
                     var newAnswer = new Answer(req.body);
-                    newAnswer.category = thread.category;
                     newAnswer.creator = userId;
-                    newAnswer.save(next)
-                },
-                function(answer, saved, next) {
-                    Category.findOne({
-                        _id: answer.category
-                    }, 'name', function(err, category) {
-                        next(err, answer, category.name);
+                    newAnswer.save(function(err, answer) {
+                        next(err, answer, thread);
                     })
                 },
-                function(answer, categoryName, next) {
-                    Thread.findById(req.body.thread, function(err, thread) {
-                        next(err, answer, thread, categoryName);
+                function(answer, thread, next) {
+                    Category.findOne({
+                        _id: thread.category
+                    }, 'name', function(err, category) {
+                        next(err, answer, thread, category.name);
                     })
                 }
 
@@ -365,7 +341,7 @@ exports.getThread = function(req, res) {
             if (results) {
                 var threadObject = results[0];
                 threadObject.numberOfAnswers = results[1].length - 1;
-                if (req.user && threadObject.creator != req.user._id) {
+                if (req.user && (threadObject.creator._id.toString() != req.user._id.toString())) {
                     var thread = new Thread(threadObject);
                     thread.addView();
                     Thread.findByIdAndUpdate(thread._id, thread, function(err, thread) {
@@ -418,24 +394,6 @@ exports.updateThread = function(req, res) {
     var threadId = req.params.id;
     var threadData = req.body;
     Thread.findByIdAndUpdate(threadId, threadData, function(err) {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.sendStatus(200);
-        }
-    });
-};
-
-/**
- * Update thread views
- */
-exports.updateThreadViews = function(req, res) {
-    var threadId = req.params.id;
-    Thread.findByIdAndUpdateAsync(threadId, {
-        $inc: {
-            numberOfViews: 1
-        }
-    }, function(err) {
         if (err) {
             res.status(500).send(err);
         } else {

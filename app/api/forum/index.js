@@ -16,9 +16,6 @@ router.get('/', controller.getForumIndex);
 router.get('/category/:category', controller.getCategory);
 router.get('/thread/:id', auth.getUser(), controller.getThread);
 
-// HEAD
-router.head('/threadStats/views/:id', auth.isAuthenticated(), controller.updateThreadViews);
-
 // POST
 router.post('/category/all', auth.hasRole('admin'), controller.createAllCategories);
 router.post('/category', auth.hasRole('admin'), controller.createCategory);
