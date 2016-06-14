@@ -123,6 +123,10 @@ function countAnswersInCategories(next) {
             as: 'thread'
         }
     }, {
+        $match: {
+            main: false
+        }
+    }, {
         $group: {
             _id: '$thread.categoryId',
             numberOfAnswers: {$sum: 1}
