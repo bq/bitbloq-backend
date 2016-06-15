@@ -6,7 +6,8 @@ var Answer = require('./models/forumanswer.model.js'),
     async = require('async'),
     mailer = require('../../components/mailer'),
     config = require('../../res/config.js'),
-    _ = require('lodash');
+    _ = require('lodash'),
+    itemsPerPage = 10;
 
 
 function countAnswersThread(thread, next) {
@@ -142,6 +143,17 @@ function getLastThreads(next) {
         next(err, result);
     });
 }
+
+function searchThreadsPage(titleRegex, page, next) {
+    Thread.find({title: titleRegex})
+        .populate('creator', 'username')
+        .populate('category', 'name')
+        .skip(itemsPerPage * (page - 1)) // page start counting in 1 (if page == 1 -> skip 0)
+        .limit(itemsPerPage)
+        .sort('-updatedAt')
+        .exec(next)
+}
+
 
 /**
  * Create Category
@@ -363,6 +375,29 @@ exports.getThread = function(req, res) {
             }
         }
     });
+};
+
+
+/**
+ * Search threads page with partialTitle
+ */
+exports.searchThreads = function (req, res) {
+    var titleRegex = new RegExp(req.query.partialTitle, "i"),
+        page = req.query.page || 1;
+
+    async.parallel([
+            function (callback) {
+                Thread.find({title: titleRegex}).count(callback);
+            },
+            searchThreadsPage.bind(null, titleRegex, page)
+        ],
+        function (err, result) {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+                res.status(200).json({count: result[0], threads: result[1], itemsPerPage: itemsPerPage});
+            }
+        });
 };
 
 /**
