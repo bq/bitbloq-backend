@@ -14,6 +14,7 @@ router.delete('/category/all', auth.hasRole('admin'), controller.deleteAllCatego
 // GET
 router.get('/', controller.getForumIndex);
 router.get('/category/:category', controller.getCategory);
+router.get('/thread/search', auth.getUser(), controller.searchThreads);
 router.get('/thread/:id', auth.getUser(), controller.getThread);
 
 // POST

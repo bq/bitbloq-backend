@@ -17,7 +17,7 @@ function getRobotFirmware(robot, version) {
 }
 
 /**
- * Get public a frimware
+ * Get public a firmware
  */
 exports.get = function (req, res) {
     var robot = req.params.robot,
