@@ -18,6 +18,7 @@ router.put('/:id/private', auth.isAuthenticated(), controller.private);
 router.put('/:id/publish', auth.isAuthenticated(), controller.publish);
 router.put('/:id/share', auth.isAuthenticated(), controller.share);
 router.put('/:id/clone', auth.isAuthenticated(), controller.clone);
+router.put('/:id/download', auth.getUser(), controller.download);
 router.put('/:id', auth.isAuthenticated(), controller.update);
 
 router.delete('/all', auth.hasRole('admin'), controller.deleteAll);

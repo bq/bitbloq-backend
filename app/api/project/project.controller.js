@@ -5,7 +5,7 @@ var Project = require('./project.model.js'),
     ImageFunctions = require('../image/image.functions.js'),
     utils = require('../utils'),
     async = require('async'),
-    ObjectID = require('mongodb').ObjectID,
+    ObjectID = require('mongoose').Types.ObjectId,
     _ = require('lodash');
 
 var maxPerPage = 20;
@@ -38,17 +38,6 @@ function getUserProject(item, next) {
             project.creatorUsername = user.username;
         }
         next(err, project);
-    });
-}
-
-function completeProjects(res, projects) {
-
-    async.map(projects, getUserProject, function(err, completedProjects) {
-        if (err) {
-            res.status(500).send(err)
-        } else {
-            res.status(200).json(completedProjects);
-        }
     });
 }
 
@@ -89,11 +78,12 @@ function getSearch(res, params) {
         .limit(parseInt(perPage))
         .skip(parseInt(perPage * page))
         .sort(sortFilter)
+        .populate('creator', 'username')
         .exec(function(err, projects) {
             if (err) {
                 res.status(500).send(err);
             } else {
-                completeProjects(res, projects)
+                res.status(200).json(projects);
             }
         });
 }
@@ -127,21 +117,11 @@ function returnProject(req, res, project) {
                 }
             });
 
-        } else if (req.query && req.query.download) {
-            if (req.user && !project._acl['user:' + req.user._id]) {
-                project.addDownload();
-                updateProjectAndReturn(res, project);
-            } else {
-                res.status(200).json(project);
-            }
-
+        } else if (req.user && !project._acl['user:' + req.user._id]) {
+            project.addView();
+            updateProjectAndReturn(res, project);
         } else {
-            if (req.user && !project._acl['user:' + req.user._id]) {
-                project.addView();
-                updateProjectAndReturn(res, project);
-            } else {
-                res.status(200).json(project);
-            }
+            res.status(200).json(project);
         }
     }
     else if (req.user && project._acl['user:' + req.user._id] && (project._acl['user:' + req.user._id].permission === 'READ' || project._acl['user:' + req.user._id].permission === 'ADMIN')) {
@@ -169,6 +149,31 @@ exports.create = function(req, res) {
             res.status(500).send(err);
         } else {
             res.status(200).json(project.id);
+        }
+    });
+};
+
+/**
+ * Create a new project
+ */
+exports.download = function(req, res) {
+    Project.findById(req.params.id, function(err, project) {
+        if (req.user || project._acl.ALL) {
+            if (req.user && !project._acl['user:' + req.user._id]) {
+                project.addDownload();
+                project.update(project, function(err) {
+                    if (err) {
+                        res.status(500).send(err);
+                    } else {
+                        console.log(project);
+                        res.status(200).json(project);
+                    }
+                });
+            } else {
+                res.status(200).json(project);
+            }
+        } else {
+            res.sendStatus(401);
         }
     });
 };
