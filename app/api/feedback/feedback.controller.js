@@ -16,7 +16,7 @@ exports.create = function(req, res) {
             var locals = {
                 email: config.supportEmail,
                 subject: 'Nuevo feedback',
-                user: newFeedback.userInfo,
+                user: newFeedback.creator,
                 feedback: newFeedback
             };
 
