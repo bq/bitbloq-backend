@@ -9,7 +9,6 @@ var Answer = require('./models/forumanswer.model.js'),
     _ = require('lodash'),
     itemsPerPage = 10;
 
-
 function countAnswersThread(thread, next) {
     Answer.count({
         thread: thread._id,
@@ -19,12 +18,12 @@ function countAnswersThread(thread, next) {
 
 function getLastAnswer(thread, next) {
     Answer.findOne({
-        thread: thread._id
-    }, null, {
-        sort: {
-            'updatedAt': -1
-        }
-    })
+            thread: thread._id
+        }, null, {
+            sort: {
+                'updatedAt': -1
+            }
+        })
         .populate('creator', 'username')
         .exec(next);
 }
@@ -37,31 +36,31 @@ function getThreadsInCategory(category, next) {
         .lean()
         .populate('creator', 'username')
         .sort('-updatedAt').exec(function(err, threads) {
-        if (err) {
-            next(err);
-        } else {
-            async.map(threads, function(thread, next) {
-                async.parallel([
-                    countAnswersThread.bind(null, thread),
-                    getLastAnswer.bind(null, thread)
-                ], function(err, results) {
-                    if (results) {
-                        thread.numberOfAnswers = results[0];
-                        thread.lastAnswer = results[1] || {};
-                        next(err, thread);
+            if (err) {
+                next(err);
+            } else {
+                async.map(threads, function(thread, next) {
+                    async.parallel([
+                        countAnswersThread.bind(null, thread),
+                        getLastAnswer.bind(null, thread)
+                    ], function(err, results) {
+                        if (results) {
+                            thread.numberOfAnswers = results[0];
+                            thread.lastAnswer = results[1] || {};
+                            next(err, thread);
 
-                    } else {
-                        next(err, []);
-                    }
-                });
-            }, function(err, completedThreads) {
-                next(err, {
-                    category: category,
-                    threads: completedThreads
-                });
-            })
-        }
-    });
+                        } else {
+                            next(err, []);
+                        }
+                    });
+                }, function(err, completedThreads) {
+                    next(err, {
+                        category: category,
+                        threads: completedThreads
+                    });
+                })
+            }
+        });
 }
 
 function getCompletedThread(id, next) {
@@ -72,12 +71,11 @@ function getCompletedThread(id, next) {
 
 function getCompletedAnswer(themeId, next) {
     Answer.find({
-        thread: themeId
-    })
+            thread: themeId
+        })
         .populate('creator', 'username')
         .exec(next);
 }
-
 
 function countThreadsInCategories(next) {
     Thread.aggregate([{
@@ -90,7 +88,9 @@ function countThreadsInCategories(next) {
     }, {
         $group: {
             _id: '$category._id',
-            numberOfThreads: {$sum: 1}
+            numberOfThreads: {
+                $sum: 1
+            }
         }
     }], next);
 }
@@ -110,7 +110,9 @@ function countAnswersInCategories(next) {
     }, {
         $group: {
             _id: '$thread.category',
-            numberOfAnswers: {$sum: 1}
+            numberOfAnswers: {
+                $sum: 1
+            }
         }
     }], next);
 }
@@ -126,14 +128,26 @@ function getLastThreads(next) {
     }, {
         $group: {
             _id: '$_id',
-            title: {$first: '$title'},
-            creatorUsername: {$first: '$user.username'},
-            numberOfViews: {$first: '$numberOfViews'},
-            category: {$first: '$category'},
-            updatedAt: {$first: '$numberOfViews'}
+            title: {
+                $first: '$title'
+            },
+            creatorUsername: {
+                $first: '$user.username'
+            },
+            numberOfViews: {
+                $first: '$numberOfViews'
+            },
+            category: {
+                $first: '$category'
+            },
+            updatedAt: {
+                $first: '$numberOfViews'
+            }
         }
     }, {
-        $sort: {updatedAt: 1}
+        $sort: {
+            updatedAt: 1
+        }
     }], function(err, result) {
         if (result) {
             result.forEach(function(item) {
@@ -145,7 +159,9 @@ function getLastThreads(next) {
 }
 
 function searchThreadsPage(titleRegex, page, next) {
-    Thread.find({title: titleRegex})
+    Thread.find({
+            title: titleRegex
+        })
         .populate('creator', 'username')
         .populate('category', 'name')
         .skip(itemsPerPage * (page - 1)) // page start counting in 1 (if page == 1 -> skip 0)
@@ -153,7 +169,6 @@ function searchThreadsPage(titleRegex, page, next) {
         .sort('-updatedAt')
         .exec(next)
 }
-
 
 /**
  * Create Category
@@ -219,7 +234,7 @@ exports.createThread = function(req, res) {
                         if (err) {
                             res.status(500).send(err);
                         }
-                        res.status(200).send(newThread._id);
+                        res.status(200).json({thread: newThread, answer: answer});
                     });
                 }
             });
@@ -342,7 +357,6 @@ exports.getCategory = function(req, res) {
  */
 exports.getThread = function(req, res) {
     var themeId = req.params.id;
-
     async.parallel([
         getCompletedThread.bind(null, themeId),
         getCompletedAnswer.bind(null, themeId)
@@ -377,25 +391,30 @@ exports.getThread = function(req, res) {
     });
 };
 
-
 /**
  * Search threads page with partialTitle
  */
-exports.searchThreads = function (req, res) {
+exports.searchThreads = function(req, res) {
     var titleRegex = new RegExp(req.query.partialTitle, "i"),
         page = req.query.page || 1;
 
     async.parallel([
-            function (callback) {
-                Thread.find({title: titleRegex}).count(callback);
+            function(callback) {
+                Thread.find({
+                    title: titleRegex
+                }).count(callback);
             },
             searchThreadsPage.bind(null, titleRegex, page)
         ],
-        function (err, result) {
+        function(err, result) {
             if (err) {
                 res.status(500).send(err);
             } else {
-                res.status(200).json({count: result[0], threads: result[1], itemsPerPage: itemsPerPage});
+                res.status(200).json({
+                    count: result[0],
+                    threads: result[1],
+                    itemsPerPage: itemsPerPage
+                });
             }
         });
 };

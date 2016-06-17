@@ -187,7 +187,6 @@ exports.show = function(req, res) {
  * Get public project list
  */
 exports.getPublished = function(req, res) {
-
     if (req.query && !utils.isEmpty(req.query)) {
         completeQuery(req.query, function(err, query) {
             if (err) {
@@ -197,7 +196,7 @@ exports.getPublished = function(req, res) {
                     getCountPublic(res, query);
                 } else {
                     req.query.query = query;
-                    getSearch(res, req.query);
+                    getSearch(res, req.query)
                 }
             }
         });
