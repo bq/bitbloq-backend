@@ -31,16 +31,6 @@ function getCountPublic(res, query) {
     });
 }
 
-function getUserProject(item, next) {
-    var project = JSON.parse(JSON.stringify(item));
-    UserFunctions.getUserProfile(project.creator, function(err, user) {
-        if (user) {
-            project.creatorUsername = user.username;
-        }
-        next(err, project);
-    });
-}
-
 function completeQuery(params, next) {
     var query = params.query ? JSON.parse(params.query) : {};
     query = utils.extend(query, {
@@ -89,34 +79,23 @@ function getSearch(res, params) {
 }
 
 function updateProjectAndReturn(res, project) {
-    Project.findByIdAndUpdate(project.id, project, function(err, project) {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            getUserProject(project, function(err, completedProject) {
-                if (err) {
-                    res.status(500).send(err);
-                } else {
-                    res.status(200).json(completedProject);
-                }
-            });
+    Project.findByIdAndUpdate(project.id, project)
+        .populate('creator', 'username')
+        .exec(function(err, completedProject) {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+                res.status(200).json(completedProject);
+            }
 
-        }
-    });
+        });
 }
 
 function returnProject(req, res, project) {
     if (project._acl.ALL && project._acl.ALL.permission === 'READ') {
         //it is public
         if (req.query && req.query.profile) {
-            getUserProject(project.profile, function(err, completedProject) {
-                if (err) {
-                    res.status(500).send(err);
-                } else {
-                    res.status(200).json(completedProject);
-                }
-            });
-
+            res.status(200).json(project.profile);
         } else if (req.user && !project._acl['user:' + req.user._id]) {
             project.addView();
             updateProjectAndReturn(res, project);
@@ -165,7 +144,6 @@ exports.download = function(req, res) {
                     if (err) {
                         res.status(500).send(err);
                     } else {
-                        console.log(project);
                         res.status(200).json(project);
                     }
                 });
@@ -192,16 +170,17 @@ exports.show = function(req, res) {
             corbelId: req.params.id
         };
     }
-    Project.findOne(query, function(err, project) {
-        if (err) {
-            console.log(err);
-            res.status(500).send(err);
-        } else if (!project) {
-            res.sendStatus(404);
-        } else {
-            returnProject(req, res, project);
-        }
-    });
+    Project.findOne(query)
+        .populate('creator', 'username')
+        .exec(function(err, project) {
+            if (err) {
+                res.status(500).send(err);
+            } else if (!project) {
+                res.sendStatus(404);
+            } else {
+                returnProject(req, res, project);
+            }
+        });
 };
 
 /**
