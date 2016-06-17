@@ -6,7 +6,7 @@ var express = require('express'),
 
 var router = express.Router();
 
-router.get('/', controller.getAll);
+router.get('/', controller.getPublished);
 router.get('/me', auth.isAuthenticated(), controller.me);
 router.get('/shared', auth.isAuthenticated(), controller.sharedWithMe);
 router.get('/:id', auth.getUser(), controller.show);

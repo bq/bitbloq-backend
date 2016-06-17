@@ -59,7 +59,7 @@ function getSearch(res, params) {
     var page = params.page || 0,
         perPage = (params.pageSize && (params.pageSize <= maxPerPage)) ? params.pageSize : maxPerPage,
         defaultSortFilter = {
-            createdAt: 'desc'
+            updatedAt: 'desc'
         },
         sortFilter = params.sort ? JSON.parse(params.sort) : defaultSortFilter;
 
@@ -186,7 +186,7 @@ exports.show = function(req, res) {
 /**
  * Get public project list
  */
-exports.getAll = function(req, res) {
+exports.getPublished = function(req, res) {
 
     if (req.query && !utils.isEmpty(req.query)) {
         completeQuery(req.query, function(err, query) {
