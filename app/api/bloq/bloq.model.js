@@ -9,7 +9,9 @@ var BloqSchema = new mongoose.Schema({
     bloqClass: String,
     content: Array,
     code: String,
-    returnType:{}
+    returnType:{},
+    headerText:String,
+    descriptionText:String
 }, {
     timestamps: true
 });
