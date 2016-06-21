@@ -141,7 +141,7 @@ function getLastThreads(next) {
                 $first: '$category'
             },
             updatedAt: {
-                $first: '$numberOfViews'
+                $first: '$updatedAt'
             }
         }
     }, {
@@ -312,6 +312,7 @@ exports.getForumIndex = function(req, res) {
         if (err) {
             res.status(500).send(err);
         } else {
+            console.log(result[3]);
             var categories = result[0],
                 threadsCounter = _.groupBy(result[1], '_id[0]'),
                 answersCounter = _.groupBy(result[2], '_id[0]'),
