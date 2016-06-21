@@ -18,12 +18,12 @@ function countAnswersThread(thread, next) {
 
 function getLastAnswer(thread, next) {
     Answer.findOne({
-            thread: thread._id
-        }, null, {
-            sort: {
-                'updatedAt': -1
-            }
-        })
+        thread: thread._id
+    }, null, {
+        sort: {
+            'updatedAt': -1
+        }
+    })
         .populate('creator', 'username')
         .exec(next);
 }
@@ -36,31 +36,31 @@ function getThreadsInCategory(category, next) {
         .lean()
         .populate('creator', 'username')
         .sort('-updatedAt').exec(function(err, threads) {
-            if (err) {
-                next(err);
-            } else {
-                async.map(threads, function(thread, next) {
-                    async.parallel([
-                        countAnswersThread.bind(null, thread),
-                        getLastAnswer.bind(null, thread)
-                    ], function(err, results) {
-                        if (results) {
-                            thread.numberOfAnswers = results[0];
-                            thread.lastAnswer = results[1] || {};
-                            next(err, thread);
+        if (err) {
+            next(err);
+        } else {
+            async.map(threads, function(thread, next) {
+                async.parallel([
+                    countAnswersThread.bind(null, thread),
+                    getLastAnswer.bind(null, thread)
+                ], function(err, results) {
+                    if (results) {
+                        thread.numberOfAnswers = results[0];
+                        thread.lastAnswer = results[1] || {};
+                        next(err, thread);
 
-                        } else {
-                            next(err, []);
-                        }
-                    });
-                }, function(err, completedThreads) {
-                    next(err, {
-                        category: category,
-                        threads: completedThreads
-                    });
-                })
-            }
-        });
+                    } else {
+                        next(err, []);
+                    }
+                });
+            }, function(err, completedThreads) {
+                next(err, {
+                    category: category,
+                    threads: completedThreads
+                });
+            })
+        }
+    });
 }
 
 function getCompletedThread(id, next) {
@@ -71,8 +71,8 @@ function getCompletedThread(id, next) {
 
 function getCompletedAnswer(themeId, next) {
     Answer.find({
-            thread: themeId
-        })
+        thread: themeId
+    })
         .populate('creator', 'username')
         .exec(next);
 }
@@ -160,8 +160,8 @@ function getLastThreads(next) {
 
 function searchThreadsPage(titleRegex, page, next) {
     Thread.find({
-            title: titleRegex
-        })
+        title: titleRegex
+    })
         .populate('creator', 'username')
         .populate('category', 'name')
         .skip(itemsPerPage * (page - 1)) // page start counting in 1 (if page == 1 -> skip 0)
@@ -548,6 +548,19 @@ exports.deleteAllCategories = function(req, res) {
     });
 };
 
+exports.createForceThread = function(req, res) {
+    delete req.body._id;
+    var thread = new Thread(req.body);
+    thread.save(req.body, function(err, thread) {
+        if (err) {
+            console.log(err);
+            res.status(500).send(err);
+        } else {
+            res.status(200).send(thread._id);
+        }
+    });
+};
+
 exports.createAllThreads = function(req, res) {
     Thread.create(req.body, function(err) {
         if (err) {
@@ -560,6 +573,18 @@ exports.createAllThreads = function(req, res) {
 };
 exports.createAllAnswers = function(req, res) {
     Answer.create(req.body, function(err) {
+        if (err) {
+            console.log(err);
+            res.status(500).send(err);
+        } else {
+            res.sendStatus(200);
+        }
+    });
+};
+
+exports.createForceAnswer = function(req, res) {
+    var answer = new Answer(req.body);
+    answer.save(req.body, function(err) {
         if (err) {
             console.log(err);
             res.status(500).send(err);
