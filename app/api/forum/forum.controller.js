@@ -146,7 +146,7 @@ function getLastThreads(next) {
         }
     }, {
         $sort: {
-            updatedAt: 1
+            updatedAt: -1
         }
     }], function(err, result) {
         if (result) {
