@@ -131,8 +131,10 @@ function getLastThreads(next) {
             title: {
                 $first: '$title'
             },
-            creatorUsername: {
-                $first: '$user.username'
+            creator: {
+                $first: {
+                    username: '$user.username'
+                }
             },
             numberOfViews: {
                 $first: '$numberOfViews'
@@ -151,7 +153,7 @@ function getLastThreads(next) {
     }], function(err, result) {
         if (result) {
             result.forEach(function(item) {
-                item.creatorUsername = _.toString(item.creatorUsername) || 'Anonimo';
+                item.creator.username = _.toString(item.creator.username) || 'Anonimo';
             });
         }
         next(err, result);
@@ -310,9 +312,9 @@ exports.getForumIndex = function(req, res) {
         getLastThreads
     ], function(err, result) {
         if (err) {
+            console.log(err);
             res.status(500).send(err);
         } else {
-            console.log(result[3]);
             var categories = result[0],
                 threadsCounter = _.groupBy(result[1], '_id[0]'),
                 answersCounter = _.groupBy(result[2], '_id[0]'),
