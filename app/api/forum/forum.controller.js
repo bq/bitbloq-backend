@@ -587,12 +587,12 @@ exports.createAllAnswers = function(req, res) {
 
 exports.createForceAnswer = function(req, res) {
     var answer = new Answer(req.body);
-    answer.save(req.body, function(err) {
+    answer.save(req.body, function(err, answer) {
         if (err) {
             console.log(err);
             res.status(500).send(err);
         } else {
-            res.sendStatus(200);
+            res.status(200).send(answer._id);
         }
     });
 };
