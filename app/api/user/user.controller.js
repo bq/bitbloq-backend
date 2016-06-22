@@ -761,9 +761,25 @@ exports.createAll = function(req, res) {
         // console.log('item');
         // console.log(item);
         // console.log(item._id);
-        User.findByIdAndUpdate(item._id, item, {
-            upsert: true
-        }, done);
+        User.findById(item._id, function(err, user){
+            if(err){
+                done(err);
+            }else if(user){
+                console.log('found');
+                console.log(user.username);
+                console.log(item.username);
+                console.log(user._id);
+                console.log(item._id);
+                user = _.extend(user, item);
+                user.save(done);
+            }else {
+                console.log('newuser');
+                console.log(item.username);
+                var newUser = new User(item);
+                newUser.role = 'user';
+                newUser.save(done);
+            }
+        });
     }, function(err) {
         console.log('Finish request');
         console.log('numRequests:', numRequests, 'numRequestsOK:', numRequestsOK, 'numRequestsKO:', numRequestsKO);
