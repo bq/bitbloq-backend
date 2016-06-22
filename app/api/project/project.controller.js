@@ -245,6 +245,7 @@ exports.sharedWithMe = function(req, res) {
         .sort({
             name: 'asc'
         })
+        .populate('creator', 'username')
         .exec(function(err, projects) {
             if (err) {
                 res.status(500).send(err);
