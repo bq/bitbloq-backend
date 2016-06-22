@@ -7,7 +7,6 @@ var ProjectSchema = new mongoose.Schema({
     creator: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        trim: false,
         required: true
     },
     name: String,
@@ -44,6 +43,10 @@ var ProjectSchema = new mongoose.Schema({
     },
     hardwareTags: [String],
     userTags: [String],
+    image: {
+        type: String,
+        default: 'default'
+    },
     _acl: {}
 }, {
     timestamps: true
