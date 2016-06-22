@@ -11,7 +11,8 @@ var BloqSchema = new mongoose.Schema({
     code: String,
     returnType:{},
     headerText:String,
-    descriptionText:String
+    descriptionText:String,
+    createDynamicContent:{}
 }, {
     timestamps: true
 });
