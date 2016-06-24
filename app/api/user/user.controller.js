@@ -752,48 +752,51 @@ exports.showBannedUsers = function(req, res) {
 var numRequests = 0,
     numRequestsOK = 0,
     numRequestsKO = 0,
-    numItems = 0;
+    numItemsCreated = 0,
+    numItemsUpdated = 0;
 
 exports.createAll = function(req, res) {
     numRequests++;
+    var i =0;
     console.log('numRequest', numRequests);
-    async.each(req.body, function(item, done) {
-        // console.log('item');
-        // console.log(item);
-        // console.log(item._id);
-        User.findById(item._id, function(err, user){
-            if(err){
-                done(err);
-            }else if(user){
-                console.log('found');
-                console.log(user.username);
-                console.log(item.username);
-                console.log(user._id);
-                console.log(item._id);
-                user = _.extend(user, item);
-                user.save(done);
-            }else {
-                console.log('newuser');
-                console.log(item.username);
-                var newUser = new User(item);
-                newUser.role = 'user';
-                newUser.save(done);
+
+    //console.log(req.body[0]);
+    //console.log(req.body[req.body.length-1]);
+    if(req.body.length > 0 ){
+        async.each(req.body, function(item, done) {
+            User.findOne({'_id':item._id}, function(err, user){
+                console.log(numItemsCreated, numItemsUpdated);
+                if(err){
+                    done(err);
+                }else if(user){
+                    numItemsUpdated++;
+                    user.update(item, done);
+                }else {
+                    numItemsCreated++;
+                    var newUser = new User(item);
+                    //newUser.role = 'user';
+                    newUser.save(done);
+                }
+            });
+
+
+        }, function(err) {
+            console.log('Finish request');
+            console.log('numRequests:', numRequests, 'numRequestsOK:', numRequestsOK, 'numRequestsKO:', numRequestsKO);
+            console.log(numItemsCreated, numItemsUpdated);
+            if (err) {
+                numRequestsKO++;
+                console.log('err');
+                console.log(err);
+                res.status(500).send(err);
+            } else {
+                numRequestsOK++;
+                res.sendStatus(200);
             }
         });
-    }, function(err) {
-        console.log('Finish request');
-        console.log('numRequests:', numRequests, 'numRequestsOK:', numRequestsOK, 'numRequestsKO:', numRequestsKO);
-        if (err) {
-            numRequestsKO++;
-            console.log('err');
-            console.log(err);
-            res.status(500).send(err);
-        } else {
-            numRequestsOK++;
-            res.sendStatus(200);
-        }
-    });
-
+    }else{
+        res.send(200);
+    }
 };
 
 exports.deleteAll = function(req, res) {

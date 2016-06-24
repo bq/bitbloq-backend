@@ -225,15 +225,17 @@ UserSchema
             this.makeSalt(function(saltErr, salt) {
                 if (saltErr) {
                     next(saltErr);
+                }else{
+                    _this.salt = salt;
+                    _this.encryptPassword(_this.password, function(encryptErr, hashedPassword) {
+                        if (encryptErr) {
+                            next(encryptErr);
+                        }
+                        _this.password = hashedPassword;
+                        next();
+                    });
                 }
-                _this.salt = salt;
-                _this.encryptPassword(_this.password, function(encryptErr, hashedPassword) {
-                    if (encryptErr) {
-                        next(encryptErr);
-                    }
-                    _this.password = hashedPassword;
-                    next();
-                });
+
             });
         } else {
             next();
@@ -245,6 +247,7 @@ UserSchema
         // Handle new/update role
         if (this.role !== 'user' && this.isModified('role')) {
             this.invalidate('role');
+            next(401);
         } else {
             next();
         }
@@ -255,6 +258,7 @@ UserSchema
         // Handle new/update passwords
         if (this.isModified('bannedInForum')) {
             this.invalidate('bannedInForum');
+            next(401);
         } else {
             next();
         }
@@ -283,12 +287,12 @@ UserSchema.methods = {
         this.encryptPassword(password, function(err, pwdGen) {
             if (err) {
                 callback(err);
-            }
-
-            if (_this.password === pwdGen) {
-                callback(null, true);
-            } else {
-                callback(null, false);
+            }else{
+                if (_this.password === pwdGen) {
+                    callback(null, true);
+                } else {
+                    callback(null, false);
+                }
             }
         });
     },
