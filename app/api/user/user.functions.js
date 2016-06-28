@@ -5,7 +5,6 @@ var request = require('request-promise'),
     jwt = require('jsonwebtoken');
 
 
-
 /**
  * Return if user is banned
  * @param {String} userId
@@ -13,7 +12,7 @@ var request = require('request-promise'),
  */
 exports.isBanned = function(userId, next) {
     User.findById(userId, function(err, user) {
-        if(user && user.bannedInForum){
+        if (user && user.bannedInForum) {
             next(err, true);
         } else {
             next(err, false);
@@ -45,6 +44,9 @@ exports.getUserProfile = function(userId, next) {
  * @return {Function} next
  */
 exports.getUserIdsByName = function(username, next) {
+    if (username['$regex']) {
+        username['$regex'] = username['$regex'].toLowerCase();
+    }
     User.find({username: username}, '_id', function(err, user) {
         if (err) {
             next(err);
