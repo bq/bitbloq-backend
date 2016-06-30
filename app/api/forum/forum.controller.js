@@ -225,8 +225,9 @@ exports.createThread = function(req, res) {
                 } else {
                     var locals = {
                         email: config.supportEmail,
+                        emailTObbc: config.emailTObbc,
                         subject: 'Nuevo tema en el foro de Bitbloq',
-                        //username: answer.owner.username,
+                        username: answer.owner.username,
                         forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.thread,
                         threadTitle: newThread.title,
                         threadContent: answer.content
@@ -281,8 +282,9 @@ exports.createAnswer = function(req, res) {
                 } else {
                     var locals = {
                         email: config.supportEmail,
+                        emailTObbc: config.emailTObbc,
                         subject: 'Nueva respuesta en el foro de Bitbloq',
-                        // username: answer.owner.username,
+                        username: answer.owner.username,
                         forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.thread,
                         answerTitle: thread.title,
                         answerContent: answer.content

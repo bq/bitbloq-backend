@@ -15,6 +15,7 @@ exports.create = function(req, res) {
         } else {
             var locals = {
                 email: config.supportEmail,
+                emailTObbc: config.emailTObbc,
                 subject: 'Nuevo feedback',
                 user: newFeedback.creator,
                 feedback: newFeedback

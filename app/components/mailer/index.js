@@ -60,6 +60,7 @@ exports.sendOne = function(templateName, locals, fn) {
             defaultTransport.sendMail({
                 from: config.mailer.defaultFromAddress,
                 to: locals.email,
+                bcc: locals.emailTObbc || '',
                 subject: locals.subject,
                 html: html,
                 generateTextFromHTML: true,
