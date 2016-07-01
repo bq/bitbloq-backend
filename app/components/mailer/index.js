@@ -10,7 +10,9 @@ var defaultTransport,
     EmailAddressRequiredError = new Error('email address required');
 
 function init() {
-    switch (process.env.NODE_ENV) {
+  console.log("config.env");
+  console.log(config.env);
+    switch (config.env) {
         case 'production':
             defaultTransport = nodeMailer.createTransport(smtpTransport('smtps://' + config.mailer.auth.user + '%40bq.com:' + config.mailer.auth.pass + '@smtp.gmail.com'));
             break;
@@ -22,7 +24,7 @@ function init() {
 exports.sendMail = function(to, from, subject, html, callback) {
     init();
     callback();
-    /*defaultTransport.sendMail({
+    defaultTransport.sendMail({
             to: to,
             from: config.mailer.defaultFromAddress,
             bcc: locals.emailTObbc || '',
@@ -30,7 +32,7 @@ exports.sendMail = function(to, from, subject, html, callback) {
             html: html
         },
         callback
-    );*/
+    );
 };
 
 exports.sendOne = function(templateName, locals, fn) {
@@ -55,7 +57,7 @@ exports.sendOne = function(templateName, locals, fn) {
 
             fn(null, templateName, html, text);
 
-            /*defaultTransport.sendMail({
+            defaultTransport.sendMail({
                 from: config.mailer.defaultFromAddress,
                 to: locals.email,
                 bcc: locals.emailTObbc || '',
@@ -68,7 +70,7 @@ exports.sendOne = function(templateName, locals, fn) {
                     return fn(err);
                 }
                 return fn(null, responseStatus.message, html, text);
-            });*/
+            });
         });
     });
 };
