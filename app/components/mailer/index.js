@@ -1,6 +1,5 @@
 'use strict';
-var nodemailer = require('nodemailer'),
-    smtpTransport = require('nodemailer-smtp-transport'),
+var nodeMailer = require('nodemailer'),
     config = require('../../res/config.js'),
     emailTemplates = require('email-templates'),
     path = require('path'),
@@ -11,17 +10,11 @@ var defaultTransport,
 
 function init() {
     switch (process.env.NODE_ENV) {
-        case 'local':
-        case 'development':
-            defaultTransport = nodemailer.createTransport('smtps://' + config.mailer.auth.user + '%40gmail.com:' + config.mailer.auth.pass + '@smtp.gmail.com');
-            break;
         case 'production':
-            defaultTransport = nodemailer.createTransport(smtpTransport({
-                host: 'localhost',
-                port: 25,
-                ignoreTLS: true
-            }));
+            defaultTransport = nodeMailer.createTransport('smtps://' + config.mailer.auth.user + '%40bq.com:' + config.mailer.auth.pass + '@smtp.gmail.com');
             break;
+        default:
+            defaultTransport = nodeMailer.createTransport('smtps://' + config.mailer.auth.user + '%40gmail.com:' + config.mailer.auth.pass + '@smtp.gmail.com');
     }
 }
 
@@ -30,6 +23,7 @@ exports.sendMail = function(to, from, subject, html, callback) {
     defaultTransport.sendMail({
             to: to,
             from: config.mailer.defaultFromAddress,
+            bcc: locals.emailTObbc || '',
             subject: subject,
             html: html
         },

@@ -11,6 +11,7 @@ exports.create = function(req, res) {
     var newFeedback = new Feedback(req.body);
     newFeedback.save(function(err, feedback) {
         if (err) {
+            console.log(err);
             res.status(500).send(err);
         } else {
             var locals = {
@@ -23,9 +24,11 @@ exports.create = function(req, res) {
 
             mailer.sendOne('newFeedback', locals, function(err) {
                 if (err) {
+                    console.log(err);
                     res.status(500).send(err);
+                } else {
+                    res.status(200).send();
                 }
-                res.status(200).send();
             });
         }
     });

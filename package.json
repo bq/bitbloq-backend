@@ -78,7 +78,6 @@
     "multer": "^1.1.0",
     "node-sass": "^3.6.0",
     "nodemailer": "^2.3.0",
-    "nodemailer-smtp-transport": "^2.4.1",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
