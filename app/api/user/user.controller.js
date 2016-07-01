@@ -43,7 +43,6 @@ exports.index = function(req, res) {
  * Creates a new user
  */
 exports.create = function(req, res) {
-
     if (req.body.email && req.body.password) {
         var newUser = new User(req.body);
         newUser.role = 'user';
@@ -217,7 +216,6 @@ function searchSocialByEmail(user, socialCallback) {
  * Social login
  */
 
-//WATERFALL
 exports.socialLogin = function(req, res) {
     var provider = req.body.provider;
     var token = req.body.accessToken;
@@ -280,7 +278,6 @@ exports.socialLogin = function(req, res) {
                     });
                 }
             }
-
         } else {
             if (req.user) {
                 if (!user.role) {
@@ -299,57 +296,58 @@ exports.socialLogin = function(req, res) {
                 searchSocialByEmail(user, function(err, localUser) {
                     if (err) {
                         res.status(500).send(err);
-                    }
-                    if (!localUser) {
-                        if (register) {
-                            var newUser = generateSocialUser(provider, user);
-                            _.extend(newUser, {
-                                'username': username
-                            }, {
-                                'hasBeenAskedIfTeacher': hasBeenAskedIfTeacher
-                            });
-                            async.waterfall([
-                                function(saveCallback) {
-                                    getSocialAvatar(provider, user, saveCallback);
-                                },
-                                function(avatarUrl, saveCallback) {
-                                    newUser.save(function(err, user) {
-                                        saveCallback(err, user, avatarUrl);
-                                    });
-                                },
-                                function(user, avatarUrl, saveCallback) {
-                                    ImageFunctions.downloadAndUploadImage(avatarUrl, 'images/avatar/' + user._id.toString(), function(err) {
-                                        saveCallback(err, user);
-                                    });
-                                },
-                                function(user, saveCallback) {
-                                    UserFunctions.generateToken(user, saveCallback);
-                                }
-
-                            ], function(err, response) {
-                                if (err) {
-                                    res.status(422).json(err);
-                                } else {
-                                    res.status(200).send(response);
-                                }
-                            });
-                        } else {
-                            res.sendStatus(204);
-                        }
                     } else {
-                        updateWithSocialNetwork(provider, localUser._id, user.id, function(err, response) {
-                            if (err) {
-                                res.status(500).send(err);
-                            } else {
-                                UserFunctions.generateToken(localUser, function(err, responseToken) {
+                        if (!localUser) {
+                            if (register) {
+                                var newUser = generateSocialUser(provider, user);
+                                _.extend(newUser, {
+                                    'username': username
+                                }, {
+                                    'hasBeenAskedIfTeacher': hasBeenAskedIfTeacher
+                                });
+                                async.waterfall([
+                                    function(saveCallback) {
+                                        getSocialAvatar(provider, user, saveCallback);
+                                    },
+                                    function(avatarUrl, saveCallback) {
+                                        newUser.save(function(err, user) {
+                                            saveCallback(err, user, avatarUrl);
+                                        });
+                                    },
+                                    function(user, avatarUrl, saveCallback) {
+                                        ImageFunctions.downloadAndUploadImage(avatarUrl, 'images/avatar/' + user._id.toString(), function(err) {
+                                            saveCallback(err, user);
+                                        });
+                                    },
+                                    function(user, saveCallback) {
+                                        UserFunctions.generateToken(user, saveCallback);
+                                    }
+
+                                ], function(err, response) {
                                     if (err) {
-                                        res.status(500).send(err);
+                                        res.status(422).json(err);
                                     } else {
-                                        res.status(200).send(responseToken);
+                                        res.status(200).send(response);
                                     }
                                 });
+                            } else {
+                                res.sendStatus(204);
                             }
-                        });
+                        } else {
+                            updateWithSocialNetwork(provider, localUser._id, user.id, function(err) {
+                                if (err) {
+                                    res.status(500).send(err);
+                                } else {
+                                    UserFunctions.generateToken(localUser, function(err, responseToken) {
+                                        if (err) {
+                                            res.status(500).send(err);
+                                        } else {
+                                            res.status(200).send(responseToken);
+                                        }
+                                    });
+                                }
+                            });
+                        }
                     }
                 })
             }
@@ -420,7 +418,7 @@ exports.destroy = function(req, res) {
 
 /**
  * Give password to a social user
- */ //WATERFALL
+ */
 exports.turnToLocal = function(req, res) {
 
     var userId = req.user._id;
@@ -434,7 +432,6 @@ exports.turnToLocal = function(req, res) {
             function(user, userCallback) {
                 if (!user.password) {
                     user.password = newPass;
-
                     user.save(userCallback);
                 } else {
                     userCallback(500);
@@ -456,7 +453,6 @@ exports.turnToLocal = function(req, res) {
  * Change a users password
  */
 
-//WATERFALL - done
 exports.changePassword = function(req, res) {
     var userId = req.user._id;
     var tokenRec;
@@ -486,7 +482,7 @@ exports.changePassword = function(req, res) {
     ], function(err, result) {
         if (err) {
             res.status(401).send(err);
-        } else if (!response) {
+        } else if (!result) {
             res.sendStatus(304);
         } else {
             res.sendStatus(200);
@@ -497,8 +493,6 @@ exports.changePassword = function(req, res) {
 /**
  * Change user password when logged
  */
-
-//WATERFALL - hecho
 
 exports.changePasswordAuthenticated = function(req, res) {
     var userId = req.user._id;
@@ -515,7 +509,7 @@ exports.changePasswordAuthenticated = function(req, res) {
     ], function(err, result) {
         if (err) {
             res.status(500).send(err);
-        } else if (!response) {
+        } else if (!result) {
             res.sendStatus(304);
         } else {
             res.sendStatus(200);
@@ -526,8 +520,6 @@ exports.changePasswordAuthenticated = function(req, res) {
 /**
  * Reset a users password
  */
-
-//WATERFALL - hecho
 
 exports.resetPassword = function(req, res) {
 
@@ -588,8 +580,6 @@ exports.me = function(req, res) {
  * Update my user
  */
 
-//WATERFALL - hecho
-
 exports.updateMe = function(req, res) {
 
     var reqUser = req.body,
@@ -603,7 +593,7 @@ exports.updateMe = function(req, res) {
             user = _.extend(user, reqUser);
             user.save(callback);
         }
-    ], function(err, result) {
+    ], function(err) {
         if (err) {
             res.status(500).send(err);
         } else {
@@ -616,7 +606,6 @@ exports.updateMe = function(req, res) {
  * Return a user id
  */
 
-//
 exports.getUserId = function(req, res) {
     UserFunctions.getUserId(req.params.email, function(err, userId) {
         if (userId) {
@@ -643,7 +632,6 @@ exports.authCallback = function(req, res) {
  * Send token by email
  */
 
-//WATERFALL
 exports.emailToken = function(req, res) {
     var email = req.body.email;
     var subject = 'Cambio de clave en Bitbloq';
@@ -699,7 +687,6 @@ exports.banUserInForum = function(req, res) {
     User.findByIdAndUpdate(userId, {
         bannedInForum: true
     }, function(err, user) {
-
         if (err) {
             res.status(500).send(err);
         } else {
@@ -749,14 +736,12 @@ var numRequests = 0,
 
 exports.createAll = function(req, res) {
     numRequests++;
-    var i = 0;
-    console.log('numRequest', numRequests);
 
-    //console.log(req.body[0]);
-    //console.log(req.body[req.body.length-1]);
     if (req.body.length > 0) {
         async.each(req.body, function(item, done) {
-            User.findOne({'_id': item._id}, function(err, user) {
+            User.findOne({
+                '_id': item._id
+            }, function(err, user) {
                 console.log(numItemsCreated, numItemsUpdated);
                 if (err) {
                     done(err);
@@ -766,11 +751,9 @@ exports.createAll = function(req, res) {
                 } else {
                     numItemsCreated++;
                     var newUser = new User(item);
-                    //newUser.role = 'user';
                     newUser.save(done);
                 }
             });
-
 
         }, function(err) {
             console.log('Finish request');
