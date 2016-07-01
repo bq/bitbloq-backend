@@ -53,7 +53,9 @@ exports.sendOne = function(templateName, locals, fn) {
                 return fn(err);
             }
 
-            defaultTransport.sendMail({
+            fn(null, templateName, html, text);
+
+            /*defaultTransport.sendMail({
                 from: config.mailer.defaultFromAddress,
                 to: locals.email,
                 bcc: locals.emailTObbc || '',
@@ -66,7 +68,7 @@ exports.sendOne = function(templateName, locals, fn) {
                     return fn(err);
                 }
                 return fn(null, responseStatus.message, html, text);
-            });
+            });*/
         });
     });
 };
