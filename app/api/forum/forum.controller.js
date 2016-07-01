@@ -227,7 +227,7 @@ exports.createThread = function(req, res) {
                         email: config.supportEmail,
                         emailTObbc: config.emailTObbc,
                         subject: 'Nuevo tema en el foro de Bitbloq',
-                        username: answer.owner.username,
+                        username: req.user.username,
                         forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.thread,
                         threadTitle: newThread.title,
                         threadContent: answer.content
@@ -266,25 +266,26 @@ exports.createAnswer = function(req, res) {
                     newAnswer.creator = userId;
                     newAnswer.save(function(err, answer) {
                         next(err, answer, thread);
-                    })
+                    });
                 },
                 function(answer, thread, next) {
                     Category.findOne({
                         _id: thread.category
                     }, 'name', function(err, category) {
                         next(err, answer, thread, category.name);
-                    })
+                    });
                 }
 
             ], function(err, answer, thread, categoryName) {
                 if (err) {
+                    console.log(err);
                     res.status(500).send(err);
                 } else {
                     var locals = {
                         email: config.supportEmail,
                         emailTObbc: config.emailTObbc,
                         subject: 'Nueva respuesta en el foro de Bitbloq',
-                        username: answer.owner.username,
+                        username: req.user.username,
                         forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.thread,
                         answerTitle: thread.title,
                         answerContent: answer.content
@@ -292,9 +293,11 @@ exports.createAnswer = function(req, res) {
 
                     mailer.sendOne('newForumAnswer', locals, function(err) {
                         if (err) {
+                            console.log(err);
                             res.status(500).send(err);
+                        } else {
+                            res.status(200).send(answer._id);
                         }
-                        res.status(200).send(answer._id);
                     });
                 }
             });
