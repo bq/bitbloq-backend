@@ -542,7 +542,6 @@ exports.createAll = function(req, res) {
 exports.deleteAll = function(req, res) {
     Project.remove({}, function(err) {
         if (err) {
-
             console.log(err);
             res.status(500).send(err);
         } else {

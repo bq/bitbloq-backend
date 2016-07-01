@@ -19,39 +19,42 @@ function getRobotFirmware(robot, version) {
 /**
  * Get public a firmware
  */
-exports.get = function (req, res) {
+exports.get = function(req, res) {
     var robot = req.params.robot,
         version = req.params.version;
 
     res.sendFile(getRobotFirmware(robot, version));
 };
 
-exports.getMulterCreator = function () {
+exports.getMulterCreator = function() {
     var storage = multer.diskStorage({
-        destination: function (req, file, cb) {
+        destination: function(req, file, cb) {
             var robot = req.params.robot;
             cb(null, getRobotFirmwareFolder(robot))
         },
-        filename: function (req, file, cb) {
+        filename: function(req, file, cb) {
             var version = req.params.version;
             cb(null, getRobotFirmwareName(version))
         }
     });
-    return multer({ storage: storage });
+    return multer({
+        storage: storage
+    });
 };
 
-exports.create = function (req, res) {
+exports.create = function(req, res) {
     res.sendStatus(200);
 };
 
-exports.delete = function (req, res) {
+exports.delete = function(req, res) {
     var robot = req.params.robot,
         version = req.params.version;
 
-    fs.unlink(getRobotFirmware(robot, version), function (err) {
+    fs.unlink(getRobotFirmware(robot, version), function(err) {
         if (err) {
             res.status(500).send(err);
+        } else {
+            res.sendStatus(200);
         }
-        res.sendStatus(200);
     })
 };

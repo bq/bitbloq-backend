@@ -9,7 +9,7 @@ var Feedback = require('./feedback.model.js'),
  */
 exports.create = function(req, res) {
     var newFeedback = new Feedback(req.body);
-    newFeedback.save(function(err, feedback) {
+    newFeedback.save(function(err) {
         if (err) {
             console.log(err);
             res.status(500).send(err);
