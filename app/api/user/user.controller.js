@@ -259,9 +259,7 @@ exports.socialLogin = function(req, res) {
                         if (err) {
                             res.status(500).send(err);
                         } else {
-                            if (response) {
-                                res.status(200).send(response);
-                            }
+                            res.status(200).send(response);
                         }
                     });
                 } else {
@@ -309,7 +307,7 @@ exports.socialLogin = function(req, res) {
                                 'username': username
                             }, {
                                 'hasBeenAskedIfTeacher': hasBeenAskedIfTeacher
-                            })
+                            });
                             async.waterfall([
                                 function(saveCallback) {
                                     getSocialAvatar(provider, user, saveCallback);
@@ -332,9 +330,7 @@ exports.socialLogin = function(req, res) {
                                 if (err) {
                                     res.status(422).json(err);
                                 } else {
-                                    if (response) {
-                                        res.status(200).send(response);
-                                    }
+                                    res.status(200).send(response);
                                 }
                             });
                         } else {
@@ -349,9 +345,7 @@ exports.socialLogin = function(req, res) {
                                     if (err) {
                                         res.status(500).send(err);
                                     } else {
-                                        if (response) {
-                                            res.status(200).send(responseToken);
-                                        }
+                                        res.status(200).send(responseToken);
                                     }
                                 });
                             }
@@ -448,12 +442,12 @@ exports.turnToLocal = function(req, res) {
             }
         ],
         function(err, response) {
-            if (response) {
-                res.sendStatus(200);
+            if (err) {
+                res.status(401).send(err);
+            } else if (!response) {
+                res.sendStatus(304);
             } else {
-                if (err) {
-                    res.sendStatus(401);
-                }
+                res.sendStatus(200);
             }
         });
 };
@@ -490,12 +484,12 @@ exports.changePassword = function(req, res) {
             Token.remove(tokenRec, tokenCallback);
         }
     ], function(err, result) {
-        if (result) {
-            res.sendStatus(204);
+        if (err) {
+            res.status(401).send(err);
+        } else if (!response) {
+            res.sendStatus(304);
         } else {
-            if (err) {
-                res.sendStatus(err);
-            }
+            res.sendStatus(200);
         }
     });
 };
@@ -519,13 +513,12 @@ exports.changePasswordAuthenticated = function(req, res) {
             user.save(userCallback);
         }
     ], function(err, result) {
-
-        if (result) {
-            res.sendStatus(204);
+        if (err) {
+            res.status(500).send(err);
+        } else if (!response) {
+            res.sendStatus(304);
         } else {
-            if (err) {
-                res.status(500).send(err);
-            }
+            res.sendStatus(200);
         }
     });
 };
@@ -560,7 +553,6 @@ exports.resetPassword = function(req, res) {
         } else {
             res.status(500).send(err);
         }
-
     });
 
 };
@@ -644,7 +636,6 @@ exports.getUserId = function(req, res) {
  * Authentication callback
  */
 exports.authCallback = function(req, res) {
-
     res.redirect('/');
 };
 
@@ -690,8 +681,9 @@ exports.emailToken = function(req, res) {
             mailer.sendOne('resetPassword', locals, function(err) {
                 if (err) {
                     res.status(500).send(err);
+                } else {
+                    res.sendStatus(200);
                 }
-                res.sendStatus(200);
             });
         } else {
             res.status(500).send(err);
@@ -757,21 +749,21 @@ var numRequests = 0,
 
 exports.createAll = function(req, res) {
     numRequests++;
-    var i =0;
+    var i = 0;
     console.log('numRequest', numRequests);
 
     //console.log(req.body[0]);
     //console.log(req.body[req.body.length-1]);
-    if(req.body.length > 0 ){
+    if (req.body.length > 0) {
         async.each(req.body, function(item, done) {
-            User.findOne({'_id':item._id}, function(err, user){
+            User.findOne({'_id': item._id}, function(err, user) {
                 console.log(numItemsCreated, numItemsUpdated);
-                if(err){
+                if (err) {
                     done(err);
-                }else if(user){
+                } else if (user) {
                     numItemsUpdated++;
                     user.update(item, done);
-                }else {
+                } else {
                     numItemsCreated++;
                     var newUser = new User(item);
                     //newUser.role = 'user';
@@ -794,7 +786,7 @@ exports.createAll = function(req, res) {
                 res.sendStatus(200);
             }
         });
-    }else{
+    } else {
         res.send(200);
     }
 };
