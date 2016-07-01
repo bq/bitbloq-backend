@@ -234,8 +234,6 @@ exports.createThread = function(req, res) {
 
                     mailer.sendOne('newForumThread', locals, function(err) {
                         if (err) {
-                        console.log("err");
-                        console.log(err);
                             res.status(500).send(err);
                         } else {
                             res.status(200).json({

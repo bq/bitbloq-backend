@@ -13,8 +13,6 @@ function init() {
     switch (process.env.NODE_ENV) {
         case 'production':
             defaultTransport = nodeMailer.createTransport(smtpTransport('smtps://' + config.mailer.auth.user + '%40bq.com:' + config.mailer.auth.pass + '@smtp.gmail.com'));
-            console.log("defaultTransport");
-            console.log(defaultTransport);
             break;
         default:
             defaultTransport = nodeMailer.createTransport('smtps://' + config.mailer.auth.user + '%40gmail.com:' + config.mailer.auth.pass + '@smtp.gmail.com');
@@ -33,16 +31,6 @@ exports.sendMail = function(to, from, subject, html, callback) {
         },
         callback
     );*/
-
-    defaultTransport.sendMail({
-            to: to,
-            from: config.mailer.defaultFromAddress,
-          //  bcc: locals.emailTObbc || '',
-            subject: subject,
-            html: html
-        },
-        callback
-    );
 };
 
 exports.sendOne = function(templateName, locals, fn) {
@@ -67,20 +55,6 @@ exports.sendOne = function(templateName, locals, fn) {
 
             fn(null, templateName, html, text);
 
-                        defaultTransport.sendMail({
-                            from: config.mailer.defaultFromAddress,
-                            to: locals.email,
-                            bcc: locals.emailTObbc || '',
-                            subject: locals.subject,
-                            html: html,
-                            generateTextFromHTML: true,
-                            text: text
-                        }, function(err, responseStatus) {
-                            if (err) {
-                                return fn(err);
-                            }
-                            return fn(null, responseStatus.message, html, text);
-                        });
             /*defaultTransport.sendMail({
                 from: config.mailer.defaultFromAddress,
                 to: locals.email,
