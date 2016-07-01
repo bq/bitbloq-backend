@@ -21,7 +21,8 @@ function init() {
 
 exports.sendMail = function(to, from, subject, html, callback) {
     init();
-    defaultTransport.sendMail({
+    callback();
+    /*defaultTransport.sendMail({
             to: to,
             from: config.mailer.defaultFromAddress,
             bcc: locals.emailTObbc || '',
@@ -29,7 +30,7 @@ exports.sendMail = function(to, from, subject, html, callback) {
             html: html
         },
         callback
-    );
+    );*/
 };
 
 exports.sendOne = function(templateName, locals, fn) {
