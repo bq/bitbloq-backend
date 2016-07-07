@@ -72,6 +72,7 @@ function getCompletedAnswer(themeId, next) {
     Answer.find({
             thread: themeId
         })
+        .sort('updatedAt')
         .populate('creator', 'username')
         .exec(next);
 }
