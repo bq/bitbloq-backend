@@ -5,6 +5,8 @@ var Project = require('./project.model.js'),
     ImageFunctions = require('../image/image.functions.js'),
     utils = require('../utils'),
     async = require('async'),
+    config = require('../../res/config.js'),
+    mailer = require('../../components/mailer'),
     ObjectID = require('mongoose').Types.ObjectId,
     _ = require('lodash');
 
@@ -102,8 +104,7 @@ function returnProject(req, res, project) {
         } else {
             res.status(200).json(project);
         }
-    }
-    else if (req.user && project._acl['user:' + req.user._id] && (project._acl['user:' + req.user._id].permission === 'READ' || project._acl['user:' + req.user._id].permission === 'ADMIN')) {
+    } else if (req.user && project._acl['user:' + req.user._id] && (project._acl['user:' + req.user._id].permission === 'READ' || project._acl['user:' + req.user._id].permission === 'ADMIN')) {
         //it is a shared project
         if (req.query && req.query.profile) {
             res.status(200).json(project.profile);
@@ -370,6 +371,26 @@ exports.share = function(req, res) {
                                         id: user,
                                         email: email
                                     });
+
+                                    var locals = {
+                                        email: email,
+                                        subject: req.user.username + ' ha compartido contigo un proyecto de Bitbloq',
+                                        username: req.user.username
+                                    };
+
+                                    if (project.codeproject) {
+                                        locals.projectUrl = config.client_domain + '/#/codeproject/' + projectId;
+                                    } else {
+                                        locals.projectUrl = config.client_domain + '/#/bloqsproject/' + projectId;
+                                    }
+
+                                    mailer.sendOne('shareProject', locals, function(err) {
+                                        if (err) {
+                                            res.status(500).send(err);
+                                        } else {
+                                            res.status(200);
+                                        }
+                                    });
                                     response.users.push(email);
                                 } else if (!err) {
                                     response.noUsers.push(email);
@@ -506,7 +527,6 @@ exports.createAll = function(req, res) {
                 var newProject = new Project(item);
                 newProject.save(done);
             } else {
-                console.log(response);
                 numRepeatedItems++;
                 response.update(item, done);
             }

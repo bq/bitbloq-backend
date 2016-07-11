@@ -10,8 +10,6 @@ var defaultTransport,
     EmailAddressRequiredError = new Error('email address required');
 
 function init() {
-  console.log("config.env");
-  console.log(config.env);
     switch (config.env) {
         case 'production':
             defaultTransport = nodeMailer.createTransport(smtpTransport('smtps://' + config.mailer.auth.user + '%40bq.com:' + config.mailer.auth.pass + '@smtp.gmail.com'));

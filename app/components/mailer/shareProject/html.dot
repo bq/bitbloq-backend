@@ -1,0 +1,18 @@
+<img src="http://storage.googleapis.com/bitbloq/mail-images/logobit.png" alt="Bitbloq logo">
+<h1>{{=it.username}} ha compartido contigo un proyecto de Bitbloq</h1>
+<p>
+    Hola, estás recibiendo este correo porque el usuario <b>{{=it.username}}</b> ha compartido un proyecto de <b>Bitbloq</b> contigo. <br>
+</p>
+<br>
+<div class="mailer__container--button">
+    <a class="mailer__button" href="{{=it.projectUrl}}">Ver Proyecto Compartido</a>
+</div>
+<br>
+<p>
+    o bien, corta y pega el siguiente enlace en la barra de direcciones de tu navegador:
+</p>
+    <a class="url-link" href="{{=it.projectUrl}}">{{=it.projectUrl}}</a>
+<p>
+    Un saludo, <br>
+    <i>el equipo de</i> Bitbloq.
+</p>
