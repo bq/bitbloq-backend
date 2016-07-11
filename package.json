@@ -30,12 +30,12 @@
             "email": "laura.delrio@bq.com"
         },
         {
-            "name": "Tomás Calvo",
-            "email": "tomas.calvo@bq.com"
-        },
-        {
             "name": "Álvaro Sánchez",
             "email": "alvaro.sanchez@bq.com"
+        },
+        {
+            "name": "Tomás Calvo",
+            "email": "tomas.calvo@bq.com"
         }
     ],
     "license": "GPL-3.0",
