@@ -379,9 +379,9 @@ exports.share = function(req, res) {
                                     };
 
                                     if (project.codeproject) {
-                                        locals.projectUrl = config.client_domain + '/#/codeproject/' + projectId;
+                                        locals.projectUrl = config.client_domain + '#/login?init=/codeproject/' + projectId;
                                     } else {
-                                        locals.projectUrl = config.client_domain + '/#/bloqsproject/' + projectId;
+                                        locals.projectUrl = config.client_domain + '#/login?init=/bloqsproject/' + projectId;
                                     }
 
                                     mailer.sendOne('shareProject', locals, function(err) {
