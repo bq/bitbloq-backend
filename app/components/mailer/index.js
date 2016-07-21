@@ -53,8 +53,6 @@ exports.sendOne = function(templateName, locals, fn) {
                 return fn(err);
             }
 
-            fn(null, templateName, html, text);
-
             defaultTransport.sendMail({
                 from: config.mailer.defaultFromAddress,
                 to: locals.email,
