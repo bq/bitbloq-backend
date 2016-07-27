@@ -30,12 +30,12 @@
             "email": "alvaro.sanchez@bq.com"
         },
         {
-            "name": "Diego Segura",
-            "email": "diego.segura@bq.com"
-        },
-        {
             "name": "Tomás Calvo",
             "email": "tomas.calvo@bq.com"
+        },
+        {
+            "name": "Diego Segura",
+            "email": "diego.segura@bq.com"
         }
     ],
     "license": "GPL-3.0",
