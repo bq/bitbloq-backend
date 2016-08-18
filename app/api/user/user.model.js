@@ -65,6 +65,10 @@ var UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    hasFirstComponent: {
+        type: Boolean,
+        default: false
+    },
     hasBeenWarnedAboutChangeBloqsToCode: {
         type: Boolean,
         default: false
@@ -119,6 +123,7 @@ UserSchema
             'cookiePolicyAccepted': this.cookiePolicyAccepted,
             'hasBeenAskedIfTeacher': this.hasBeenAskedIfTeacher,
             'hasBeenWarnedAboutChangeBloqsToCode': this.hasBeenWarnedAboutChangeBloqsToCode,
+            'hasFirstComponent': this.hasFirstComponent,
             'takeTour': this.takeTour
         };
     });
@@ -225,7 +230,7 @@ UserSchema
             this.makeSalt(function(saltErr, salt) {
                 if (saltErr) {
                     next(saltErr);
-                }else{
+                } else {
                     _this.salt = salt;
                     _this.encryptPassword(_this.password, function(encryptErr, hashedPassword) {
                         if (encryptErr) {
@@ -287,7 +292,7 @@ UserSchema.methods = {
         this.encryptPassword(password, function(err, pwdGen) {
             if (err) {
                 callback(err);
-            }else{
+            } else {
                 if (_this.password === pwdGen) {
                     callback(null, true);
                 } else {
