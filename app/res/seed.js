@@ -13,8 +13,8 @@ var Token = require('../api/recovery/token.model');
 
 Version.find({}).remove(function() {
     return Version.create({
-        backend: '0.0.1',
-        frontend: '3.0.0'
+        backend: '1.0.1',
+        frontend: '3.1.0'
     }, function() {
         console.log('finished populating version');
     });
