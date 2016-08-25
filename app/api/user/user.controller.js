@@ -684,13 +684,24 @@ exports.emailToken = function(req, res) {
  */
 exports.banUserInForum = function(req, res) {
     var userId = req.params.id;
-    User.findByIdAndUpdate(userId, {
-        bannedInForum: true
-    }, function(err, user) {
+    User.findById(userId, function(err, user) {
         if (err) {
+            console.log(err);
             res.status(500).send(err);
         } else {
-            res.status(200).json(user.owner);
+            if (user) {
+                user.bannedInForum = true;
+                user.save({validateBeforeSave: false}, function(err, user) {
+                    if (err) {
+                        console.log(err);
+                        res.status(500).send(err);
+                    } else {
+                        res.status(200).json(user.owner);
+                    }
+                });
+            } else {
+                res.sendStatus(404);
+            }
         }
     });
 };
@@ -701,13 +712,24 @@ exports.banUserInForum = function(req, res) {
 exports.unbanUserInForum = function(req, res) {
     var userId = req.params.id;
 
-    User.findByIdAndUpdate(userId, {
-        bannedInForum: false
-    }, function(err, user) {
+    User.findById(userId, function(err, user) {
         if (err) {
+            console.log(err);
             res.status(500).send(err);
         } else {
-            res.status(200).json(user.owner);
+            if (user) {
+                user.bannedInForum = false;
+                user.save({validateBeforeSave: false}, function(err, user) {
+                    if (err) {
+                        console.log(err);
+                        res.status(500).send(err);
+                    } else {
+                        res.status(200).json(user.owner);
+                    }
+                });
+            } else {
+                res.sendStatus(404);
+            }
         }
     });
 };
