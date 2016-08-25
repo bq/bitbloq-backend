@@ -138,16 +138,8 @@ function getUser() {
         });
 }
 
-/**
- * Send token to user email
- */
-function sendTokenByEmail() {
-    // @TODO:  SEND TOKEN BY EMAIL
-    // var token = signToken(user._id, user.role);
-}
 exports.isAuthenticated = isAuthenticated;
 exports.hasRole = hasRole;
 exports.signToken = signToken;
 exports.setTokenCookie = setTokenCookie;
-exports.sendTokenByEmail = sendTokenByEmail;
 exports.getUser = getUser;

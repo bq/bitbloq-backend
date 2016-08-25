@@ -518,38 +518,6 @@ exports.changePasswordAuthenticated = function(req, res) {
 };
 
 /**
- * Reset a users password
- */
-
-exports.resetPassword = function(req, res) {
-
-    var email = req.params.email;
-
-    async.waterfall([
-        function(userCallback) {
-            User.findOne({
-                email: email
-            }, userCallback)
-        },
-        function(user, userCallback) {
-            if (user) {
-                auth.sendTokenByEmail(user, userCallback);
-            } else {
-                userCallback(500);
-            }
-        }
-
-    ], function(err, result) {
-        if (result) {
-            res.sendStatus(200);
-        } else {
-            res.status(500).send(err);
-        }
-    });
-
-};
-
-/**
  * Get my info
  */
 exports.me = function(req, res) {

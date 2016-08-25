@@ -17,7 +17,6 @@ router.head('/:id/unban', auth.hasRole('admin'), controller.unbanUserInForum);
 
 // GET
 router.get('/', auth.hasRole('admin'), controller.index);
-router.get('/reset/:email', controller.resetPassword);
 router.get('/email/:email', controller.getUserId);
 router.get('/me', auth.isAuthenticated(), controller.me);
 router.get('/banned', controller.showBannedUsers);
