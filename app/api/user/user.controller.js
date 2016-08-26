@@ -6,7 +6,6 @@ var User = require('./user.model.js'),
     Token = require('../recovery/token.model.js'),
     config = require('../../res/config.js'),
     jwt = require('jsonwebtoken'),
-    auth = require('../../components/auth/auth.service'),
     mailer = require('../../components/mailer'),
     async = require('async'),
     _ = require('lodash');
