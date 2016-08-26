@@ -529,15 +529,15 @@ exports.me = function(req, res) {
             '-salt -password',
             function(err, user) {
                 if (err) {
-                    res.status(400).send(err);
+                    res.status(500).send(err);
                 } else {
                     if (!user) {
                         res.sendStatus(401);
                     } else {
-                        res.status(200).json(user.owner)
+                        res.status(200).json(user.owner);
                     }
                 }
-            })
+            });
     } else {
         res.sendStatus(404);
     }
@@ -550,23 +550,30 @@ exports.me = function(req, res) {
 exports.updateMe = function(req, res) {
 
     var reqUser = req.body,
-        userId = req.user._id;
-
-    async.waterfall([
-        function(callback) {
-            User.findById(userId, callback)
-        },
-        function(user, callback) {
-            user = _.extend(user, reqUser);
-            user.save(callback);
-        }
-    ], function(err) {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.sendStatus(200);
-        }
-    });
+        userReq = req.user;
+    if (userReq) {
+        async.waterfall([
+            function(callback) {
+                User.findById(userReq._id, callback);
+            },
+            function(user, callback) {
+                user = _.extend(user, reqUser);
+                user.save(callback);
+            }
+        ], function(err, user) {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+                if (!user) {
+                    res.sendStatus(401);
+                } else {
+                    res.sendStatus(200);
+                }
+            }
+        });
+    } else {
+        res.sendStatus(404);
+    }
 };
 
 /**
