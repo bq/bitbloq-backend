@@ -280,7 +280,7 @@ UserSchema
 UserSchema
     .pre('validate', function(next) {
         // Handle birthday
-        if(this.isYounger() && !this.hasBeenValidated){
+        if(this.isUnder14() && !this.hasBeenValidated){
             var validateDay = new Date();
             validateDay.setDate(validateDay.getDate() - 15);
             if (this.createdAt >= validateDay) {
@@ -430,7 +430,7 @@ UserSchema.methods = {
      * @return {Boolean}
      * @api public
      */
-    isYounger: function() {
+    isUnder14: function() {
         var userIsYounger = false,
             older = new Date();
         older.setYear(older.getFullYear() - 14);

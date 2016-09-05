@@ -4,7 +4,7 @@ var User = require('./user.model.js'),
     UserFunctions = require('./user.functions.js'),
     ImageFunctions = require('../image/image.functions.js'),
     Token = require('../recovery/token.model.js'),
-    AutorizationToken = require('../authorization/token.model.js'),
+    AuthorizationToken = require('../authorization/token.model.js'),
     config = require('../../res/config.js'),
     jwt = require('jsonwebtoken'),
     mailer = require('../../components/mailer'),
@@ -53,11 +53,11 @@ exports.create = function(req, res) {
                 res.status(409).send(err);
             } else {
                 if (user) {
-                    if (user.isYounger()) {
+                    if (user.isUnder14()) {
                         sendEmailTutorAuthorization(user, function(err) {
                             if (err) {
                                 console.log(err);
-                                res.sendStatus(500);
+                                res.status(500).send(err);
                             } else {
                                 generateAndSendToken(user, res);
                             }
@@ -76,8 +76,26 @@ exports.create = function(req, res) {
 /**
  * authorize a younger user
  */
-exports.authorize = function(req, res) {
+exports.authorizeUser = function(req, res) {
 
+};
+
+exports.getUser = function(req,res){
+    var tutorToken = req.params.token;
+    async.waterfall([
+        AuthorizationToken.findOne.bind(AuthorizationToken, {token: tutorToken}),
+        function(token, next){
+            User.findById(token._id, next);
+        }
+    ], function(err, user){
+        if(err){
+            console.log(err);
+            res.status(500).send(err);
+        } else {
+            res.status(200).send(user);
+        }
+
+    });
 };
 
 function generateAndSendToken(user, res) {
@@ -93,10 +111,11 @@ function generateAndSendToken(user, res) {
 
 function sendEmailTutorAuthorization(user, next) {
     var token = jwt.sign({
-        _id: user._id
+        _id: user._id,
+        email: user.tutor.email
     }, config.secrets.session, {});
 
-    var tokenModel = new AutorizationToken({
+    var tokenModel = new AuthorizationToken({
         'userId': user._id,
         'token': token
     });
@@ -578,6 +597,7 @@ exports.me = function(req, res) {
             '-salt -password',
             function(err, user) {
                 if (err) {
+                    console.log(err);
                     res.status(500).send(err);
                 } else {
                     if (!user) {

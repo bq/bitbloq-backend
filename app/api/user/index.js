@@ -20,6 +20,7 @@ router.get('/', auth.hasRole('admin'), controller.index);
 router.get('/email/:email', controller.getUserId);
 router.get('/me', auth.isAuthenticated(), controller.me);
 router.get('/banned', controller.showBannedUsers);
+router.get('/under14authorization/:token', controller.getUser);
 
 router.get('/:id', controller.show);
 
@@ -34,6 +35,6 @@ router.put('/me', auth.isAuthenticated(), controller.updateMe);
 router.put('/me/password', auth.isAuthenticated(), controller.changePasswordAuthenticated);
 router.put('/:id/password', auth.isAuthenticated(), controller.changePassword);
 router.put('/:id/social', auth.isAuthenticated(), controller.turnToLocal);
-router.put('/under14authorization', auth.isAuthenticated(), controller.authorize);
+router.put('/under14authorization', controller.authorizeUser);
 
 module.exports = router;

@@ -2,7 +2,7 @@
 
 var mongoose = require('mongoose');
 
-var TokenSchema = new mongoose.Schema({
+var AutorizationTokenSchema = new mongoose.Schema({
     _id: String,
     userId: String,
     token: String,
@@ -18,11 +18,11 @@ var TokenSchema = new mongoose.Schema({
  * Pre-save hook
  */
 
-TokenSchema.pre('save', function(next) {
+AutorizationTokenSchema.pre('save', function(next) {
     this._id = this.userId;
     this.userId = undefined;
     next();
 });
 
 
-module.exports = mongoose.model('AutorizationToken', TokenSchema);
+module.exports = mongoose.model('AutorizationToken', AutorizationTokenSchema);
