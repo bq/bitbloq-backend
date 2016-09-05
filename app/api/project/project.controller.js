@@ -546,26 +546,3 @@ exports.createAll = function(req, res) {
 
 };
 
-// Project.create(req.body, function(err) {
-//     if (err) {
-//         numRequestsKO++;
-//         console.log('error', numRequests, numRequestsOK, numRequestsKO, numRepeatedRequests);
-//         console.log(err);
-//         res.status(500).send(err);
-//     } else {
-//         numRequestsOK++;
-//         console.log('done', numRequests, numRequestsOK, numRequestsKO, numRepeatedRequests);
-//         res.sendStatus(200);
-//     }
-// });
-
-exports.deleteAll = function(req, res) {
-    Project.remove({}, function(err) {
-        if (err) {
-            console.log(err);
-            res.status(500).send(err);
-        } else {
-            res.sendStatus(200);
-        }
-    });
-};

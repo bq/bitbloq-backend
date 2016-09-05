@@ -80,7 +80,20 @@ var UserSchema = new mongoose.Schema({
     isTeacher: Boolean,
     password: String,
     salt: String,
-    corbelHash: Boolean
+    corbelHash: {
+        type: Boolean
+    },
+    hasBeenValidated: {
+        type: Boolean,
+        default: false
+    },
+    tutor: {
+        dni: String,
+        firstName: String,
+        lastName: String,
+        email: String
+    },
+    anonymize: String
 }, {
     timestamps: true
 });
@@ -129,7 +142,8 @@ UserSchema
             'hasBeenAskedIfTeacher': this.hasBeenAskedIfTeacher,
             'hasBeenWarnedAboutChangeBloqsToCode': this.hasBeenWarnedAboutChangeBloqsToCode,
             'hasFirstComponent': this.hasFirstComponent,
-            'takeTour': this.takeTour
+            'takeTour': this.takeTour,
+            'hasBeenValidated': this.hasBeenValidated
         };
     });
 
@@ -142,6 +156,18 @@ UserSchema
             'role': this.role
         };
     });
+
+// Public tutor information
+UserSchema
+    .virtual('tutorProfile')
+    .get(function() {
+        return {
+            'hasBeenValidated': this.hasBeenValidated,
+            'tutor': this.tutor
+        };
+    });
+
+
 
 /**
  * Validations
@@ -249,6 +275,27 @@ UserSchema
             });
         } else {
             next();
+        }
+    });
+
+UserSchema
+    .pre('validate', function(next) {
+        // Handle birthday
+        if(this.anonymize){
+            next(404);
+        } else {
+            if (this.isUnder14() && !this.hasBeenValidated) {
+                var validateDay = new Date();
+                validateDay.setDate(validateDay.getDate() - 15);
+                if (this.createdAt >= validateDay) {
+                    this.invalidate('birthday');
+                    next(401);
+                } else {
+                    next();
+                }
+            } else {
+                next();
+            }
         }
     });
 
@@ -378,7 +425,27 @@ UserSchema.methods = {
                 return callback(null, key.toString('base64'));
             });
         }
+    },
 
+
+    /**
+     * check if user is younger than 14
+     *
+     * @param {String} birthday
+     * @return {Boolean}
+     * @api public
+     */
+    isUnder14: function() {
+        var userIsYounger = false,
+            older = new Date();
+        older.setYear(older.getFullYear() - 14);
+        console.log('this.birthday');
+        console.log(this.birthday);
+        if (this.birthday >= older && !this.hasBeenValidated) {
+            userIsYounger = true;
+        }
+        console.log(userIsYounger);
+        return userIsYounger;
     }
 };
 

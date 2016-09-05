@@ -2,8 +2,10 @@
 
 var User = require('./user.model.js'),
     UserFunctions = require('./user.functions.js'),
+    ProjectFunctions = require('../project/project.functions.js'),
     ImageFunctions = require('../image/image.functions.js'),
     Token = require('../recovery/token.model.js'),
+    AuthorizationToken = require('../authorization/token.model.js'),
     config = require('../../res/config.js'),
     jwt = require('jsonwebtoken'),
     mailer = require('../../components/mailer'),
@@ -48,17 +50,22 @@ exports.create = function(req, res) {
 
         newUser.save(function(err, user) {
             if (err) {
+                console.log(err);
                 res.status(409).send(err);
             } else {
                 if (user) {
-                    var token = jwt.sign({
-                        _id: user._id
-                    }, config.secrets.session, {
-                        expiresIn: 600 * 240
-                    });
-                    res.json({
-                        token: token
-                    });
+                    if (user.isUnder14()) {
+                        sendEmailTutorAuthorization(user, function(err) {
+                            if (err) {
+                                console.log(err);
+                                res.status(500).send(err);
+                            } else {
+                                generateAndSendToken(user, res);
+                            }
+                        });
+                    } else {
+                        generateAndSendToken(user, res);
+                    }
                 } else {
                     res.sendStatus(500);
                 }
@@ -66,6 +73,122 @@ exports.create = function(req, res) {
         });
     }
 };
+
+/**
+ * authorize a younger user
+ */
+exports.authorizeUser = function(req, res) {
+    var tutorToken = req.body.token,
+        userData = req.body.userData;
+    async.waterfall([
+        AuthorizationToken.findOne.bind(AuthorizationToken, {token: tutorToken}),
+        function(token, next) {
+            if (token) {
+                User.findById(token._id, next);
+            } else {
+                next(401);
+            }
+        },
+        function(user, next) {
+            if (!userData.hasBeenValidated) {
+                userData.firstName = 'anon';
+                userData.lastName = 'anon';
+                userData.email = 'anon@anon.com';
+                userData.username = 'anon' + Date.now();
+                userData.password = '';
+                userData.tutor = {};
+                userData.social = {
+                    google: {
+                        id: ''
+                    },
+                    facebook: {
+                        id: ''
+                    }
+                };
+                userData.anonymize = 'rejectedTutor';
+                ProjectFunctions.deleteAllByUser(userData._id, function(err){
+                    if(err){
+                        next(err);
+                    } else {
+                        user.update(userData, next)
+                    }
+                });
+            } else {
+                userData.hasBeenValidated = true;
+                user.update(userData, next)
+            }
+        }, function(user, next) {
+            AuthorizationToken.remove({token: tutorToken}, next);
+        }
+    ], function(err) {
+        if (err) {
+            console.log(err);
+            res.status(500).send(err);
+        } else {
+            res.sendStatus(200);
+        }
+
+    });
+};
+
+exports.getUser = function(req, res) {
+    var tutorToken = req.params.token;
+    async.waterfall([
+        AuthorizationToken.findOne.bind(AuthorizationToken, {token: tutorToken}),
+        function(token, next) {
+            if (token) {
+                User.findById(token._id, next);
+            } else {
+                next(401);
+            }
+        }
+    ], function(err, user) {
+        if (err) {
+            console.log(err);
+            res.status(500).send(err);
+        } else {
+            res.status(200).send(user);
+        }
+
+    });
+};
+
+function generateAndSendToken(user, res) {
+    var token = jwt.sign({
+        _id: user._id
+    }, config.secrets.session, {
+        expiresIn: 600 * 240
+    });
+    res.json({
+        token: token
+    });
+}
+
+function sendEmailTutorAuthorization(user, next) {
+    var token = jwt.sign({
+        _id: user._id,
+        email: user.tutor.email
+    }, config.secrets.session, {});
+
+    var tokenModel = new AuthorizationToken({
+        'userId': user._id,
+        'token': token
+    });
+    tokenModel.save();
+
+    var authorizationUrl = config.client_domain + '/#/under14authorization/' + token;
+
+    var params = {
+        email: user.tutor.email,
+        subject: 'Autorización de registro en Bitbloq',
+        username: user.username,
+        useremail: user.email,
+        tutorname: user.tutor.firstName,
+        authorizationUrl: authorizationUrl
+    };
+
+    mailer.sendOne('under14Authorization', params, next);
+}
 
 function findUserBySocialNetwork(provider, token, socialCallback) {
 
@@ -529,6 +652,7 @@ exports.me = function(req, res) {
             '-salt -password',
             function(err, user) {
                 if (err) {
+                    console.log(err);
                     res.status(500).send(err);
                 } else {
                     if (!user) {
@@ -562,6 +686,7 @@ exports.updateMe = function(req, res) {
             }
         ], function(err, user) {
             if (err) {
+                console.log(err);
                 res.status(500).send(err);
             } else {
                 if (!user) {
