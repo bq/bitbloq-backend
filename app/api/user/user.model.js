@@ -52,6 +52,10 @@ var UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    chromeapp: {
+        type: Boolean,
+        default: false
+    },
     language: {
         type: String,
         default: 'es-ES'
@@ -118,6 +122,7 @@ UserSchema
             'facebookEmail': this.facebookEmail,
             'bannedInForum': this.bannedInForum,
             'newsletter': this.newsletter,
+            'chromeapp': this.chromeapp,
             'isTeacher': this.isTeacher,
             'language': this.language,
             'cookiePolicyAccepted': this.cookiePolicyAccepted,
