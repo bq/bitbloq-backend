@@ -21,7 +21,6 @@ router.put('/:id/clone', auth.isAuthenticated(), controller.clone);
 router.put('/:id/download', auth.getUser(), controller.download);
 router.put('/:id', auth.isAuthenticated(), controller.update);
 
-router.delete('/all', auth.hasRole('admin'), controller.deleteAll);
 router.delete('/:id', auth.isAuthenticated(), controller.destroy);
 
 module.exports = router;

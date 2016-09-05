@@ -92,7 +92,8 @@ var UserSchema = new mongoose.Schema({
         firstName: String,
         lastName: String,
         email: String
-    }
+    },
+    anonymize: String
 }, {
     timestamps: true
 });
@@ -280,17 +281,21 @@ UserSchema
 UserSchema
     .pre('validate', function(next) {
         // Handle birthday
-        if(this.isUnder14() && !this.hasBeenValidated){
-            var validateDay = new Date();
-            validateDay.setDate(validateDay.getDate() - 15);
-            if (this.createdAt >= validateDay) {
-                this.invalidate('birthday');
-                next(401);
+        if(this.anonymize){
+            next(404);
+        } else {
+            if (this.isUnder14() && !this.hasBeenValidated) {
+                var validateDay = new Date();
+                validateDay.setDate(validateDay.getDate() - 15);
+                if (this.createdAt >= validateDay) {
+                    this.invalidate('birthday');
+                    next(401);
+                } else {
+                    next();
+                }
             } else {
                 next();
             }
-        } else {
-            next();
         }
     });
 
@@ -434,9 +439,12 @@ UserSchema.methods = {
         var userIsYounger = false,
             older = new Date();
         older.setYear(older.getFullYear() - 14);
+        console.log('this.birthday');
+        console.log(this.birthday);
         if (this.birthday >= older && !this.hasBeenValidated) {
             userIsYounger = true;
         }
+        console.log(userIsYounger);
         return userIsYounger;
     }
 };

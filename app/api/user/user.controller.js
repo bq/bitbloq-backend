@@ -2,6 +2,7 @@
 
 var User = require('./user.model.js'),
     UserFunctions = require('./user.functions.js'),
+    ProjectFunctions = require('../project/project.functions.js'),
     ImageFunctions = require('../image/image.functions.js'),
     Token = require('../recovery/token.model.js'),
     AuthorizationToken = require('../authorization/token.model.js'),
@@ -77,18 +78,72 @@ exports.create = function(req, res) {
  * authorize a younger user
  */
 exports.authorizeUser = function(req, res) {
+    var tutorToken = req.body.token,
+        userData = req.body.userData;
+    async.waterfall([
+        AuthorizationToken.findOne.bind(AuthorizationToken, {token: tutorToken}),
+        function(token, next) {
+            if (token) {
+                User.findById(token._id, next);
+            } else {
+                next(401);
+            }
+        },
+        function(user, next) {
+            if (!userData.hasBeenValidated) {
+                userData.firstName = 'anon';
+                userData.lastName = 'anon';
+                userData.email = 'anon@anon.com';
+                userData.username = 'anon' + Date.now();
+                userData.password = '';
+                userData.tutor = {};
+                userData.social = {
+                    google: {
+                        id: ''
+                    },
+                    facebook: {
+                        id: ''
+                    }
+                };
+                userData.anonymize = 'rejectedTutor';
+                ProjectFunctions.deleteAllByUser(userData._id, function(err){
+                    if(err){
+                        next(err);
+                    } else {
+                        user.update(userData, next)
+                    }
+                });
+            } else {
+                userData.hasBeenValidated = true;
+                user.update(userData, next)
+            }
+        }, function(user, next) {
+            AuthorizationToken.remove({token: tutorToken}, next);
+        }
+    ], function(err) {
+        if (err) {
+            console.log(err);
+            res.status(500).send(err);
+        } else {
+            res.sendStatus(200);
+        }
 
+    });
 };
 
-exports.getUser = function(req,res){
+exports.getUser = function(req, res) {
     var tutorToken = req.params.token;
     async.waterfall([
         AuthorizationToken.findOne.bind(AuthorizationToken, {token: tutorToken}),
-        function(token, next){
-            User.findById(token._id, next);
+        function(token, next) {
+            if (token) {
+                User.findById(token._id, next);
+            } else {
+                next(401);
+            }
         }
-    ], function(err, user){
-        if(err){
+    ], function(err, user) {
+        if (err) {
             console.log(err);
             res.status(500).send(err);
         } else {
@@ -631,6 +686,7 @@ exports.updateMe = function(req, res) {
             }
         ], function(err, user) {
             if (err) {
+                console.log(err);
                 res.status(500).send(err);
             } else {
                 if (!user) {
