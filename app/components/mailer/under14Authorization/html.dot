@@ -1,0 +1,27 @@
+<img src="http://storage.googleapis.com/bitbloq/mail-images/logobit.png" alt="Bitbloq logo">
+<h1>Autorización de registro en Bitbloq</h1>
+<p>
+    Estimado/a {{=it.tutorname}}:<br>
+    Desde Bitbloq nos ponemos en contacto contigo para informarte de que un usuario con nombre de usuario <b>{{=it.username}}</b> y con email <b>{{=it.useremail}} </b> ha iniciado el proceso de registro en Bitbloq,
+     el espacio donde {{=it.username}} podrá aprender a programar jugando y crear todo lo que se imagines: robots, juegos electrónicos ¡y hasta sus propios inventos!<br>
+</p>
+<p>
+    Al ser menor de 14 años, según establece la normativa de protección de datos española,
+    necesitamos que como padre/madre/tutor legal le autorices para completar su registro. Sin esta
+    autorización, tras un periodo de 15 días desde la recepción de este correo electrónico, perderá
+    el acceso a sus contenidos digitales.<br>
+    Por favor, haz click en el siguiente botón  para ir al formulario de autorización:
+</p>
+<br>
+<div class="mailer__container--button">
+    <a class="mailer__button" href="{{=it.authorizationUrl}}">AUTORIZAR REGISTRO</a>
+</div>
+<br>
+<p>
+    o bien, corta y pega el siguiente enlace en la barra de direcciones de tu navegador:
+</p>
+    <a class="url-link" href="{{=it.authorizationUrl}}">{{=it.authorizationUrl}}</a>
+<p>
+    Un saludo, <br>
+    <i>el equipo de</i> Bitbloq.
+</p>
