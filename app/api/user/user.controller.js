@@ -54,7 +54,7 @@ exports.create = function(req, res) {
                 res.status(409).send(err);
             } else {
                 if (user) {
-                    if (user.isUnder14()) {
+                    if (newUser.needValidation) {
                         sendEmailTutorAuthorization(user, function(err) {
                             if (err) {
                                 console.log(err);
@@ -90,35 +90,19 @@ exports.authorizeUser = function(req, res) {
             }
         },
         function(user, next) {
-            if (!userData.hasBeenValidated) {
-                userData.firstName = 'anon';
-                userData.lastName = 'anon';
-                userData.email = 'anon@anon.com';
-                userData.username = 'anon' + Date.now();
-                userData.password = '';
-                userData.tutor = {};
-                userData.social = {
-                    google: {
-                        id: ''
-                    },
-                    facebook: {
-                        id: ''
-                    }
-                };
-                userData.anonymize = 'rejectedTutor';
-                ProjectFunctions.deleteAllByUser(userData._id, function(err){
-                    if(err){
-                        next(err);
-                    } else {
-                        user.update(userData, next)
-                    }
-                });
+            if (user) {
+                if (!userData.tutor.validation.result) {
+                    user.anonymize('rejectByTutor', next);
+                } else {
+                    userData.needValidation = false;
+                    userData.tutor.validation.date = Date.now();
+                    user.update(userData, next);
+                }
             } else {
-                userData.hasBeenValidated = true;
-                user.update(userData, next)
+                next(404);
             }
-        }, function(user, next) {
-            AuthorizationToken.remove({token: tutorToken}, next);
+        }, function(user, next2, next) {
+            AuthorizationToken.remove({token: tutorToken}, next || next2);
         }
     ], function(err) {
         if (err) {

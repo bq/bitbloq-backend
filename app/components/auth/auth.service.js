@@ -40,10 +40,12 @@ function isAuthenticated() {
             if (req.user) {
                 User.findById(req.user._id, function(err, user) {
                     if (err) {
-                        next(err);
+                        res.status(500).send(err);
                     } else {
                         if (!user) {
-                            res.sendStatus(401);
+                            res.sendStatus(404);
+                        } else if (!user.isValidated()) {
+                            res.sendStatus(404);
                         } else {
                             req.user = user;
                             next();
@@ -51,7 +53,7 @@ function isAuthenticated() {
                     }
                 });
             } else {
-                next();
+                res.sendStatus(401);
             }
 
         });
