@@ -2,7 +2,8 @@
 'use strict';
 
 var crypto = require('crypto'),
-    mongoose = require('mongoose');
+    mongoose = require('mongoose'),
+    ProjectFunctions = require('../project/project.functions.js');
 
 var UserSchema = new mongoose.Schema({
     firstName: {
@@ -83,17 +84,20 @@ var UserSchema = new mongoose.Schema({
     corbelHash: {
         type: Boolean
     },
-    hasBeenValidated: {
-        type: Boolean,
-        default: false
+    needValidation: {
+        type: Boolean
     },
     tutor: {
         dni: String,
         firstName: String,
         lastName: String,
-        email: String
+        email: String,
+        validation: {
+            date: Date,
+            result: Boolean
+        }
     },
-    anonymize: String
+    anonymous: String
 }, {
     timestamps: true
 });
@@ -166,7 +170,6 @@ UserSchema
             'tutor': this.tutor
         };
     });
-
 
 
 /**
@@ -281,21 +284,10 @@ UserSchema
 UserSchema
     .pre('validate', function(next) {
         // Handle birthday
-        if(this.anonymize){
-            next(404);
+        if (this.isValidated()) {
+            next();
         } else {
-            if (this.isUnder14() && !this.hasBeenValidated) {
-                var validateDay = new Date();
-                validateDay.setDate(validateDay.getDate() - 15);
-                if (this.createdAt >= validateDay) {
-                    this.invalidate('birthday');
-                    next(401);
-                } else {
-                    next();
-                }
-            } else {
-                next();
-            }
+            next(404);
         }
     });
 
@@ -320,6 +312,17 @@ UserSchema
             next();
         }
     });
+
+
+UserSchema
+    .pre('validate', function(next) {
+        // Handle new/update passwords
+        if (this.needValidation) {
+            this.bannedInForum = true;
+        }
+        next();
+    });
+
 /**
  * Methods
  */
@@ -335,8 +338,6 @@ UserSchema.methods = {
 
     authenticate: function(password, callback) {
         if (!callback) {
-            console.log(this.password);
-            console.log(this.encryptPassword(password));
             return this.password === this.encryptPassword(password);
         }
 
@@ -401,7 +402,6 @@ UserSchema.methods = {
             return null;
         }
         if (this.corbelHash) {
-            console.log('corbelHash');
             if (callback) {
                 callback(null, crypto.createHash('md5').update(password + this.salt).digest('hex'));
             } else {
@@ -429,23 +429,68 @@ UserSchema.methods = {
 
 
     /**
-     * check if user is younger than 14
+     * check if user is validated
      *
-     * @param {String} birthday
+     * @param {Object} user
      * @return {Boolean}
      * @api public
      */
-    isUnder14: function() {
-        var userIsYounger = false,
-            older = new Date();
-        older.setYear(older.getFullYear() - 14);
-        console.log('this.birthday');
-        console.log(this.birthday);
-        if (this.birthday >= older && !this.hasBeenValidated) {
-            userIsYounger = true;
+    isValidated: function() {
+        if (this.anonymous) {
+            return false;
+        } else {
+            if (this.needValidation) {
+                var createdDay = new Date(this.createdAt);
+                createdDay.setDate(createdDay.getDate() + 15);
+                if (createdDay.getTime() < Date.now()) {
+                    this.anonymize('rejectInValidation', function() {
+                        return false
+                    });
+                } else {
+                    return true;
+                }
+            } else {
+                return true;
+            }
         }
-        console.log(userIsYounger);
-        return userIsYounger;
+    },
+
+    anonymize: function(anonText, next) {
+        this.firstName = 'anon';
+        this.lastName = 'anon';
+        this.email = 'anon@anon.com' + Date.now();
+        this.username = 'anon' + Date.now();
+        this.password = Date.now() * Math.random();
+        this.bannedInForum = true;
+        this.needValidation = false;
+        this.tutor = {
+            dni: '',
+            firstName: '',
+            lastName: '',
+            email: '',
+            validation: {
+                result: false,
+                date: Date.now()
+            }
+        };
+        this.social = {
+            google: {
+                id: ''
+            },
+            facebook: {
+                id: ''
+            }
+        };
+        this.anonymous = anonText;
+
+        var that = this;
+        ProjectFunctions.deleteAllByUser(this._id, function(err) {
+            if (err) {
+                next(500);
+            } else {
+                that.save(next);
+            }
+        });
     }
 };
 
