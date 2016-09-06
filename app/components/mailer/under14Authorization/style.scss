@@ -17,3 +17,21 @@ i {
     font-size: 12px;
     color: #666;
 }
+
+.mailer__container--button {
+    margin: 15px 0px;
+    .mailer__button {
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        background-color: #95C517;
+        color: #FFFFFF;
+        padding: 15px 10px;
+        text-decoration: none;
+    }
+}
+
+.url-link {
+    font-size: 12px;
+    color: #1155CC;
+    text-decoration: underline;
+}
