@@ -81,7 +81,9 @@ exports.authorizeUser = function(req, res) {
     var tutorToken = req.body.token,
         userData = req.body.userData;
     async.waterfall([
-        AuthorizationToken.findOne.bind(AuthorizationToken, {token: tutorToken}),
+        AuthorizationToken.findOne.bind(AuthorizationToken, {
+            token: tutorToken
+        }),
         function(token, next) {
             if (token) {
                 User.findById(token._id, next);
@@ -101,8 +103,11 @@ exports.authorizeUser = function(req, res) {
             } else {
                 next(404);
             }
-        }, function(user, next2, next) {
-            AuthorizationToken.remove({token: tutorToken}, next || next2);
+        },
+        function(user, next2, next) {
+            AuthorizationToken.remove({
+                token: tutorToken
+            }, next || next2);
         }
     ], function(err) {
         if (err) {
@@ -118,7 +123,9 @@ exports.authorizeUser = function(req, res) {
 exports.getUser = function(req, res) {
     var tutorToken = req.params.token;
     async.waterfall([
-        AuthorizationToken.findOne.bind(AuthorizationToken, {token: tutorToken}),
+        AuthorizationToken.findOne.bind(AuthorizationToken, {
+            token: tutorToken
+        }),
         function(token, next) {
             if (token) {
                 User.findById(token._id, next);
@@ -345,8 +352,8 @@ exports.socialLogin = function(req, res) {
                         }
                     });
                 } else {
-                    if (req.user.email !== user.email) {
-                        res.status(500).end();
+                    if (req.user.email !== user.email) { // Account already linked to other user
+                        res.status(409).end();
                     } else {
                         updateWithSocialNetwork(provider, user, function(err) {
                             if (err) {
@@ -774,7 +781,9 @@ exports.banUserInForum = function(req, res) {
         } else {
             if (user) {
                 user.bannedInForum = true;
-                user.save({validateBeforeSave: false}, function(err, user) {
+                user.save({
+                    validateBeforeSave: false
+                }, function(err, user) {
                     if (err) {
                         console.log(err);
                         res.status(500).send(err);
@@ -802,7 +811,9 @@ exports.unbanUserInForum = function(req, res) {
         } else {
             if (user) {
                 user.bannedInForum = false;
-                user.save({validateBeforeSave: false}, function(err, user) {
+                user.save({
+                    validateBeforeSave: false
+                }, function(err, user) {
                     if (err) {
                         console.log(err);
                         res.status(500).send(err);
