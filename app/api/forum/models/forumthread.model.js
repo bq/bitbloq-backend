@@ -28,7 +28,6 @@ var ForumThreadSchema = new mongoose.Schema({
     subscribers: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        unique: true
     }]
 
 }, {

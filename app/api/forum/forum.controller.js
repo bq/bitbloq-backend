@@ -29,6 +29,12 @@ function getLastAnswer(thread, next) {
         .exec(next);
 }
 
+function getSubscribersEmail(threadId, next) {
+    Thread.findById(threadId)
+        .populate('subscribers', 'email')
+        .exec(next);
+}
+
 function getThreadsInCategory(category, next) {
     Thread
         .find({
@@ -288,24 +294,41 @@ exports.createAnswer = function(req, res) {
                     console.log(err);
                     res.status(500).send(err);
                 } else {
-                    var locals = {
-                        email: config.supportEmail,
-                        emailTObbc: config.emailTObbc,
-                        subject: 'Nueva respuesta en el foro de Bitbloq',
-                        username: req.user.username,
-                        forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.thread,
-                        answerTitle: thread.title,
-                        answerContent: answer.content
-                    };
+                    //enviar mail para soporte
 
-                    mailer.sendOne('newForumAnswer', locals, function(err) {
-                        if (err) {
-                            console.log(err);
-                            res.status(500).send(err);
-                        } else {
-                            res.status(200).send(answer._id);
-                        }
-                    });
+                    async.waterfall([
+                            function(cb) {
+                                getSubscribersEmail(thread._id, cb)
+                            },
+                            function(thread, cb) {
+                                var subscribersEmails = _.reduce(thread.subscribers, function(results, person) {
+                                    if (person._id.toString() !== req.user._id.toString()) {
+                                        results.push(person.email);
+                                    }
+                                    return results;
+                                }, []);
+                                var subscribersBBC = _.join(subscribersEmails);
+
+                                var locals = {
+                                    email: config.supportEmail,
+                                    emailTObbc: config.emailTObbc + ',' + subscribersBBC,
+                                    subject: 'Nueva respuesta en el foro de Bitbloq',
+                                    username: req.user.username,
+                                    forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.thread,
+                                    answerTitle: thread.title,
+                                    answerContent: answer.content
+                                };
+
+                                mailer.sendOne('newForumAnswer', locals, cb);
+                            }
+                        ],
+                        function(err) {
+                            if (err) {
+                                res.status(500).send(err);
+                            } else {
+                                res.status(200).send(answer._id);
+                            }
+                        });
                 }
             });
         }
@@ -616,7 +639,8 @@ exports.subscribeToThread = function(req, res) {
             Thread.findById(req.params.id, cb);
         },
         function(thread, cb) {
-            if (thread.subscribers.indexOf(req.user._id) < 1) {
+            console.log(req.user._id);
+            if (thread.subscribers.indexOf(req.user._id) < -1) {
                 cb();
             } else {
                 thread.subscribers.push(req.user._id);
