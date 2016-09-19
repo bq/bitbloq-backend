@@ -640,7 +640,8 @@ exports.subscribeToThread = function(req, res) {
         },
         function(thread, cb) {
             console.log(req.user._id);
-            if (thread.subscribers.indexOf(req.user._id) < -1) {
+            if (thread.subscribers.indexOf(req.user._id) > -1) {
+              console.log("isinarray");
                 cb();
             } else {
                 thread.subscribers.push(req.user._id);
