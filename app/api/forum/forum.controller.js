@@ -6,6 +6,7 @@ var Answer = require('./models/forumanswer.model.js'),
     async = require('async'),
     mailer = require('../../components/mailer'),
     config = require('../../res/config.js'),
+    ObjectID = require('mongoose').Types.ObjectId,
     _ = require('lodash'),
     itemsPerPage = 10;
 
@@ -18,12 +19,12 @@ function countAnswersThread(thread, next) {
 
 function getLastAnswer(thread, next) {
     Answer.findOne({
-        thread: thread._id
-    }, null, {
-        sort: {
-            'updatedAt': -1
-        }
-    })
+            thread: thread._id
+        }, null, {
+            sort: {
+                'updatedAt': -1
+            }
+        })
         .populate('creator', 'username')
         .exec(next);
 }
@@ -36,30 +37,30 @@ function getThreadsInCategory(category, next) {
         .lean()
         .populate('creator', 'username')
         .sort('-updatedAt').exec(function(err, threads) {
-        if (err) {
-            next(err);
-        } else {
-            async.map(threads, function(thread, next) {
-                async.parallel([
-                    countAnswersThread.bind(null, thread),
-                    getLastAnswer.bind(null, thread)
-                ], function(err, results) {
-                    if (results) {
-                        thread.numberOfAnswers = results[0];
-                        thread.lastAnswer = results[1] || {};
-                        next(err, thread);
-                    } else {
-                        next(err, []);
-                    }
-                });
-            }, function(err, completedThreads) {
-                next(err, {
-                    category: category,
-                    threads: completedThreads
-                });
-            })
-        }
-    });
+            if (err) {
+                next(err);
+            } else {
+                async.map(threads, function(thread, next) {
+                    async.parallel([
+                        countAnswersThread.bind(null, thread),
+                        getLastAnswer.bind(null, thread)
+                    ], function(err, results) {
+                        if (results) {
+                            thread.numberOfAnswers = results[0];
+                            thread.lastAnswer = results[1] || {};
+                            next(err, thread);
+                        } else {
+                            next(err, []);
+                        }
+                    });
+                }, function(err, completedThreads) {
+                    next(err, {
+                        category: category,
+                        threads: completedThreads
+                    });
+                })
+            }
+        });
 }
 
 function getCompletedThread(id, next) {
@@ -70,8 +71,8 @@ function getCompletedThread(id, next) {
 
 function getCompletedAnswer(themeId, next) {
     Answer.find({
-        thread: themeId
-    })
+            thread: themeId
+        })
         .sort('updatedAt')
         .populate('creator', 'username')
         .exec(next);
@@ -162,8 +163,8 @@ function getLastThreads(next) {
 
 function searchThreadsPage(titleRegex, page, next) {
     Thread.find({
-        title: titleRegex
-    })
+            title: titleRegex
+        })
         .populate('creator', 'username')
         .populate('category', 'name')
         .skip(itemsPerPage * (page - 1)) // page start counting in 1 (if page == 1 -> skip 0)
@@ -381,7 +382,7 @@ exports.getThread = function(req, res) {
             if (results) {
                 var threadObject = results[0];
                 threadObject.numberOfAnswers = results[1].length - 1;
-                if (req.user && (threadObject.creator._id.toString() != req.user._id.toString())) {
+                if (req.user && (threadObject.creator._id.toString() !== req.user._id.toString())) {
                     var thread = new Thread(threadObject);
                     thread.addView();
                     Thread.findByIdAndUpdate(thread._id, thread, function(err, thread) {
@@ -604,6 +605,30 @@ exports.createForceAnswer = function(req, res) {
             res.status(500).send(err);
         } else {
             res.status(200).send(answer._id);
+        }
+    });
+};
+
+exports.subscribeToThread = function(req, res) {
+
+    async.waterfall([
+        function(cb) {
+            Thread.findById(req.params.id, cb);
+        },
+        function(thread, cb) {
+            if (thread.subscribers.indexOf(req.user._id) < 1) {
+                cb();
+            } else {
+                thread.subscribers.push(req.user._id);
+                var threadUpdated = new Thread(thread);
+                threadUpdated.save(cb);
+            }
+        }
+    ], function(err) {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.sendStatus(200);
         }
     });
 };
