@@ -31,6 +31,7 @@ router.post('/answer', auth.isAuthenticated(), controller.createAnswer);
 router.put('/thread/:id', auth.isAuthenticated(), controller.updateThread);
 router.put('/thread/:id/moveTo/:categoryName', auth.hasRole('admin'), controller.moveThread);
 router.put('/thread/:id/subscribe', auth.isAuthenticated(), controller.subscribeToThread);
+router.put('/thread/:id/unsubscribe', auth.isAuthenticated(), controller.unsubscribeToThread);
 router.put('/answer/:id', auth.isAuthenticated(), controller.updateAnswer);
 
 module.exports = router;

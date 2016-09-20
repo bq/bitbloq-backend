@@ -6,7 +6,6 @@ var Answer = require('./models/forumanswer.model.js'),
     async = require('async'),
     mailer = require('../../components/mailer'),
     config = require('../../res/config.js'),
-    ObjectID = require('mongoose').Types.ObjectId,
     _ = require('lodash'),
     itemsPerPage = 10;
 
@@ -206,6 +205,7 @@ exports.createThread = function(req, res) {
         } else if (banned) {
             res.sendStatus(401);
         } else {
+          req.body.thread.subscriber
             var newThread = new Thread(req.body.thread),
                 newAnswer = new Answer(req.body.answer);
 
@@ -312,7 +312,7 @@ exports.createAnswer = function(req, res) {
                                 var locals = {
                                     email: config.supportEmail,
                                     emailTObbc: config.emailTObbc + ',' + subscribersBBC,
-                                    subject: 'Nueva respuesta en el foro de Bitbloq',
+                                    subject: 'Bitbloq- Nueva respuesta en el tema ' + thread.title,
                                     username: req.user.username,
                                     forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.thread,
                                     answerTitle: thread.title,
@@ -639,10 +639,8 @@ exports.subscribeToThread = function(req, res) {
             Thread.findById(req.params.id, cb);
         },
         function(thread, cb) {
-            console.log(req.user._id);
             if (thread.subscribers.indexOf(req.user._id) > -1) {
-              console.log("isinarray");
-                cb();
+                cb(409);
             } else {
                 thread.subscribers.push(req.user._id);
                 var threadUpdated = new Thread(thread);
@@ -651,9 +649,33 @@ exports.subscribeToThread = function(req, res) {
         }
     ], function(err) {
         if (err) {
-            res.status(500).send(err);
+            res.status(409).send(err);
         } else {
             res.sendStatus(200);
         }
     });
 };
+
+exports.unsubscribeToThread = function(req, res) {
+    async.waterfall([
+        function(cb) {
+            Thread.findById(req.params.id, cb);
+        },
+        function(thread, cb) {
+            if (thread.subscribers.indexOf(req.user._id) > -1) {
+                _.remove(thread.subscribers, req.user._id);
+                var threadUpdated = new Thread(thread);
+                threadUpdated.save(cb);
+            } else {
+                cb(409);
+            }
+        }
+    ], function(err) {
+        if (err) {
+            res.status(409).send(err);
+        } else {
+            res.sendStatus(200);
+        }
+    });
+
+}
