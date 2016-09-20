@@ -24,7 +24,12 @@ var ForumThreadSchema = new mongoose.Schema({
         ref: 'User',
         trim: false,
         required: true
-    }
+    },
+    subscribers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    }]
+
 }, {
     timestamps: true
 });

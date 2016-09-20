@@ -18,13 +18,19 @@ function countAnswersThread(thread, next) {
 
 function getLastAnswer(thread, next) {
     Answer.findOne({
-        thread: thread._id
-    }, null, {
-        sort: {
-            'updatedAt': -1
-        }
-    })
+            thread: thread._id
+        }, null, {
+            sort: {
+                'updatedAt': -1
+            }
+        })
         .populate('creator', 'username')
+        .exec(next);
+}
+
+function getSubscribersEmail(threadId, next) {
+    Thread.findById(threadId)
+        .populate('subscribers', 'email')
         .exec(next);
 }
 
@@ -36,30 +42,30 @@ function getThreadsInCategory(category, next) {
         .lean()
         .populate('creator', 'username')
         .sort('-updatedAt').exec(function(err, threads) {
-        if (err) {
-            next(err);
-        } else {
-            async.map(threads, function(thread, next) {
-                async.parallel([
-                    countAnswersThread.bind(null, thread),
-                    getLastAnswer.bind(null, thread)
-                ], function(err, results) {
-                    if (results) {
-                        thread.numberOfAnswers = results[0];
-                        thread.lastAnswer = results[1] || {};
-                        next(err, thread);
-                    } else {
-                        next(err, []);
-                    }
-                });
-            }, function(err, completedThreads) {
-                next(err, {
-                    category: category,
-                    threads: completedThreads
-                });
-            })
-        }
-    });
+            if (err) {
+                next(err);
+            } else {
+                async.map(threads, function(thread, next) {
+                    async.parallel([
+                        countAnswersThread.bind(null, thread),
+                        getLastAnswer.bind(null, thread)
+                    ], function(err, results) {
+                        if (results) {
+                            thread.numberOfAnswers = results[0];
+                            thread.lastAnswer = results[1] || {};
+                            next(err, thread);
+                        } else {
+                            next(err, []);
+                        }
+                    });
+                }, function(err, completedThreads) {
+                    next(err, {
+                        category: category,
+                        threads: completedThreads
+                    });
+                })
+            }
+        });
 }
 
 function getCompletedThread(id, next) {
@@ -70,8 +76,8 @@ function getCompletedThread(id, next) {
 
 function getCompletedAnswer(themeId, next) {
     Answer.find({
-        thread: themeId
-    })
+            thread: themeId
+        })
         .sort('updatedAt')
         .populate('creator', 'username')
         .exec(next);
@@ -162,8 +168,8 @@ function getLastThreads(next) {
 
 function searchThreadsPage(titleRegex, page, next) {
     Thread.find({
-        title: titleRegex
-    })
+            title: titleRegex
+        })
         .populate('creator', 'username')
         .populate('category', 'name')
         .skip(itemsPerPage * (page - 1)) // page start counting in 1 (if page == 1 -> skip 0)
@@ -199,6 +205,7 @@ exports.createThread = function(req, res) {
         } else if (banned) {
             res.sendStatus(401);
         } else {
+          req.body.thread.subscriber
             var newThread = new Thread(req.body.thread),
                 newAnswer = new Answer(req.body.answer);
 
@@ -287,24 +294,41 @@ exports.createAnswer = function(req, res) {
                     console.log(err);
                     res.status(500).send(err);
                 } else {
-                    var locals = {
-                        email: config.supportEmail,
-                        emailTObbc: config.emailTObbc,
-                        subject: 'Nueva respuesta en el foro de Bitbloq',
-                        username: req.user.username,
-                        forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.thread,
-                        answerTitle: thread.title,
-                        answerContent: answer.content
-                    };
+                    //enviar mail para soporte
 
-                    mailer.sendOne('newForumAnswer', locals, function(err) {
-                        if (err) {
-                            console.log(err);
-                            res.status(500).send(err);
-                        } else {
-                            res.status(200).send(answer._id);
-                        }
-                    });
+                    async.waterfall([
+                            function(cb) {
+                                getSubscribersEmail(thread._id, cb)
+                            },
+                            function(thread, cb) {
+                                var subscribersEmails = _.reduce(thread.subscribers, function(results, person) {
+                                    if (person._id.toString() !== req.user._id.toString()) {
+                                        results.push(person.email);
+                                    }
+                                    return results;
+                                }, []);
+                                var subscribersBBC = _.join(subscribersEmails);
+
+                                var locals = {
+                                    email: config.supportEmail,
+                                    emailTObbc: config.emailTObbc + ',' + subscribersBBC,
+                                    subject: 'Bitbloq- Nueva respuesta en el tema ' + thread.title,
+                                    username: req.user.username,
+                                    forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.thread,
+                                    answerTitle: thread.title,
+                                    answerContent: answer.content
+                                };
+
+                                mailer.sendOne('newForumAnswer', locals, cb);
+                            }
+                        ],
+                        function(err) {
+                            if (err) {
+                                res.status(500).send(err);
+                            } else {
+                                res.status(200).send(answer._id);
+                            }
+                        });
                 }
             });
         }
@@ -381,7 +405,7 @@ exports.getThread = function(req, res) {
             if (results) {
                 var threadObject = results[0];
                 threadObject.numberOfAnswers = results[1].length - 1;
-                if (req.user && (threadObject.creator._id.toString() != req.user._id.toString())) {
+                if (req.user && (threadObject.creator._id.toString() !== req.user._id.toString())) {
                     var thread = new Thread(threadObject);
                     thread.addView();
                     Thread.findByIdAndUpdate(thread._id, thread, function(err, thread) {
@@ -607,3 +631,51 @@ exports.createForceAnswer = function(req, res) {
         }
     });
 };
+
+exports.subscribeToThread = function(req, res) {
+
+    async.waterfall([
+        function(cb) {
+            Thread.findById(req.params.id, cb);
+        },
+        function(thread, cb) {
+            if (thread.subscribers.indexOf(req.user._id) > -1) {
+                cb(409);
+            } else {
+                thread.subscribers.push(req.user._id);
+                var threadUpdated = new Thread(thread);
+                threadUpdated.save(cb);
+            }
+        }
+    ], function(err) {
+        if (err) {
+            res.status(409).send(err);
+        } else {
+            res.sendStatus(200);
+        }
+    });
+};
+
+exports.unsubscribeToThread = function(req, res) {
+    async.waterfall([
+        function(cb) {
+            Thread.findById(req.params.id, cb);
+        },
+        function(thread, cb) {
+            if (thread.subscribers.indexOf(req.user._id) > -1) {
+                _.remove(thread.subscribers, req.user._id);
+                var threadUpdated = new Thread(thread);
+                threadUpdated.save(cb);
+            } else {
+                cb(409);
+            }
+        }
+    ], function(err) {
+        if (err) {
+            res.status(409).send(err);
+        } else {
+            res.sendStatus(200);
+        }
+    });
+
+}
