@@ -19,6 +19,8 @@ exports.getAll = function(req, res) {
         })
         .exec(function(err, projects) {
             if (err) {
+                console.log('err');
+                console.log(err);
                 res.status(500).send(err);
             } else {
                 res.status(200).json(projects);
@@ -29,6 +31,8 @@ exports.getAll = function(req, res) {
 exports.createAll = function(req, res) {
     Property.create(req.body, function(err) {
         if (err) {
+            console.log('err');
+            console.log(err);
             res.status(500).send(err);
         } else {
             res.sendStatus(200);
@@ -39,6 +43,8 @@ exports.createAll = function(req, res) {
 exports.deleteAll = function(req, res) {
     Property.remove({}, function(err) {
         if (err) {
+            console.log('err');
+            console.log(err);
             res.status(500).send(err);
         } else {
             res.sendStatus(200);
