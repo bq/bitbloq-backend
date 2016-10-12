@@ -43,7 +43,7 @@ var UserSchema = new mongoose.Schema({
         }
     },
     role: {
-        type: String,
+        type: String, // user | admin | teacher | student
         default: 'user'
     },
     birthday: {
@@ -97,7 +97,13 @@ var UserSchema = new mongoose.Schema({
             result: Boolean
         }
     },
-    anonymous: String
+    anonymous: String,
+    center: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Center',
+        trim: false,
+        required: true
+    }
 }, {
     timestamps: true
 });
