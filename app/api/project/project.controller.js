@@ -263,6 +263,7 @@ exports.update = function(req, res) {
     var projectId = req.params.id;
     Project.findById(projectId, function(err, project) {
         if (err) {
+            console.log(err);
             res.status(500).send(err);
         } else {
             if (project.isOwner(req.user._id)) {
@@ -270,6 +271,7 @@ exports.update = function(req, res) {
                 project = _.extend(project, projectBody);
                 project.save(function(err, project) {
                     if (err) {
+                        console.log(err);
                         res.status(500).send(err);
                     } else {
                         res.sendStatus(200);

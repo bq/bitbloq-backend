@@ -24,6 +24,7 @@ module.exports = function(app) {
     router.use('/changelog', require('./api/changelog/index'));
     router.use('/feedback', require('./api/feedback/index'));
     router.use('/robotsFirmware', require('./api/robotsFirmware/index'));
+    router.use('/center', require('./api/centerMode/index'));
 
     // Set a prefix for all calls
     app.use('/bitbloq/v1', router);
