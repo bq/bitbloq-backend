@@ -101,8 +101,7 @@ var UserSchema = new mongoose.Schema({
     center: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Center',
-        trim: false,
-        required: true
+        trim: false
     }
 }, {
     timestamps: true
