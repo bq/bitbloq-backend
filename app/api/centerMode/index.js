@@ -18,7 +18,7 @@ router.get('/center/:id', auth.isAuthenticated(), controller.getCenter);
 router.post('/exercise', auth.isAuthenticated(), controller.createExercise);
 router.post('/task', auth.isAuthenticated(), controller.createTask);
 router.post('/group', auth.isAuthenticated(), controller.createGroup);
-router.post('/teacher', auth.isAuthenticated(), controller.addTeacher);
+router.post('/center/:centerId/teacher', auth.isAuthenticated(), controller.addTeacher);
 router.post('/center', auth.isAuthenticated(), controller.createCenter);
 
 // PUT

@@ -38,8 +38,8 @@ exports.createCenter = function(req, res) {
  */
 exports.addTeacher = function(req, res) {
     var userId = req.user._id,
-        newTeacherEmails = req.body.teachers,
-        centerId = req.body.centerId;
+        newTeacherEmails = req.body,
+        centerId = req.params.centerId;
     async.parallel([
         UserFunctions.getCenterWithUserAdmin.bind(UserFunctions, userId, centerId),
         UserFunctions.getAllUsersByEmails.bind(UserFunctions, newTeacherEmails)
