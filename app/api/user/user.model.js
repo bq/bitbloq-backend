@@ -43,7 +43,7 @@ var UserSchema = new mongoose.Schema({
         }
     },
     role: {
-        type: String, // user | admin | teacher | student
+        type: String, // user | admin
         default: 'user'
     },
     birthday: {
@@ -98,11 +98,14 @@ var UserSchema = new mongoose.Schema({
         }
     },
     anonymous: String,
-    center: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Center',
-        trim: false
-    }
+    centers: [{
+        _id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Center',
+            trim: false
+        },
+        role: String // headMaster | teacher | student
+    }]
 }, {
     timestamps: true
 });
@@ -152,7 +155,8 @@ UserSchema
             'hasBeenWarnedAboutChangeBloqsToCode': this.hasBeenWarnedAboutChangeBloqsToCode,
             'hasFirstComponent': this.hasFirstComponent,
             'takeTour': this.takeTour,
-            'hasBeenValidated': this.hasBeenValidated
+            'hasBeenValidated': this.hasBeenValidated,
+            'centers': this.centers
         };
     });
 

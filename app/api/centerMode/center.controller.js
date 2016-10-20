@@ -1,5 +1,10 @@
 'use strict';
 
+var Center = require('./models/center.model.js'),
+    UserFunctions = require('../user/user.functions.js'),
+    async = require('async');
+
+
 /**
  * Create an exercise
  */
@@ -26,6 +31,35 @@ exports.createGroup = function(req, res) {
  */
 exports.createCenter = function(req, res) {
 
+};
+
+/**
+ * Create center
+ */
+exports.addTeacher = function(req, res) {
+    var userId = req.user._id,
+        newTeacherEmails = req.body.teachers,
+        centerId = req.body.centerId;
+    async.parallel([
+        UserFunctions.getCenterWithUserAdmin.bind(UserFunctions, userId, centerId),
+        UserFunctions.getAllUsersByEmails.bind(UserFunctions, newTeacherEmails)
+    ], function(err, result) {
+        if (err) {
+            console.log(err);
+            res.sendStatus(401);
+        } else if (!result) {
+            res.sendStatus(304);
+        } else {
+            UserFunctions.addAllTeachersInCenter(result[1], result[0], function(err, newuser) {
+                if (err) {
+                    console.log(err);
+                    res.status(err.code).send(err);
+                } else {
+                    res.sendStatus(200);
+                }
+            });
+        }
+    });
 };
 
 /**
