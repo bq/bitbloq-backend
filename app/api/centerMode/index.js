@@ -32,6 +32,7 @@ router.put('/center/:id', auth.isAuthenticated(), controller.updateCenter);
 router.delete('/exercise/:id', auth.isAuthenticated(), controller.deleteExercise);
 router.delete('/task/:id', auth.isAuthenticated(), controller.deleteTask);
 router.delete('/group/:id', auth.isAuthenticated(), controller.deleteGroup);
-router.delete('/center/:id', auth.isAuthenticated(), controller.anonCenter); //anonymous
+router.delete('/center/:id', auth.isAuthenticated(), controller.anonCenter);
+router.delete('/center/:centerId/teacher/:teacherId', auth.isAuthenticated(), controller.deleteTeacher); 
 
 module.exports = router;
