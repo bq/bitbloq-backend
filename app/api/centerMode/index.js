@@ -13,6 +13,7 @@ router.get('/task/:id', auth.isAuthenticated(), controller.getTask);
 router.get('/group/:id', auth.isAuthenticated(), controller.getGroup);
 router.get('/group/teacher/:id', auth.isAuthenticated(), controller.getGroupByTeacher);
 router.get('/center/:id', auth.isAuthenticated(), controller.getCenter);
+router.get('/center/:centerId/teacher', auth.isAuthenticated(), controller.getTeachers);
 
 // POST
 router.post('/exercise', auth.isAuthenticated(), controller.createExercise);

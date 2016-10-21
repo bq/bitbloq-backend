@@ -6,6 +6,35 @@ var Center = require('./models/center.model.js'),
 
 
 /**
+ * Create center
+ */
+exports.addTeacher = function(req, res) {
+    var userId = req.user._id,
+        newTeacherEmails = req.body,
+        centerId = req.params.centerId;
+    async.parallel([
+        UserFunctions.getCenterWithUserAdmin.bind(UserFunctions, userId, centerId),
+        UserFunctions.getAllUsersByEmails.bind(UserFunctions, newTeacherEmails)
+    ], function(err, result) {
+        if (err) {
+            console.log(err);
+            res.sendStatus(401);
+        } else if (!result) {
+            res.sendStatus(304);
+        } else {
+            UserFunctions.addAllTeachers(result[1], result[0], function(err, newuser) {
+                if (err) {
+                    console.log(err);
+                    res.status(err.code).send(err);
+                } else {
+                    res.sendStatus(200);
+                }
+            });
+        }
+    });
+};
+
+/**
  * Create an exercise
  */
 exports.createExercise = function(req, res) {
@@ -34,15 +63,17 @@ exports.createCenter = function(req, res) {
 };
 
 /**
- * Create center
+ * Get teachers in a center
  */
-exports.addTeacher = function(req, res) {
+exports.getTeachers = function(req, res) {
     var userId = req.user._id,
         newTeacherEmails = req.body,
         centerId = req.params.centerId;
-    async.parallel([
+    async.waterfall([
         UserFunctions.getCenterWithUserAdmin.bind(UserFunctions, userId, centerId),
-        UserFunctions.getAllUsersByEmails.bind(UserFunctions, newTeacherEmails)
+        function(centerId, next) {
+            UserFunctions.getAllTeachers(centerId, next);
+        }
     ], function(err, result) {
         if (err) {
             console.log(err);
@@ -50,14 +81,7 @@ exports.addTeacher = function(req, res) {
         } else if (!result) {
             res.sendStatus(304);
         } else {
-            UserFunctions.addAllTeachersInCenter(result[1], result[0], function(err, newuser) {
-                if (err) {
-                    console.log(err);
-                    res.status(err.code).send(err);
-                } else {
-                    res.sendStatus(200);
-                }
-            });
+            res.send(result);
         }
     });
 };

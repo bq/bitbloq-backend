@@ -4,7 +4,8 @@ var request = require('request-promise'),
     config = require('../../res/config.js'),
     jwt = require('jsonwebtoken'),
     async = require('async'),
-    _ = require('lodash');
+    _ = require('lodash'),
+    mongoose = require('mongoose');
 
 
 /**
@@ -143,7 +144,7 @@ exports.getCenterWithUserAdmin = function(userId, centerId, next) {
  * @param {String} centerId
  * @return {Function} next
  */
-exports.addTeacherInCenter = function(user, centerId, next) {
+exports.addTeacher = function(user, centerId, next) {
     user.centers = user.centers || [];
     var centerExist = _.find(user.centers, function(center) {
         return String(center._id) === String(centerId);
@@ -164,19 +165,31 @@ exports.addTeacherInCenter = function(user, centerId, next) {
     }
 };
 
-
 /**
  * Add users in a center like teachers
  * @param {String} users
  * @param {String} centerId
  * @return {Function} next
  */
-exports.addAllTeachersInCenter = function(users, centerId, next) {
+exports.addAllTeachers = function(users, centerId, next) {
     async.map(users, function(user, next) {
-        exports.addTeacherInCenter(user, centerId, next);
+        exports.addTeacher(user, centerId, next);
     }, function(err, completedUsers) {
         next(err, completedUsers);
     });
+};
+
+/**
+ * Get all teachers in a center
+ * @param {String} centerId
+ * @return {Function} next
+ */
+exports.getAllTeachers = function(centerId, next) {
+    User.find({})
+        .elemMatch("centers", {
+            _id: centerId,
+            role: 'teacher'
+        }).exec(next);
 };
 
 
