@@ -47,7 +47,8 @@ var ProjectSchema = new mongoose.Schema({
         type: String,
         default: 'default'
     },
-    _acl: {}
+    _acl: {},
+    genericBoardSelected: {}
 }, {
     timestamps: true
 });
