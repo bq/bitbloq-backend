@@ -222,12 +222,12 @@ exports.deleteTeacher = function(userId, centerId, next) {
         function(user, next) {
             var indexArray;
             user.centers.forEach(function(center, index) {
-               if(String(center._id) === String(centerId) && center.role === 'teacher'){
-                   indexArray=index;
-               }
+                if (String(center._id) === String(centerId) && center.role === 'teacher') {
+                    indexArray = index;
+                }
             });
             if (indexArray > -1) {
-               user.centers.splice(indexArray, 1);
+                user.centers.splice(indexArray, 1);
             }
             user.update(user, next);
         }
@@ -274,5 +274,27 @@ exports.getCenterWithUserAdmin = function(userId, centerId, next) {
         }
     ], function(err, result) {
         next(err, result);
+    });
+};
+
+/**
+ * Returns if a user is head master
+ * @param user Id
+ */
+exports.getCenterIdbyHeadMaster = function(userId, next) {
+    User.findById(userId, function(err, user) {
+        if (err) {
+            res.status(err.code).send(err);
+        } else {
+            var centerId;
+            if (user && user.centers) {
+                user.centers.forEach(function(center) {
+                    if (center.role === 'headMaster') {
+                        centerId = center._id;
+                    }
+                });
+            }
+            next(null, centerId);
+        }
     });
 };

@@ -6,6 +6,8 @@ var express = require('express'),
 
 var router = express.Router();
 
+//HEAD
+router.head('/center/:type', auth.isAuthenticated(), controller.isHeadMaster);
 // GET
 router.get('/exercise/:id', auth.isAuthenticated(), controller.getExercise);
 router.get('/exercise/:task', auth.isAuthenticated(), controller.getExerciseByTask);
