@@ -11,7 +11,8 @@ var request = require('request-promise'),
 /**
  * Return if user is banned
  * @param {String} userId
- * @return {Function} next
+ * @param {Function} next
+ * @return {Boolean} banned
  */
 exports.isBanned = function(userId, next) {
     User.findById(userId, function(err, user) {
@@ -27,7 +28,8 @@ exports.isBanned = function(userId, next) {
 /**
  * Get a single profile user
  * @param {String} userId
- * @return {Function} next
+ * @param {Function} next
+ * @return {Object} user.profile
  */
 exports.getUserProfile = function(userId, next) {
     User.findById(userId, function(err, user) {
@@ -44,7 +46,8 @@ exports.getUserProfile = function(userId, next) {
 /**
  * Get users by username regex
  * @param {String} username
- * @return {Function} next
+ * @param {Function} next
+ * @return {Object} user.owner
  */
 exports.getUserIdsByName = function(username, next) {
     if (username['$regex']) {
@@ -54,7 +57,7 @@ exports.getUserIdsByName = function(username, next) {
         if (err) {
             next(err);
         } else if (user) {
-            next(err, user);
+            next(err, user.owner);
         } else {
             next();
         }
@@ -64,7 +67,8 @@ exports.getUserIdsByName = function(username, next) {
 /**
  * Get an user id
  * @param {String} email
- * @return {Function} next
+ * @param {Function} next
+ * @return {String} user Id
  */
 exports.getUserId = function(email, next) {
     User.findOne({
@@ -83,7 +87,8 @@ exports.getUserId = function(email, next) {
 /**
  * Get an user
  * @param {String} email
- * @return {Function} next
+ * @param {Function} next
+ * @return {Object} user.owner
  */
 exports.getUserByEmail = function(email, next) {
     User.findOne({
@@ -103,7 +108,8 @@ exports.getUserByEmail = function(email, next) {
 /**
  * Get users
  * @param {String} emails
- * @return {Function} next
+ * @param {Function} next
+ * @return {Array} userIds
  */
 exports.getAllUsersByEmails = function(emails, next) {
     async.map(emails, exports.getUserByEmail, function(err, userIds) {
@@ -128,6 +134,9 @@ exports.generateToken = function(user, next) {
 
 /**
  * Get google user data with token
+ * @param {String} provider
+ * @param {Function} next
+ * @return {Promise} request
  */
 
 exports.getSocialProfile = function(provider, token) {
@@ -143,6 +152,12 @@ exports.getSocialProfile = function(provider, token) {
     return socialRequest;
 };
 
+/**
+ * Get avatar facebook user
+ * @param {String} userId
+ * @param {Function} next
+ * @return {Promise} request
+ */
 exports.getFacebookAvatar = function(userId) {
     return request('http://graph.facebook.com/v2.5/' + userId + '/picture?type=large&redirect=false');
 };
@@ -223,7 +238,8 @@ exports.deleteTeacher = function(userId, centerId, next) {
 /**
  * Get all teachers in a center
  * @param {String} centerId
- * @return {Function} next
+ * @param {Function} next
+ * @return {Array} teachers
  */
 exports.getAllTeachers = function(centerId, next) {
     User.find({})
@@ -260,4 +276,3 @@ exports.getCenterWithUserAdmin = function(userId, centerId, next) {
         next(err, result);
     });
 };
-

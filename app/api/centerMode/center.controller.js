@@ -7,6 +7,8 @@ var Center = require('./models/center.model.js'),
 
 /**
  * Create center
+ * @param req
+ * @param res
  */
 exports.addTeacher = function(req, res) {
     var userId = req.user._id,
@@ -36,6 +38,8 @@ exports.addTeacher = function(req, res) {
 
 /**
  * Create an exercise
+ * @param req
+ * @param res
  */
 exports.createExercise = function(req, res) {
 
@@ -43,6 +47,8 @@ exports.createExercise = function(req, res) {
 
 /**
  * Create task
+ * @param req
+ * @param res
  */
 exports.createTask = function(req, res) {
 
@@ -50,6 +56,8 @@ exports.createTask = function(req, res) {
 
 /**
  * Create group
+ * @param req
+ * @param res
  */
 exports.createGroup = function(req, res) {
 
@@ -57,6 +65,8 @@ exports.createGroup = function(req, res) {
 
 /**
  * Create center
+ * @param req
+ * @param res
  */
 exports.createCenter = function(req, res) {
 
@@ -64,6 +74,8 @@ exports.createCenter = function(req, res) {
 
 /**
  * Get teachers in a center
+ * @param req
+ * @param res
  */
 exports.getTeachers = function(req, res) {
     var userId = req.user._id,
@@ -87,6 +99,8 @@ exports.getTeachers = function(req, res) {
 
 /**
  * Get info of exercise by id
+ * @param req
+ * @param res
  */
 exports.getExercise = function(req, res) {
 
@@ -94,6 +108,8 @@ exports.getExercise = function(req, res) {
 
 /**
  * Get a exercise by its task
+ * @param req
+ * @param res
  */
 exports.getExerciseByTask = function(req, res) {
 
@@ -101,6 +117,8 @@ exports.getExerciseByTask = function(req, res) {
 
 /**
  * Get student task
+ * @param req
+ * @param res
  */
 exports.getTask = function(req, res) {
 
@@ -108,6 +126,8 @@ exports.getTask = function(req, res) {
 
 /**
  * Get student group
+ * @param req
+ * @param res
  */
 exports.getGroup = function(req, res) {
 
@@ -115,6 +135,8 @@ exports.getGroup = function(req, res) {
 
 /**
  * Get student group by its teacher
+ * @param req
+ * @param res
  */
 exports.getGroupByTeacher = function(req, res) {
 
@@ -122,6 +144,8 @@ exports.getGroupByTeacher = function(req, res) {
 
 /**
  * Get center
+ * @param req
+ * @param res
  */
 exports.getCenter = function(req, res) {
 
@@ -129,6 +153,8 @@ exports.getCenter = function(req, res) {
 
 /**
  * Update an exercise ir user is owner
+ * @param req
+ * @param res
  */
 exports.updateExercise = function(req, res) {
 
@@ -136,6 +162,8 @@ exports.updateExercise = function(req, res) {
 
 /**
  * Update a task if user is owner
+ * @param req
+ * @param res
  */
 exports.updateTask = function(req, res) {
 
@@ -143,6 +171,8 @@ exports.updateTask = function(req, res) {
 
 /**
  * Update a student group
+ * @param req
+ * @param res
  */
 exports.updateGroup = function(req, res) {
 
@@ -150,6 +180,8 @@ exports.updateGroup = function(req, res) {
 
 /**
  * Update center information
+ * @param req
+ * @param res
  */
 exports.updateCenter = function(req, res) {
 
@@ -157,6 +189,8 @@ exports.updateCenter = function(req, res) {
 
 /**
  * Delete an exercise if user is owner
+ * @param req
+ * @param res
  */
 exports.deleteExercise = function(req, res) {
 
@@ -164,6 +198,8 @@ exports.deleteExercise = function(req, res) {
 
 /**
  * Delete a group if user is owner
+ * @param req
+ * @param res
  */
 exports.deleteGroup = function(req, res) {
 
@@ -172,6 +208,8 @@ exports.deleteGroup = function(req, res) {
 
 /**
  * Delete a task if user is owner
+ * @param req
+ * @param res
  */
 exports.deleteTask = function(req, res) {
 
@@ -179,6 +217,8 @@ exports.deleteTask = function(req, res) {
 
 /**
  * Delete a teacher in a center
+ * @param req
+ * @param res
  */
 exports.deleteTeacher = function(req, res) {
     var userId = req.user._id,
@@ -203,6 +243,8 @@ exports.deleteTeacher = function(req, res) {
 
 /**
  * Make anonymous a center if user is owner
+ * @param req
+ * @param res
  */
 exports.anonCenter = function(req, res) {
 
