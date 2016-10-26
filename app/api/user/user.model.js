@@ -98,14 +98,7 @@ var UserSchema = new mongoose.Schema({
         }
     },
     anonymous: String,
-    centers: [{
-        _id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Center',
-            trim: false
-        },
-        role: String // headMaster | teacher | student
-    }]
+    centers : {} // CenterId : {date, role: headMaster | teacher | student} 
 }, {
     timestamps: true
 });
