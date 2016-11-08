@@ -264,7 +264,7 @@ exports.update = function(req, res) {
     Project.findById(projectId, function(err, project) {
         if (err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(404).send(err);
         } else {
             if (project.isOwner(req.user._id)) {
                 var projectBody = clearProject(req.body);
@@ -272,7 +272,7 @@ exports.update = function(req, res) {
                 project.save(function(err, project) {
                     if (err) {
                         console.log(err);
-                        res.status(500).send(err);
+                        res.status(409).send(err);
                     } else {
                         res.sendStatus(200);
                     }
