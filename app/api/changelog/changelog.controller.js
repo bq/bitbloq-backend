@@ -19,6 +19,8 @@ exports.get = function(req, res) {
             order: 'asc'
         }).exec(function(err, projects) {
             if (err) {
+                console.log('err');
+                console.log(err);
                 res.status(500).send(err);
             } else {
                 res.status(200).json(projects);
@@ -30,6 +32,8 @@ exports.get = function(req, res) {
 exports.createAll = function(req, res) {
     Changelog.create(req.body, function(err) {
         if (err) {
+            console.log('err');
+            console.log(err);
             res.status(500).send(err);
         } else {
             res.sendStatus(200);
@@ -40,6 +44,8 @@ exports.createAll = function(req, res) {
 exports.deleteAll = function(req, res) {
     Changelog.remove({}, function(err) {
         if (err) {
+            console.log('err');
+            console.log(err);
             res.status(500).send(err);
         } else {
             res.sendStatus(200);

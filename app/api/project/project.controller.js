@@ -24,7 +24,8 @@ function clearProject(project) {
 function getCountPublic(res, query) {
     Project.count(query, function(err, counter) {
         if (err) {
-            res.status(500).send(err);
+            console.log(err);
+            res.status(err.code).send(err);
         } else {
             res.status(200).json({
                 'count': counter
@@ -73,7 +74,8 @@ function getSearch(res, params) {
         .populate('creator', 'username')
         .exec(function(err, projects) {
             if (err) {
-                res.status(500).send(err);
+                console.log(err);
+                res.status(err.code).send(err);
             } else {
                 res.status(200).json(projects);
             }
@@ -85,7 +87,8 @@ function updateProjectAndReturn(res, project) {
         .populate('creator', 'username')
         .exec(function(err, completedProject) {
             if (err) {
-                res.status(500).send(err);
+                console.log(err);
+                res.status(err.code).send(err);
             } else {
                 res.status(200).json(completedProject);
             }
@@ -126,7 +129,8 @@ exports.create = function(req, res) {
     var newProject = new Project(projectObject);
     newProject.save(function(err, project) {
         if (err) {
-            res.status(500).send(err);
+            console.log(err);
+            res.status(err.code).send(err);
         } else {
             res.status(200).json(project.id);
         }
@@ -143,7 +147,8 @@ exports.download = function(req, res) {
                 project.addDownload();
                 project.update(project, function(err) {
                     if (err) {
-                        res.status(500).send(err);
+                        console.log(err);
+                        res.status(err.code).send(err);
                     } else {
                         res.status(200).json(project);
                     }
@@ -175,7 +180,8 @@ exports.show = function(req, res) {
         .populate('creator', 'username')
         .exec(function(err, project) {
             if (err) {
-                res.status(500).send(err);
+                console.log(err);
+                res.status(err.code).send(err);
             } else if (!project) {
                 res.sendStatus(404);
             } else {
@@ -191,7 +197,8 @@ exports.getPublished = function(req, res) {
     if (req.query && !utils.isEmpty(req.query)) {
         completeQuery(req.query, function(err, query) {
             if (err) {
-                res.status(500).send(err);
+                console.log(err);
+                res.status(err.code).send(err);
             } else {
                 if (req.query.count === '*') {
                     getCountPublic(res, query);
@@ -223,7 +230,8 @@ exports.me = function(req, res) {
         })
         .exec(function(err, projects) {
             if (err) {
-                res.status(500).send(err);
+                console.log(err);
+                res.status(err.code).send(err);
             } else {
                 res.status(200).json(projects);
             }
@@ -249,7 +257,8 @@ exports.sharedWithMe = function(req, res) {
         .populate('creator', 'username')
         .exec(function(err, projects) {
             if (err) {
-                res.status(500).send(err);
+                console.log(err);
+                res.status(err.code).send(err);
             } else {
                 res.status(200).json(projects);
             }
@@ -264,7 +273,7 @@ exports.update = function(req, res) {
     Project.findById(projectId, function(err, project) {
         if (err) {
             console.log(err);
-            res.status(404).send(err);
+            res.status(err.code).send(err);
         } else {
             if (project.isOwner(req.user._id)) {
                 var projectBody = clearProject(req.body);
@@ -292,7 +301,9 @@ exports.publish = function(req, res) {
         userId = req.user._id;
     Project.findById(projectId, function(err, project) {
         if (err) {
-            res.status(500).send(err);
+
+            console.log(err);
+            res.status(err.code).send(err);
         } else {
             if (project.isOwner(userId)) {
                 Project.findByIdAndUpdate(projectId, {
@@ -304,7 +315,8 @@ exports.publish = function(req, res) {
                     }
                 }, function(err) {
                     if (err) {
-                        res.sendStatus(500).send(err);
+                        console.log(err);
+                        res.sendStatus(err.code).send(err);
                     } else {
                         res.sendStatus(200);
                     }
@@ -324,7 +336,8 @@ exports.private = function(req, res) {
         userId = req.user._id;
     Project.findById(projectId, function(err, project) {
         if (err) {
-            res.status(500).send(err);
+            console.log(err);
+            res.status(err.code).send(err);
         } else {
             if (project.isOwner(userId)) {
                 Project.findByIdAndUpdate(projectId, {
@@ -333,7 +346,7 @@ exports.private = function(req, res) {
                     }
                 }, function(err) {
                     if (err) {
-                        res.sendStatus(500).send(err);
+                        res.status(err.code).send(err);
                     } else {
                         res.sendStatus(200);
                     }
@@ -358,7 +371,8 @@ exports.share = function(req, res) {
         userId = req.user._id;
     Project.findById(projectId, function(err, project) {
         if (err) {
-            res.status(500).send(err)
+            console.log(err);
+            res.status(err.code).send(err)
         } else {
             if (project.isOwner(userId)) {
                 project.resetShare();
@@ -388,7 +402,8 @@ exports.share = function(req, res) {
 
                                     mailer.sendOne('shareProject', locals, function(err) {
                                         if (err) {
-                                            res.status(500).send(err);
+                                            console.log(err);
+                                            res.status(err.code).send(err);
                                         } else {
                                             res.status(200);
                                         }
@@ -403,12 +418,14 @@ exports.share = function(req, res) {
                     },
                     function(err) {
                         if (err) {
-                            res.status(500).send(err);
+                            console.log(err);
+                            res.status(err.code).send(err);
                         } else {
                             response.project = project;
                             Project.findByIdAndUpdate(projectId, project, function(err) {
                                 if (err) {
-                                    res.status(500).send(err);
+                                    console.log(err);
+                                    res.status(err.code).send(err);
                                 } else {
                                     res.status(200).json(response);
                                 }
@@ -462,7 +479,8 @@ exports.clone = function(req, res) {
         }
     ], function(err, newProject) {
         if (err) {
-            res.status(500).send(err)
+            console.log(err);
+            res.status(err.code).send(err)
         } else {
             res.status(200).json(newProject._id);
         }
@@ -496,7 +514,8 @@ exports.destroy = function(req, res) {
 
     ], function(err) {
         if (err) {
-            res.status(500).send(err)
+            console.log(err);
+            res.status(err.code).send(err);
         } else {
             res.status(204).end();
         }
@@ -539,7 +558,8 @@ exports.createAll = function(req, res) {
         console.log('Items', numItems, 'Repeated', numRepeatedItems);
         if (err) {
             numRequestsKO++;
-            res.status(500).send(err);
+            console.log(err);
+            res.status(err.code).send(err);
         } else {
             numRequestsOK++;
             res.sendStatus(200);

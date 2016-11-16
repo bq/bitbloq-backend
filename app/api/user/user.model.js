@@ -57,6 +57,10 @@ var UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    seeBoardsUnderDevelopment: {
+        type: Boolean,
+        default: false
+    },
     language: {
         type: String,
         default: 'es-ES'
@@ -141,6 +145,7 @@ UserSchema
             'bannedInForum': this.bannedInForum,
             'newsletter': this.newsletter,
             'chromeapp': this.chromeapp,
+            'seeBoardsUnderDevelopment': this.seeBoardsUnderDevelopment,
             'isTeacher': this.isTeacher,
             'language': this.language,
             'cookiePolicyAccepted': this.cookiePolicyAccepted,
@@ -172,7 +177,6 @@ UserSchema
             'tutor': this.tutor
         };
     });
-
 
 /**
  * Validations
@@ -315,7 +319,6 @@ UserSchema
         }
     });
 
-
 UserSchema
     .pre('validate', function(next) {
         // Handle new/update passwords
@@ -428,7 +431,6 @@ UserSchema.methods = {
             });
         }
     },
-
 
     /**
      * check if user is validated
