@@ -18,19 +18,21 @@ exports.get = function(req, res) {
         .sort({
             name: 'asc'
         }).exec(function(err, projects) {
-            if (err) {
-                res.status(500).send(err);
-            } else {
-                res.status(200).json(projects);
-            }
-        });
+        if (err) {
+            console.log(err);
+            res.status(err.code).send(err);
+        } else {
+            res.status(200).json(projects);
+        }
+    });
 
 };
 
 exports.createAll = function(req, res) {
     Bloq.create(req.body, function(err) {
         if (err) {
-            res.status(500).send(err);
+            console.log(err);
+            res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
         }
@@ -40,7 +42,8 @@ exports.createAll = function(req, res) {
 exports.deleteAll = function(req, res) {
     Bloq.remove({}, function(err) {
         if (err) {
-            res.status(500).send(err);
+            console.log(err);
+            res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
         }

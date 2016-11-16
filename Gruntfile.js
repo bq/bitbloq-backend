@@ -9,7 +9,6 @@
 
 module.exports = function(grunt) {
     grunt.registerTask('generateGCSConfig', 'Configure data files', function(env) {
-
         var environment = env || 'qa',
             configJSON,
             file;

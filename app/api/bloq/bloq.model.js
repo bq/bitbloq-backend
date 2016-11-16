@@ -9,14 +9,13 @@ var BloqSchema = new mongoose.Schema({
     bloqClass: String,
     content: Array,
     code: String,
-    returnType:{},
-    headerText:String,
-    descriptionText:String,
-    createDynamicContent:{}
+    returnType: {},
+    headerText: String,
+    descriptionText: String,
+    createDynamicContent: {},
+    arduino: {}
 }, {
     timestamps: true
 });
-
-
 
 module.exports = mongoose.model('Bloq', BloqSchema);
