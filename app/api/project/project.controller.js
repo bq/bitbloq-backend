@@ -517,7 +517,7 @@ exports.destroy = function(req, res) {
     ], function(err) {
         if (err) {
             console.log(err);
-            res.status(err.code).send(err)
+            res.status(err.code).send(err);
         } else {
             res.status(204).end();
         }
@@ -569,4 +569,3 @@ exports.createAll = function(req, res) {
     });
 
 };
-
