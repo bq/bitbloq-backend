@@ -488,7 +488,7 @@ UserSchema.methods = {
         var that = this;
         ProjectFunctions.deleteAllByUser(this._id, function(err) {
             if (err) {
-                next(500);
+                next(err.code);
             } else {
                 that.save(next);
             }

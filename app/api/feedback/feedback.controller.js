@@ -17,9 +17,8 @@ exports.send = function(req, res) {
 
     mailer.sendOne('newFeedback', locals, function(err) {
         if (err) {
-            console.log('err');
             console.log(err);
-            res.status(500).send(err);
+            res.status(err.code).send(err);
         } else {
             res.status(200).send();
         }
