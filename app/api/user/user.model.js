@@ -22,7 +22,8 @@ var UserSchema = new mongoose.Schema({
     email: {
         type: String,
         lowercase: true,
-        trim: true
+        trim: true,
+        required: true
     },
     bannedInForum: {
         type: Boolean,
@@ -83,7 +84,10 @@ var UserSchema = new mongoose.Schema({
         default: false
     },
     isTeacher: Boolean,
-    password: String,
+    password: {
+        type: String,
+        required: true
+    },
     salt: String,
     corbelHash: {
         type: Boolean
@@ -102,7 +106,11 @@ var UserSchema = new mongoose.Schema({
         }
     },
     anonymous: String,
-    centers : {} // CenterId : {date, role: headMaster | teacher | student} 
+    studentMode: {
+        type: Boolean,
+        default: false
+    },
+    centers : {} // CenterId : {date, role: headMaster | teacher | student}
 }, {
     timestamps: true
 });
@@ -181,24 +189,6 @@ UserSchema
 /**
  * Validations
  */
-
-// Validate empty email
-UserSchema
-    .path('email')
-    .validate(function(email) {
-        //TODO esto podría ir en atributo en Schema o meterlo abajo....
-
-        return email.length;
-    }, 'Email cannot be blank');
-
-// Validate empty password
-UserSchema
-    .path('password')
-    .validate(function(password) {
-        //TODO esto podría ir en atributo en Schema....
-
-        return password.length;
-    }, 'Password cannot be blank');
 
 // Validate email is not taken
 UserSchema
