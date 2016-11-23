@@ -58,6 +58,7 @@ exports.create = function(req, res) {
                         sendEmailTutorAuthorization(user, function(err) {
                             if (err) {
                                 console.log(err);
+                                err.code = parseInt(err.code) || 500;
                                 res.status(err.code).send(err);
                             } else {
                                 generateAndSendToken(user, res);
@@ -114,6 +115,7 @@ exports.authorizeUser = function(req, res) {
     ], function(err) {
         if (err) {
             console.log(err);
+            err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
@@ -138,6 +140,7 @@ exports.getUser = function(req, res) {
     ], function(err, user) {
         if (err) {
             console.log(err);
+            err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else {
             res.status(200).send(user);
@@ -345,6 +348,7 @@ exports.socialLogin = function(req, res) {
                     UserFunctions.generateToken(user, function(err, response) {
                         if (err) {
                             console.log(err);
+                            err.code = parseInt(err.code) || 500;
                             res.status(err.code).send(err);
                         } else {
                             if (response) {
@@ -373,6 +377,7 @@ exports.socialLogin = function(req, res) {
                     UserFunctions.generateToken(user, function(err, response) {
                         if (err) {
                             console.log(err);
+                            err.code = parseInt(err.code) || 500;
                             res.status(err.code).send(err);
                         } else {
                             res.status(200).send(response);
@@ -392,6 +397,7 @@ exports.socialLogin = function(req, res) {
                             res.status(200).send(response);
                         } else {
                             console.log(err);
+                            err.code = parseInt(err.code) || 500;
                             res.status(err.code).send(err);
                         }
                     });
@@ -416,6 +422,7 @@ exports.socialLogin = function(req, res) {
                 searchSocialByEmail(user, function(err, localUser) {
                     if (err) {
                         console.log(err);
+                        err.code = parseInt(err.code) || 500;
                         res.status(err.code).send(err);
                     } else {
                         if (!localUser) {
@@ -459,11 +466,13 @@ exports.socialLogin = function(req, res) {
                             updateWithSocialNetwork(provider, localUser._id, user.id, function(err) {
                                 if (err) {
                                     console.log(err);
+                                    err.code = parseInt(err.code) || 500;
                                     res.status(err.code).send(err);
                                 } else {
                                     UserFunctions.generateToken(localUser, function(err, responseToken) {
                                         if (err) {
                                             console.log(err);
+                                            err.code = parseInt(err.code) || 500;
                                             res.status(err.code).send(err);
                                         } else {
                                             res.status(200).send(responseToken);
@@ -491,6 +500,7 @@ exports.usernameExists = function(req, res) {
     }, function(err, user) {
         if (err) {
             console.log(err);
+            err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else if (user) {
             res.status(200).set({
@@ -514,6 +524,7 @@ exports.show = function(req, res) {
     UserFunctions.getUserProfile(userId, function(err, userProfile) {
         if (err) {
             console.log(err);
+            err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else {
             if (userProfile) {
@@ -535,6 +546,7 @@ exports.destroy = function(req, res) {
     User.findById(req.params.id, function(err) {
         if (err) {
             console.log(err);
+            err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else {
             res.sendStatus(204);
@@ -638,6 +650,7 @@ exports.changePasswordAuthenticated = function(req, res) {
     ], function(err, result) {
         if (err) {
             console.log(err);
+            err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else if (!result) {
             res.sendStatus(304);
@@ -659,6 +672,7 @@ exports.me = function(req, res) {
         function(err, user) {
             if (err) {
                 console.log(err);
+                err.code = parseInt(err.code) || 500;
                 res.status(err.code).send(err);
             } else {
                 if (!user) {
@@ -689,6 +703,7 @@ exports.updateMe = function(req, res) {
     ], function(err, user) {
         if (err) {
             console.log(err);
+            err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else {
             if (!user) {
@@ -767,6 +782,7 @@ exports.emailToken = function(req, res) {
             mailer.sendOne('resetPassword', locals, function(err) {
                 if (err) {
                     console.log(err);
+                    err.code = parseInt(err.code) || 500;
                     res.status(err.code).send(err);
                 } else {
                     res.sendStatus(200);
@@ -774,6 +790,7 @@ exports.emailToken = function(req, res) {
             });
         } else {
             console.log(err);
+            err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         }
     });
@@ -787,6 +804,7 @@ exports.banUserInForum = function(req, res) {
     User.findById(userId, function(err, user) {
         if (err) {
             console.log(err);
+            err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else {
             if (user) {
@@ -796,6 +814,7 @@ exports.banUserInForum = function(req, res) {
                 }, function(err, user) {
                     if (err) {
                         console.log(err);
+                        err.code = parseInt(err.code) || 500;
                         res.status(err.code).send(err);
                     } else {
                         res.status(200).json(user.owner);
@@ -817,6 +836,7 @@ exports.unbanUserInForum = function(req, res) {
     User.findById(userId, function(err, user) {
         if (err) {
             console.log(err);
+            err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else {
             if (user) {
@@ -826,6 +846,7 @@ exports.unbanUserInForum = function(req, res) {
                 }, function(err, user) {
                     if (err) {
                         console.log(err);
+                        err.code = parseInt(err.code) || 500;
                         res.status(err.code).send(err);
                     } else {
                         res.status(200).json(user.owner);
@@ -848,6 +869,7 @@ exports.showBannedUsers = function(req, res) {
     }, function(err, users) {
         if (err) {
             console.log(err);
+            err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else {
             res.status(200).json(users);
@@ -889,6 +911,7 @@ exports.createAll = function(req, res) {
             if (err) {
                 numRequestsKO++;
                 console.log(err);
+                err.code = parseInt(err.code) || 500;
                 res.status(err.code).send(err);
             } else {
                 numRequestsOK++;
@@ -904,6 +927,7 @@ exports.deleteAll = function(req, res) {
     User.remove({}, function(err) {
         if (err) {
             console.log(err);
+            err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else {
             res.sendStatus(200);

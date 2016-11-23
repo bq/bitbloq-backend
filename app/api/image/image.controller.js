@@ -32,6 +32,7 @@ exports.sendUploadToGCS = function(req, res, next) {
     stream.on('error', function(err) {
         req.file.cloudStorageError = err;
         console.log(err);
+        err.code = parseInt(err.code) || 500;
         res.status(err.code).send(err);
     });
 

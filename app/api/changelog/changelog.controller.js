@@ -20,6 +20,7 @@ exports.get = function(req, res) {
         }).exec(function(err, projects) {
         if (err) {
             console.log(err);
+            err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else {
             res.status(200).json(projects);
@@ -32,6 +33,7 @@ exports.createAll = function(req, res) {
     Changelog.create(req.body, function(err) {
         if (err) {
             console.log(err);
+            err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
@@ -43,6 +45,7 @@ exports.deleteAll = function(req, res) {
     Changelog.remove({}, function(err) {
         if (err) {
             console.log(err);
+            err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
