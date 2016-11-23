@@ -22,7 +22,8 @@ var UserSchema = new mongoose.Schema({
     email: {
         type: String,
         lowercase: true,
-        trim: true
+        trim: true,
+        required: true
     },
     bannedInForum: {
         type: Boolean,
@@ -43,7 +44,7 @@ var UserSchema = new mongoose.Schema({
         }
     },
     role: {
-        type: String,
+        type: String, // user | admin
         default: 'user'
     },
     birthday: {
@@ -180,21 +181,10 @@ UserSchema
  * Validations
  */
 
-// Validate empty email
-UserSchema
-    .path('email')
-    .validate(function(email) {
-        //TODO esto podría ir en atributo en Schema o meterlo abajo....
-
-        return email.length;
-    }, 'Email cannot be blank');
-
-// Validate empty password
+// Validate empty password if present
 UserSchema
     .path('password')
     .validate(function(password) {
-        //TODO esto podría ir en atributo en Schema....
-
         return password.length;
     }, 'Password cannot be blank');
 
