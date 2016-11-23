@@ -53,6 +53,7 @@ exports.delete = function(req, res) {
     fs.unlink(getRobotFirmware(robot, version), function(err) {
         if (err) {
             console.log(err);
+            err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
