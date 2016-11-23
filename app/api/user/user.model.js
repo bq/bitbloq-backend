@@ -84,10 +84,7 @@ var UserSchema = new mongoose.Schema({
         default: false
     },
     isTeacher: Boolean,
-    password: {
-        type: String,
-        required: true
-    },
+    password: String,
     salt: String,
     corbelHash: {
         type: Boolean
@@ -189,6 +186,13 @@ UserSchema
 /**
  * Validations
  */
+
+// Validate empty password if present
+UserSchema
+    .path('password')
+    .validate(function(password) {
+        return password.length;
+    }, 'Password cannot be blank');
 
 // Validate email is not taken
 UserSchema
