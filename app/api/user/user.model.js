@@ -159,7 +159,8 @@ UserSchema
             'hasFirstComponent': this.hasFirstComponent,
             'takeTour': this.takeTour,
             'hasBeenValidated': this.hasBeenValidated,
-            'centers': this.centers
+            'centers': this.centers,
+            'studentMode': this.studentMode
         };
     });
 
