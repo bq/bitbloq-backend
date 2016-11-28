@@ -14,7 +14,7 @@
 </p>
 <br>
 <div class="mailer__container--button">
-    <a class="mailer__button" href="{{=it.forumUrl}}">Ver comentario</a>
+    <a class="mailer__button" href="{{=it.forumUrl}}">Contestar comentario</a>
 </div>
 <br>
 <p>
