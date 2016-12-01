@@ -281,7 +281,7 @@ UserSchema
         if (this.isValidated()) {
             next();
         } else {
-            next(404);
+            next({code:404, message:'Not Found'});
         }
     });
 
@@ -290,7 +290,7 @@ UserSchema
         // Handle new/update role
         if (this.role !== 'user' && this.isModified('role')) {
             this.invalidate('role');
-            next(401);
+            next({code:401, message:'Internal Server Error'});
         } else {
             next();
         }
@@ -301,7 +301,7 @@ UserSchema
         // Handle new/update passwords
         if (this.isModified('bannedInForum')) {
             this.invalidate('bannedInForum');
-            next(401);
+            next({code:401, message:'Internal Server Error'});
         } else {
             next();
         }

@@ -91,7 +91,7 @@ exports.authorizeUser = function(req, res) {
             if (token) {
                 User.findById(token._id, next);
             } else {
-                next(401);
+                next({code:401, message:'Internal Server Error'});
             }
         },
         function(user, next) {
@@ -104,7 +104,7 @@ exports.authorizeUser = function(req, res) {
                     user.update(userData, next);
                 }
             } else {
-                next(404);
+                next({code:404, message:'Not Found'});
             }
         },
         function(user, next2, next) {
@@ -134,7 +134,7 @@ exports.getUser = function(req, res) {
             if (token) {
                 User.findById(token._id, next);
             } else {
-                next(401);
+                next({code:401, message:'Internal Server Error'});
             }
         }
     ], function(err, user) {
