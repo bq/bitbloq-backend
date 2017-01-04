@@ -665,9 +665,7 @@ exports.changePasswordAuthenticated = function(req, res) {
  */
 exports.me = function(req, res) {
     var userId = req.user.id;
-    User.findOne({
-            _id: userId
-        },
+    User.findById(userId,
         '-salt -password',
         function(err, user) {
             if (err) {
