@@ -46,7 +46,7 @@ ForumCategorySchema
             if (err) {
                 next(err);
             } else if (forumcategory) {
-                next(409);
+                next({code:409, message:'Conflict'});
             } else {
                 next();
             }

@@ -285,7 +285,7 @@ exports.update = function(req, res) {
             err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else {
-            if (project.isOwner(req.user._id)) {
+            if (project && project.isOwner(req.user._id)) {
                 var projectBody = clearProject(req.body);
                 project = _.extend(project, projectBody);
                 project.save(function(err, project) {
