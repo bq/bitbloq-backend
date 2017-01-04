@@ -1,6 +1,6 @@
 {
     "name": "Bitbloq-Server",
-    "version": "v1.1.1",
+    "version": "v1.2.2",
     "description": "Backend for bitbloq web app",
     "main": "index.js",
     "scripts": {
