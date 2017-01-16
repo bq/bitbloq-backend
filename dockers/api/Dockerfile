@@ -1,4 +1,4 @@
-FROM node:4.4.2
+FROM node:6.9.2
 COPY dist /usr/bitbloq-backend
 ENV MONGO_URL files_mongo_1
 WORKDIR /usr/bitbloq-backend

@@ -22,13 +22,17 @@ exports.sendUploadToGCS = function(req, res, next) {
 
     var gcsname = req.params.id;
     var file = bucket.file('images/' + req.params.collection + '/' + gcsname);
-    var opts = { metadata: { cacheControl: 'private, max-age=0, no-transform' } };
+    var opts = {
+        metadata: {
+            cacheControl: 'private, max-age=0, no-transform'
+        }
+    };
     var stream = file.createWriteStream(opts);
 
     stream.on('error', function(err) {
         req.file.cloudStorageError = err;
-        console.log('err');
         console.log(err);
+        err.code = parseInt(err.code) || 500;
         res.status(err.code).send(err);
     });
 

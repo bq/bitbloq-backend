@@ -40,7 +40,9 @@ function isAuthenticated() {
             if (req.user) {
                 User.findById(req.user._id, function(err, user) {
                     if (err) {
-                        res.status(500).send(err);
+                        console.log(err);
+                        err.code = parseInt(err.code) || 500;
+                        res.status(err.code).send(err);
                     } else {
                         if (!user) {
                             res.sendStatus(404);

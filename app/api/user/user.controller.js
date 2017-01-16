@@ -32,7 +32,6 @@ exports.index = function(req, res) {
         .sort(sort)
         .exec(function(err, users) {
             if (err) {
-                console.log('err');
                 console.log(err);
                 res.status(400).send(err);
             } else {
@@ -51,7 +50,6 @@ exports.create = function(req, res) {
 
         newUser.save(function(err, user) {
             if (err) {
-                console.log('err');
                 console.log(err);
                 res.status(409).send(err);
             } else {
@@ -60,7 +58,8 @@ exports.create = function(req, res) {
                         sendEmailTutorAuthorization(user, function(err) {
                             if (err) {
                                 console.log(err);
-                                res.status(500).send(err);
+                                err.code = parseInt(err.code) || 500;
+                                res.status(err.code).send(err);
                             } else {
                                 generateAndSendToken(user, res);
                             }
@@ -69,7 +68,7 @@ exports.create = function(req, res) {
                         generateAndSendToken(user, res);
                     }
                 } else {
-                    res.sendStatus(500);
+                    res.sendStatus(404);
                 }
             }
         });
@@ -92,7 +91,7 @@ exports.authorizeUser = function(req, res) {
             if (token) {
                 User.findById(token._id, next);
             } else {
-                next(401);
+                next({code:401, message:'Internal Server Error'});
             }
         },
         function(user, next) {
@@ -105,7 +104,7 @@ exports.authorizeUser = function(req, res) {
                     user.update(userData, next);
                 }
             } else {
-                next(404);
+                next({code:404, message:'Not Found'});
             }
         },
         function(user, next2, next) {
@@ -115,9 +114,9 @@ exports.authorizeUser = function(req, res) {
         }
     ], function(err) {
         if (err) {
-            console.log('err');
             console.log(err);
-            res.status(500).send(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
         }
@@ -135,14 +134,14 @@ exports.getUser = function(req, res) {
             if (token) {
                 User.findById(token._id, next);
             } else {
-                next(401);
+                next({code:401, message:'Internal Server Error'});
             }
         }
     ], function(err, user) {
         if (err) {
-            console.log('err');
             console.log(err);
-            res.status(500).send(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
         } else {
             res.status(200).send(user);
         }
@@ -348,9 +347,9 @@ exports.socialLogin = function(req, res) {
                 if (existsSocialEmail(provider, req.user)) {
                     UserFunctions.generateToken(user, function(err, response) {
                         if (err) {
-                            console.log('err');
                             console.log(err);
-                            res.status(500).send(err);
+                            err.code = parseInt(err.code) || 500;
+                            res.status(err.code).send(err);
                         } else {
                             if (response) {
                                 res.status(200).send(response);
@@ -365,9 +364,8 @@ exports.socialLogin = function(req, res) {
                     } else {
                         updateWithSocialNetwork(provider, user, function(err) {
                             if (err) {
-                                console.log('err');
                                 console.log(err);
-                                res.sendStatus(500);
+                                res.sendStatus(err.code);
                             } else {
                                 res.sendStatus(200);
                             }
@@ -378,9 +376,9 @@ exports.socialLogin = function(req, res) {
                 if (existsSocialEmail(provider, user)) {
                     UserFunctions.generateToken(user, function(err, response) {
                         if (err) {
-                            console.log('err');
                             console.log(err);
-                            res.status(500).send(err);
+                            err.code = parseInt(err.code) || 500;
+                            res.status(err.code).send(err);
                         } else {
                             res.status(200).send(response);
                         }
@@ -398,9 +396,9 @@ exports.socialLogin = function(req, res) {
                         if (response) {
                             res.status(200).send(response);
                         } else {
-                            console.log('err');
                             console.log(err);
-                            res.status(500).send(err);
+                            err.code = parseInt(err.code) || 500;
+                            res.status(err.code).send(err);
                         }
                     });
                 }
@@ -410,9 +408,8 @@ exports.socialLogin = function(req, res) {
                 if (!user.role) {
                     updateWithSocialNetwork(provider, req.user._id, user.id, function(err) {
                         if (err) {
-                            console.log('err');
                             console.log(err);
-                            res.sendStatus(500);
+                            res.sendStatus(err.code);
                         } else {
                             res.sendStatus(200);
                         }
@@ -424,9 +421,9 @@ exports.socialLogin = function(req, res) {
             } else {
                 searchSocialByEmail(user, function(err, localUser) {
                     if (err) {
-                        console.log('err');
                         console.log(err);
-                        res.status(500).send(err);
+                        err.code = parseInt(err.code) || 500;
+                        res.status(err.code).send(err);
                     } else {
                         if (!localUser) {
                             if (register) {
@@ -456,7 +453,6 @@ exports.socialLogin = function(req, res) {
 
                                 ], function(err, response) {
                                     if (err) {
-                                        console.log('err');
                                         console.log(err);
                                         res.status(422).json(err);
                                     } else {
@@ -469,13 +465,15 @@ exports.socialLogin = function(req, res) {
                         } else {
                             updateWithSocialNetwork(provider, localUser._id, user.id, function(err) {
                                 if (err) {
-                                    res.status(500).send(err);
+                                    console.log(err);
+                                    err.code = parseInt(err.code) || 500;
+                                    res.status(err.code).send(err);
                                 } else {
                                     UserFunctions.generateToken(localUser, function(err, responseToken) {
                                         if (err) {
-                                            console.log('err');
                                             console.log(err);
-                                            res.status(500).send(err);
+                                            err.code = parseInt(err.code) || 500;
+                                            res.status(err.code).send(err);
                                         } else {
                                             res.status(200).send(responseToken);
                                         }
@@ -501,9 +499,9 @@ exports.usernameExists = function(req, res) {
         username: username
     }, function(err, user) {
         if (err) {
-            console.log('err');
             console.log(err);
-            res.status(500).send(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
         } else if (user) {
             res.status(200).set({
                 'exists': true
@@ -525,9 +523,9 @@ exports.show = function(req, res) {
 
     UserFunctions.getUserProfile(userId, function(err, userProfile) {
         if (err) {
-            console.log('err');
             console.log(err);
-            res.status(500).send(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
         } else {
             if (userProfile) {
                 res.status(200).json(userProfile);
@@ -547,9 +545,9 @@ exports.destroy = function(req, res) {
 
     User.findById(req.params.id, function(err) {
         if (err) {
-            console.log('err');
             console.log(err);
-            res.status(500).send(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
         } else {
             res.sendStatus(204);
         }
@@ -575,13 +573,12 @@ exports.turnToLocal = function(req, res) {
                     user.password = newPass;
                     user.save(userCallback);
                 } else {
-                    userCallback(500);
+                    userCallback(409);
                 }
             }
         ],
         function(err, response) {
             if (err) {
-                console.log('err');
                 console.log(err);
                 res.status(401).send(err);
             } else if (!response) {
@@ -624,7 +621,6 @@ exports.changePassword = function(req, res) {
         }
     ], function(err, result) {
         if (err) {
-            console.log('err');
             console.log(err);
             res.status(401).send(err);
         } else if (!result) {
@@ -653,9 +649,9 @@ exports.changePasswordAuthenticated = function(req, res) {
         }
     ], function(err, result) {
         if (err) {
-            console.log('err');
             console.log(err);
-            res.status(500).send(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
         } else if (!result) {
             res.sendStatus(304);
         } else {
@@ -675,9 +671,9 @@ exports.me = function(req, res) {
         '-salt -password',
         function(err, user) {
             if (err) {
-                console.log('err');
                 console.log(err);
-                res.status(500).send(err);
+                err.code = parseInt(err.code) || 500;
+                res.status(err.code).send(err);
             } else {
                 if (!user) {
                     res.sendStatus(401);
@@ -706,9 +702,9 @@ exports.updateMe = function(req, res) {
         }
     ], function(err, user) {
         if (err) {
-            console.log('err');
             console.log(err);
-            res.status(500).send(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
         } else {
             if (!user) {
                 res.sendStatus(401);
@@ -785,17 +781,17 @@ exports.emailToken = function(req, res) {
         if (result) {
             mailer.sendOne('resetPassword', locals, function(err) {
                 if (err) {
-                    console.log('err');
                     console.log(err);
-                    res.status(500).send(err);
+                    err.code = parseInt(err.code) || 500;
+                    res.status(err.code).send(err);
                 } else {
                     res.sendStatus(200);
                 }
             });
         } else {
-            console.log('err');
             console.log(err);
-            res.status(500).send(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
         }
     });
 };
@@ -807,9 +803,9 @@ exports.banUserInForum = function(req, res) {
     var userId = req.params.id;
     User.findById(userId, function(err, user) {
         if (err) {
-            console.log('err');
             console.log(err);
-            res.status(500).send(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
         } else {
             if (user) {
                 user.bannedInForum = true;
@@ -817,9 +813,9 @@ exports.banUserInForum = function(req, res) {
                     validateBeforeSave: false
                 }, function(err, user) {
                     if (err) {
-                        console.log('err');
                         console.log(err);
-                        res.status(500).send(err);
+                        err.code = parseInt(err.code) || 500;
+                        res.status(err.code).send(err);
                     } else {
                         res.status(200).json(user.owner);
                     }
@@ -839,9 +835,9 @@ exports.unbanUserInForum = function(req, res) {
 
     User.findById(userId, function(err, user) {
         if (err) {
-            console.log('err');
             console.log(err);
-            res.status(500).send(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
         } else {
             if (user) {
                 user.bannedInForum = false;
@@ -850,7 +846,8 @@ exports.unbanUserInForum = function(req, res) {
                 }, function(err, user) {
                     if (err) {
                         console.log(err);
-                        res.status(500).send(err);
+                        err.code = parseInt(err.code) || 500;
+                        res.status(err.code).send(err);
                     } else {
                         res.status(200).json(user.owner);
                     }
@@ -871,9 +868,9 @@ exports.showBannedUsers = function(req, res) {
         bannedInForum: true
     }, function(err, users) {
         if (err) {
-            console.log('err');
             console.log(err);
-            res.status(500).send(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
         } else {
             res.status(200).json(users);
         }
@@ -896,8 +893,6 @@ exports.createAll = function(req, res) {
             }, function(err, user) {
                 console.log(numItemsCreated, numItemsUpdated);
                 if (err) {
-                    console.log('err');
-                    console.log(err);
                     done(err);
                 } else if (user) {
                     numItemsUpdated++;
@@ -915,9 +910,9 @@ exports.createAll = function(req, res) {
             console.log(numItemsCreated, numItemsUpdated);
             if (err) {
                 numRequestsKO++;
-                console.log('err');
                 console.log(err);
-                res.status(500).send(err);
+                err.code = parseInt(err.code) || 500;
+                res.status(err.code).send(err);
             } else {
                 numRequestsOK++;
                 res.sendStatus(200);
@@ -931,9 +926,9 @@ exports.createAll = function(req, res) {
 exports.deleteAll = function(req, res) {
     User.remove({}, function(err) {
         if (err) {
-            console.log('err');
             console.log(err);
-            res.status(500).send(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
         }

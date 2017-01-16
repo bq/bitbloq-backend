@@ -22,7 +22,8 @@ var UserSchema = new mongoose.Schema({
     email: {
         type: String,
         lowercase: true,
-        trim: true
+        trim: true,
+        required: true
     },
     bannedInForum: {
         type: Boolean,
@@ -49,7 +50,7 @@ var UserSchema = new mongoose.Schema({
       accessTokenSecret: String
     },
     role: {
-        type: String,
+        type: String, // user | admin
         default: 'user'
     },
     birthday: {
@@ -197,21 +198,10 @@ UserSchema
  * Validations
  */
 
-// Validate empty email
-UserSchema
-    .path('email')
-    .validate(function(email) {
-        //TODO esto podría ir en atributo en Schema o meterlo abajo....
-
-        return email.length;
-    }, 'Email cannot be blank');
-
-// Validate empty password
+// Validate empty password if present
 UserSchema
     .path('password')
     .validate(function(password) {
-        //TODO esto podría ir en atributo en Schema....
-
         return password.length;
     }, 'Password cannot be blank');
 
@@ -232,16 +222,12 @@ UserSchema
                 }
             }]
         });
-        return this.constructor.findOne(query).then(function(user) {
-            if (user) {
-                if (self.id === user.id) {
-                    return respond(true);
-                }
-                return respond(false);
+        return this.constructor.findOne(query, function(err, user) {
+            var result = false;
+            if (!user || (user && self.id === user.id)) {
+                result = true;
             }
-            return respond(true);
-        }).catch(function(err) {
-            throw err;
+            return respond(result);
         });
     }, 'The specified email address is already in use.');
 
@@ -254,13 +240,11 @@ UserSchema
         this.constructor.findOne({
             username: value
         }, function(err, user) {
-            if (user) {
-                if (self.id === user.id) {
-                    return respond(true);
-                }
-                return respond(false);
+            var result = false;
+            if (!user || (user && self.id === user.id)) {
+                result = true;
             }
-            return respond(true);
+            return respond(result);
         })
 
     }, 'The specified username is already in use.');
@@ -308,7 +292,10 @@ UserSchema
         if (this.isValidated()) {
             next();
         } else {
-            next(404);
+            next({
+                code: 404,
+                message: 'Not Found'
+            });
         }
     });
 
@@ -317,7 +304,10 @@ UserSchema
         // Handle new/update role
         if (this.role !== 'user' && this.isModified('role')) {
             this.invalidate('role');
-            next(401);
+            next({
+                code: 401,
+                message: 'Internal Server Error'
+            });
         } else {
             next();
         }
@@ -328,7 +318,10 @@ UserSchema
         // Handle new/update passwords
         if (this.isModified('bannedInForum')) {
             this.invalidate('bannedInForum');
-            next(401);
+            next({
+                code: 401,
+                message: 'Internal Server Error'
+            });
         } else {
             next();
         }
@@ -505,7 +498,7 @@ UserSchema.methods = {
         var that = this;
         ProjectFunctions.deleteAllByUser(this._id, function(err) {
             if (err) {
-                next(500);
+                next(err.code);
             } else {
                 that.save(next);
             }
