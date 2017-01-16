@@ -47,6 +47,12 @@ var ProjectSchema = new mongoose.Schema({
         type: String,
         default: 'default'
     },
+    useBitbloqConnect: {
+        type: Boolean,
+        default: false
+    },
+
+    bitbloqConnectBT: {},
     _acl: {},
     genericBoardSelected: {}
 }, {
