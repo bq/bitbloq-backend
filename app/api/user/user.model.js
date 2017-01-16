@@ -205,16 +205,12 @@ UserSchema
                 }
             }]
         });
-        return this.constructor.findOne(query).then(function(user) {
-            if (user) {
-                if (self.id === user.id) {
-                    return respond(true);
-                }
-                return respond(false);
+        return this.constructor.findOne(query, function(err, user) {
+            var result = false;
+            if (!user || (user && self.id === user.id)) {
+                result = true;
             }
-            return respond(true);
-        }).catch(function(err) {
-            throw err;
+            return respond(result);
         });
     }, 'The specified email address is already in use.');
 
@@ -227,13 +223,11 @@ UserSchema
         this.constructor.findOne({
             username: value
         }, function(err, user) {
-            if (user) {
-                if (self.id === user.id) {
-                    return respond(true);
-                }
-                return respond(false);
+            var result = false;
+            if (!user || (user && self.id === user.id)) {
+                result = true;
             }
-            return respond(true);
+            return respond(result);
         })
 
     }, 'The specified username is already in use.');
@@ -281,7 +275,10 @@ UserSchema
         if (this.isValidated()) {
             next();
         } else {
-            next({code:404, message:'Not Found'});
+            next({
+                code: 404,
+                message: 'Not Found'
+            });
         }
     });
 
@@ -290,7 +287,10 @@ UserSchema
         // Handle new/update role
         if (this.role !== 'user' && this.isModified('role')) {
             this.invalidate('role');
-            next({code:401, message:'Internal Server Error'});
+            next({
+                code: 401,
+                message: 'Internal Server Error'
+            });
         } else {
             next();
         }
@@ -301,7 +301,10 @@ UserSchema
         // Handle new/update passwords
         if (this.isModified('bannedInForum')) {
             this.invalidate('bannedInForum');
-            next({code:401, message:'Internal Server Error'});
+            next({
+                code: 401,
+                message: 'Internal Server Error'
+            });
         } else {
             next();
         }
