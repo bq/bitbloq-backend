@@ -1,5 +1,5 @@
 'use strict';
-var request = require('request-promise'),
+var request = require('request'),
     User = require('./user.model.js'),
     config = require('../../res/config.js'),
     jwt = require('jsonwebtoken'),
@@ -135,29 +135,27 @@ exports.generateToken = function(user, next) {
 /**
  * Get google user data with token
  * @param {String} provider
+ * @param {String} token
  * @param {Function} next
- * @return {Promise} request
  */
 
-exports.getSocialProfile = function(provider, token) {
-    var socialRequest;
+exports.getSocialProfile = function(provider, token, next) {
     switch (provider) {
         case 'google':
-            socialRequest = request('https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=' + token);
+            request('https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=' + token, next);
             break;
         case 'facebook':
-            socialRequest = request('https://graph.facebook.com/me?access_token=' + token);
+            request('https://graph.facebook.com/me?access_token=' + token, next);
             break;
     }
-    return socialRequest;
 };
 
 /**
  * Get avatar facebook user
  * @param {String} userId
  * @param {Function} next
- * @return {Promise} request
+ * @param {Function} next
  */
-exports.getFacebookAvatar = function(userId) {
-    return request('http://graph.facebook.com/v2.5/' + userId + '/picture?type=large&redirect=false');
+exports.getFacebookAvatar = function(userId, next) {
+    request('http://graph.facebook.com/v2.5/' + userId + '/picture?type=large&redirect=false', next);
 };

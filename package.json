@@ -20,19 +20,24 @@
         "Backend",
         "Server"
     ],
-    "contributors": [{
-        "name": "Laura del Río",
-        "email": "laura.delrio@bq.com"
-    }, {
-        "name": "Álvaro Sánchez",
-        "email": "alvaro.sanchez@bq.com"
-    }, {
-        "name": "Tomás Calvo",
-        "email": "tomas.calvo@bq.com"
-    }, {
-        "name": "Diego Segura",
-        "email": "diego.segura@bq.com"
-    }],
+    "contributors": [
+        {
+            "name": "Laura del Río",
+            "email": "laura.delrio@bq.com"
+        },
+        {
+            "name": "Álvaro Sánchez",
+            "email": "alvaro.sanchez@bq.com"
+        },
+        {
+            "name": "Tomás Calvo",
+            "email": "tomas.calvo@bq.com"
+        },
+        {
+            "name": "Diego Segura",
+            "email": "diego.segura@bq.com"
+        }
+    ],
     "license": "GPL-3.0",
     "bugs": {
         "url": "https://github.com/bq/bitbloq-backend/issues"
@@ -74,7 +79,6 @@
         "passport-local": "^1.0.0",
         "path": "^0.12.7",
         "request": "^2.72.0",
-        "request-promise": "^2.0.1",
         "supervisor": "^0.10.0",
         "winston": "^2.1.1"
     },
