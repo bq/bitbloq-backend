@@ -486,7 +486,9 @@ exports.clone = function(req, res) {
                 hardware: project.hardware,
                 software: project.software,
                 hardwareTags: project.hardwareTags,
-                userTags: project.userTags
+                userTags: project.userTags,
+                useBitbloqConnect: project.useBitbloqConnect,
+                bitbloqConnectBT: project.bitbloqConnectBT
             });
 
             newProject.save(next);
