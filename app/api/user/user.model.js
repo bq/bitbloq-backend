@@ -43,6 +43,12 @@ var UserSchema = new mongoose.Schema({
             }
         }
     },
+    twitterApp: {
+        consumerKey: String,
+        consumerSecret: String,
+        accessToken: String,
+        accessTokenSecret: String
+    },
     role: {
         type: String, // user | admin
         default: 'user'
@@ -72,6 +78,14 @@ var UserSchema = new mongoose.Schema({
         default: false
     },
     hasBeenAskedIfTeacher: {
+        type: Boolean,
+        default: false
+    },
+    isMobileConnected: {
+        type: Boolean,
+        default: false
+    },
+    hasDownloadedApp: {
         type: Boolean,
         default: false
     },
@@ -160,7 +174,14 @@ UserSchema
             'takeTour': this.takeTour,
             'hasBeenValidated': this.hasBeenValidated,
             'centers': this.centers,
-            'studentMode': this.studentMode
+            'hasDownloadedApp' : this.hasDownloadedApp,
+            'isMobileConnected': this.isMobileConnected,
+            'twitterApp': {
+                consumerKey: this.twitterApp.consumerKey,
+                consumerSecret: this.twitterApp.consumerSecret,
+                accessToken: this.twitterApp.accessToken,
+                accessTokenSecret: this.twitterApp.accessTokenSecret
+            }
         };
     });
 

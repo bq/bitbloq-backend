@@ -47,13 +47,14 @@ var ProjectSchema = new mongoose.Schema({
         type: String,
         default: 'default'
     },
-    _acl: {},
-    genericBoardSelected: {},
-    bitbloqConnectBT: {},
     useBitbloqConnect: {
         type: Boolean,
         default: false
-    }
+    },
+
+    bitbloqConnectBT: {},
+    _acl: {},
+    genericBoardSelected: {}
 }, {
     timestamps: true
 });
@@ -77,6 +78,7 @@ ProjectSchema
             'codeProject': this.codeProject,
             'hardwareTags': this.hardwareTags,
             'userTags': this.userTags,
+            'bitbloqConnectBT': this.bitbloqConnectBT,
             'updatedAt': this.updatedAt,
             '_acl': this._acl
         };
