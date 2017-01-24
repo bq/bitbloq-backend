@@ -53,11 +53,11 @@ exports.getUserIdsByName = function(username, next) {
     if (username['$regex']) {
         username['$regex'] = username['$regex'].toLowerCase();
     }
-    User.find({username: username}, '_id', function(err, user) {
+    User.find({username: username}, '_id', function(err, users) {
         if (err) {
             next(err);
-        } else if (user) {
-            next(err, user.owner);
+        } else if (users) {
+            next(err, users);
         } else {
             next();
         }
