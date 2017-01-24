@@ -116,7 +116,12 @@ var UserSchema = new mongoose.Schema({
             result: Boolean
         }
     },
-    anonymous: String
+    anonymous: String,
+    studentMode: {
+        type: Boolean,
+        default: false
+    },
+    centers : {} // CenterId : {date, role: headMaster | teacher | student}
 }, {
     timestamps: true
 });
@@ -168,6 +173,7 @@ UserSchema
             'hasFirstComponent': this.hasFirstComponent,
             'takeTour': this.takeTour,
             'hasBeenValidated': this.hasBeenValidated,
+            'centers': this.centers,
             'hasDownloadedApp' : this.hasDownloadedApp,
             'isMobileConnected': this.isMobileConnected,
             'twitterApp': {
@@ -176,7 +182,6 @@ UserSchema
                 accessToken: this.twitterApp.accessToken,
                 accessTokenSecret: this.twitterApp.accessTokenSecret
             }
-
         };
     });
 
