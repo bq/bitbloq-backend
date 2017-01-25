@@ -174,6 +174,7 @@ UserSchema
             'takeTour': this.takeTour,
             'hasBeenValidated': this.hasBeenValidated,
             'centers': this.centers,
+            'studentMode': this.studentMode,
             'hasDownloadedApp' : this.hasDownloadedApp,
             'isMobileConnected': this.isMobileConnected,
             'twitterApp': {
