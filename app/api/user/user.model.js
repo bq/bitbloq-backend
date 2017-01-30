@@ -151,6 +151,7 @@ UserSchema
             'username': this.username,
             'email': this.email,
             'role': this.role,
+            'birthday': this.birthday,
             'social': {
                 'google': {
                     id: this.social.google.id
