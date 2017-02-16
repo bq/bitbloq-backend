@@ -3,7 +3,7 @@
 <p>
     Estimado/a {{=it.tutorname}}:<br>
     Desde Bitbloq nos ponemos en contacto contigo para informarte de que un usuario con nombre de usuario <b>{{=it.username}}</b> y con email <b>{{=it.useremail}} </b> ha iniciado el proceso de registro en Bitbloq,
-     el espacio donde {{=it.username}} podrá aprender a programar jugando y crear todo lo que se imagines: robots, juegos electrónicos ¡y hasta sus propios inventos!<br>
+     el espacio donde {{=it.username}} podrá aprender a programar jugando y crear todo lo que se imagine: robots, juegos electrónicos ¡y hasta sus propios inventos!<br>
 </p>
 <p>
     Al ser menor de 14 años, según establece la normativa de protección de datos española,
