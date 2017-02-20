@@ -34,7 +34,8 @@ var ProjectSchema = new mongoose.Schema({
         board: String,
         components: [],
         connections: [],
-        robot: String
+        robot: String,
+        showRobotImage: String
     },
     software: {
         vars: {},
