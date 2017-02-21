@@ -42,30 +42,30 @@ function getThreadsInCategory(category, next) {
         .lean()
         .populate('creator', 'username')
         .sort('-updatedAt').exec(function(err, threads) {
-        if (err) {
-            next(err);
-        } else {
-            async.map(threads, function(thread, next) {
-                async.parallel([
-                    countAnswersThread.bind(null, thread),
-                    getLastAnswer.bind(null, thread)
-                ], function(err, results) {
-                    if (results) {
-                        thread.numberOfAnswers = results[0];
-                        thread.lastAnswer = results[1] || {};
-                        next(err, thread);
-                    } else {
-                        next(err, []);
-                    }
-                });
-            }, function(err, completedThreads) {
-                next(err, {
-                    category: category,
-                    threads: completedThreads
-                });
-            })
-        }
-    });
+            if (err) {
+                next(err);
+            } else {
+                async.map(threads, function(thread, next) {
+                    async.parallel([
+                        countAnswersThread.bind(null, thread),
+                        getLastAnswer.bind(null, thread)
+                    ], function(err, results) {
+                        if (results) {
+                            thread.numberOfAnswers = results[0];
+                            thread.lastAnswer = results[1] || {};
+                            next(err, thread);
+                        } else {
+                            next(err, []);
+                        }
+                    });
+                }, function(err, completedThreads) {
+                    next(err, {
+                        category: category,
+                        threads: completedThreads
+                    });
+                })
+            }
+        });
 }
 
 function getCompletedThread(id, next) {
@@ -214,7 +214,7 @@ exports.createThread = function(req, res) {
 
             newThread.creator = userId;
             async.waterfall([
-                newThread.save,
+                newThread.save.bind(newThread),
                 function(thread, saved, next) {
                     newAnswer.thread = newThread._id;
                     newAnswer.category = newThread.category;
