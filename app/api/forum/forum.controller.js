@@ -417,7 +417,7 @@ exports.getThread = function(req, res) {
             err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else {
-            if (results) {
+            if (results && results[0] && results[1].length > 0) {
                 var threadObject = results[0];
                 threadObject.numberOfAnswers = results[1].length - 1;
                 if (req.user && (threadObject.creator._id.toString() !== req.user._id.toString())) {
@@ -441,6 +441,8 @@ exports.getThread = function(req, res) {
                         answers: results[1]
                     });
                 }
+            } else {
+                res.sendStatus(404);
             }
         }
     });
