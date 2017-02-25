@@ -121,7 +121,8 @@ var UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    centers : {} // CenterId : {date, role: headMaster | teacher | student}
+    makeblock: {},
+    centers: {} // CenterId : {date, role: headMaster | teacher | student}
 }, {
     timestamps: true
 });
@@ -176,14 +177,15 @@ UserSchema
             'hasBeenValidated': this.hasBeenValidated,
             'centers': this.centers,
             'studentMode': this.studentMode,
-            'hasDownloadedApp' : this.hasDownloadedApp,
+            'hasDownloadedApp': this.hasDownloadedApp,
             'isMobileConnected': this.isMobileConnected,
             'twitterApp': {
                 consumerKey: this.twitterApp.consumerKey,
                 consumerSecret: this.twitterApp.consumerSecret,
                 accessToken: this.twitterApp.accessToken,
                 accessTokenSecret: this.twitterApp.accessTokenSecret
-            }
+            },
+            'makeblock': this.makeblock
         };
     });
 
