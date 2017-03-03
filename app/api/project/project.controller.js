@@ -142,7 +142,7 @@ exports.create = function(req, res) {
 };
 
 /**
- * Create a new project
+ * Download a project (download times are incremented
  */
 exports.download = function(req, res) {
     Project.findById(req.params.id, function(err, project) {
@@ -520,18 +520,19 @@ exports.destroy = function(req, res) {
         function(project, next) {
             if (project) {
                 if (project.isOwner(userId)) {
-                    Project.findByIdAndRemove(projectId, next);
+                    project.delete(next);
                 } else {
-                    res.sendStatus(401);
+                    next({
+                        code: 401,
+                        message: 'Unauthorized'
+                    });
                 }
             } else {
-                res.sendStatus(404);
+                next({
+                    code: 404,
+                    message: 'Exercise not found'
+                });
             }
-        },
-        function(project, next) {
-            ImageFunctions.delete('project', projectId, function() {
-                next();
-            });
         }
 
     ], function(err) {

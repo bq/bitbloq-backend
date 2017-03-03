@@ -52,10 +52,10 @@ var ProjectSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-
     bitbloqConnectBT: {},
+    genericBoardSelected: {},
     _acl: {},
-    genericBoardSelected: {}
+    deleted: Boolean
 }, {
     timestamps: true
 });
@@ -84,6 +84,23 @@ ProjectSchema
             '_acl': this._acl
         };
     });
+
+
+/**
+ * Pre hook
+ */
+
+function findNotDeletedMiddleware(next) {
+    this.where('deleted').in([false, undefined, null]);
+    next();
+}
+
+ProjectSchema.pre('find', findNotDeletedMiddleware);
+ProjectSchema.pre('findOne', findNotDeletedMiddleware);
+ProjectSchema.pre('findOneAndUpdate', findNotDeletedMiddleware);
+ProjectSchema.pre('count', findNotDeletedMiddleware);
+
+
 
 /**
  * Pre-save hook
@@ -180,22 +197,29 @@ ProjectSchema.methods = {
     },
 
     /**
-     * share - project is shared with users
+     * delete - change deleted attribute to true
      *
-     * @param {Object} user
-     ** @param {String} user.id
-     ** @param {String} user.email
+     * @param {Function} next
      * @api public
      */
-    share: function(user) {
-        this._acl = this._acl || {};
-        this._acl['user:' + user.id] = {
-            permission: 'READ',
-            properties: {
-                email: user.email,
-                date: new Date()
-            }
-        };
+    delete: function(next) {
+        this.deleted = true;
+        this.save(next);
+    },
+
+    /**
+     * share - project is shared with users
+     *
+     * @param {String} userId
+     * @return {Boolean}
+     * @api public
+     */
+    isOwner: function(userId) {
+        var owner = false;
+        if (this._acl['user:' + userId] && this._acl['user:' + userId].permission === 'ADMIN') {
+            owner = true;
+        }
+        return owner;
     },
 
     /**
@@ -217,16 +241,20 @@ ProjectSchema.methods = {
     /**
      * share - project is shared with users
      *
-     * @param {String} userId
-     * @return {Boolean}
+     * @param {Object} user
+     ** @param {String} user.id
+     ** @param {String} user.email
      * @api public
      */
-    isOwner: function(userId) {
-        var owner = false;
-        if (this._acl['user:' + userId] && this._acl['user:' + userId].permission === 'ADMIN') {
-            owner = true;
-        }
-        return owner;
+    share: function(user) {
+        this._acl = this._acl || {};
+        this._acl['user:' + user.id] = {
+            permission: 'READ',
+            properties: {
+                email: user.email,
+                date: new Date()
+            }
+        };
     }
 };
 
