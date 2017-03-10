@@ -559,7 +559,7 @@ exports.destroyAnswer = function(req, res) {
             res.status(err.code).send(err);
         } else {
             if (answer) {
-                answer.remove(function(err) {
+                answer.delete(function(err) {
                     if (err) {
                         console.log(err);
                         err.code = parseInt(err.code) || 500;
@@ -586,7 +586,7 @@ exports.destroyThread = function(req, res) {
         }),
         function(answers, next) {
             async.each(answers, function(answer, done) {
-                answer.remove(done);
+                answer.delete(done);
             }, next);
         },
         Thread.findByIdAndRemove.bind(Thread, threadId)
@@ -614,13 +614,18 @@ exports.createAllCategories = function(req, res) {
 };
 
 exports.deleteAllCategories = function(req, res) {
-    Category.remove({}, function(err) {
+    Category.find({})
+        .exec(function(err, categories) {
         if (err) {
             console.log(err);
             err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else {
-            res.sendStatus(200);
+            async.map(categories, function(category, callBack) {
+                category.delete(callBack);
+            }, function() {
+                res.sendStatus(200);
+            });
         }
     });
 };

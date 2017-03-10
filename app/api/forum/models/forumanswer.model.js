@@ -25,22 +25,26 @@ var ForumAnswerSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    images: []
+    images: [],
+    deleted: Boolean
 }, {
     timestamps: true
 });
 
 
 /**
- * Pre-save hook
+ * Pre hook
  */
-ForumAnswerSchema
-    .pre('remove', function(next) {
-        if (this.images && this.images.length > 0) {
-            ImageFunctions.delete('forum', this._id);
-        }
-        next();
-    });
+
+function findNotDeletedMiddleware(next) {
+    this.where('deleted').in([false, undefined, null]);
+    next();
+}
+
+ForumAnswerSchema.pre('find', findNotDeletedMiddleware);
+ForumAnswerSchema.pre('findOne', findNotDeletedMiddleware);
+ForumAnswerSchema.pre('findOneAndUpdate', findNotDeletedMiddleware);
+ForumAnswerSchema.pre('count', findNotDeletedMiddleware);
 
 
 /**
@@ -48,6 +52,17 @@ ForumAnswerSchema
  */
 
 ForumAnswerSchema.methods = {
+
+    /**
+     * delete - change deleted attribute to true
+     *
+     * @param {Function} next
+     * @api public
+     */
+    delete: function(next) {
+        this.deleted = true;
+        this.save(next);
+    },
 
     /**
      * isOnwer - user is answer onwer
