@@ -1,6 +1,7 @@
 'use strict';
 
-var Bloq = require('./bloq.model.js');
+var Bloq = require('./bloq.model.js'),
+    async = require('async');
 
 var perPage = 20;
 
@@ -42,13 +43,18 @@ exports.createAll = function(req, res) {
 };
 
 exports.deleteAll = function(req, res) {
-    Bloq.remove({}, function(err) {
+    Bloq.find({})
+        .exec(function(err, bloqs) {
         if (err) {
             console.log(err);
             err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else {
-            res.sendStatus(200);
+            async.map(bloqs, function(bloq, callBack) {
+                bloq.delete(callBack);
+            }, function() {
+                res.sendStatus(200);
+            });
         }
     });
 };
