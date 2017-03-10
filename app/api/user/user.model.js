@@ -117,12 +117,7 @@ var UserSchema = new mongoose.Schema({
         }
     },
     anonymous: String,
-    studentMode: {
-        type: Boolean,
-        default: false
-    },
-    makeblock: {},
-    centers: {} // CenterId : {date, role: headMaster | teacher | student}
+    makeblock: {}
 }, {
     timestamps: true
 });
@@ -175,8 +170,6 @@ UserSchema
             'hasFirstComponent': this.hasFirstComponent,
             'takeTour': this.takeTour,
             'hasBeenValidated': this.hasBeenValidated,
-            'centers': this.centers,
-            'studentMode': this.studentMode,
             'hasDownloadedApp': this.hasDownloadedApp,
             'isMobileConnected': this.isMobileConnected,
             'twitterApp': {
@@ -321,7 +314,7 @@ UserSchema
             this.invalidate('role');
             next({
                 code: 401,
-                message: 'Internal Server Error'
+                message: 'Unauthorized'
             });
         } else {
             next();
@@ -335,7 +328,7 @@ UserSchema
             this.invalidate('bannedInForum');
             next({
                 code: 401,
-                message: 'Internal Server Error'
+                message: 'Unauthorized'
             });
         } else {
             next();
