@@ -713,9 +713,16 @@ exports.emailToken = function(req, res) {
             }, userCallback);
         },
         function(user, userCallback) {
-            Token.findByIdAndRemove(user._id, function(err) {
-                userCallback(err, user);
-            });
+            if (user) {
+                Token.findByIdAndRemove(user._id, function(err) {
+                    userCallback(err, user);
+                });
+            } else {
+                next({
+                    code: 404,
+                    message: 'Not Found'
+                });
+            }
         },
         function(user, userCallback) {
             var token = jwt.sign({
