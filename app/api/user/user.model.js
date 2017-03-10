@@ -117,7 +117,7 @@ var UserSchema = new mongoose.Schema({
         }
     },
     anonymous: String,
-    makeblock: {}
+    deleted: Boolean
 }, {
     timestamps: true
 });
@@ -177,8 +177,7 @@ UserSchema
                 consumerSecret: this.twitterApp.consumerSecret,
                 accessToken: this.twitterApp.accessToken,
                 accessTokenSecret: this.twitterApp.accessTokenSecret
-            },
-            'makeblock': this.makeblock
+            }
         };
     });
 
@@ -262,7 +261,7 @@ var validatePresenceOf = function(value) {
 };
 
 /**
- * Pre-save hook
+ * Pre hook
  */
 UserSchema
     .pre('save', function(next) {
@@ -344,10 +343,60 @@ UserSchema
         next();
     });
 
+
+function findNotDeletedMiddleware(next) {
+    this.where('deleted').in([false, undefined, null]);
+    next();
+}
+
+UserSchema.pre('find', findNotDeletedMiddleware);
+UserSchema.pre('findOne', findNotDeletedMiddleware);
+UserSchema.pre('findOneAndUpdate', findNotDeletedMiddleware);
+UserSchema.pre('count', findNotDeletedMiddleware);
+
 /**
  * Methods
  */
 UserSchema.methods = {
+
+    anonymize: function(anonText, next) {
+        this.firstName = 'anon';
+        this.lastName = 'anon';
+        this.email = 'anon@anon.com' + Date.now();
+        this.username = 'anon' + Date.now();
+        this.password = Date.now() * Math.random();
+        this.bannedInForum = true;
+        this.needValidation = false;
+        this.tutor = {
+            dni: '',
+            firstName: '',
+            lastName: '',
+            email: '',
+            validation: {
+                result: false,
+                date: Date.now()
+            }
+        };
+        this.social = {
+            google: {
+                id: ''
+            },
+            facebook: {
+                id: ''
+            }
+        };
+        this.anonymous = anonText;
+
+        var that = this;
+        ProjectFunctions.deleteAllByUser(this._id, function(err) {
+            if (err) {
+                next(err.code);
+            } else {
+                that.save(next);
+            }
+        });
+    },
+
     /**
      * Authenticate - check if the passwords are the same
      *
@@ -377,37 +426,14 @@ UserSchema.methods = {
     },
 
     /**
-     * Make salt
+     * delete - change deleted attribute to true
      *
-     * @param {Number} byteSize Optional salt byte size, default to 16
-     * @param {Function} callback
-     * @return {String}
+     * @param {Function} next
      * @api public
      */
-    makeSalt: function(byteSize, callback) {
-        var defaultByteSize = 16;
-
-        if (typeof arguments[0] === 'function') {
-            callback = arguments[0];
-            byteSize = defaultByteSize;
-        } else if (typeof arguments[1] === 'function') {
-            callback = arguments[1];
-        }
-
-        if (!byteSize) {
-            byteSize = defaultByteSize;
-        }
-
-        if (!callback) {
-            return crypto.randomBytes(byteSize).toString('base64');
-        }
-
-        return crypto.randomBytes(byteSize, function(err, salt) {
-            if (err) {
-                callback(err);
-            }
-            return callback(null, salt.toString('base64'));
-        });
+    delete: function(next) {
+        this.deleted = true;
+        this.save(next);
     },
 
     /**
@@ -475,41 +501,37 @@ UserSchema.methods = {
         }
     },
 
-    anonymize: function(anonText, next) {
-        this.firstName = 'anon';
-        this.lastName = 'anon';
-        this.email = 'anon@anon.com' + Date.now();
-        this.username = 'anon' + Date.now();
-        this.password = Date.now() * Math.random();
-        this.bannedInForum = true;
-        this.needValidation = false;
-        this.tutor = {
-            dni: '',
-            firstName: '',
-            lastName: '',
-            email: '',
-            validation: {
-                result: false,
-                date: Date.now()
-            }
-        };
-        this.social = {
-            google: {
-                id: ''
-            },
-            facebook: {
-                id: ''
-            }
-        };
-        this.anonymous = anonText;
+    /**
+     * Make salt
+     *
+     * @param {Number} byteSize Optional salt byte size, default to 16
+     * @param {Function} callback
+     * @return {String}
+     * @api public
+     */
+    makeSalt: function(byteSize, callback) {
+        var defaultByteSize = 16;
 
-        var that = this;
-        ProjectFunctions.deleteAllByUser(this._id, function(err) {
+        if (typeof arguments[0] === 'function') {
+            callback = arguments[0];
+            byteSize = defaultByteSize;
+        } else if (typeof arguments[1] === 'function') {
+            callback = arguments[1];
+        }
+
+        if (!byteSize) {
+            byteSize = defaultByteSize;
+        }
+
+        if (!callback) {
+            return crypto.randomBytes(byteSize).toString('base64');
+        }
+
+        return crypto.randomBytes(byteSize, function(err, salt) {
             if (err) {
-                next(err.code);
-            } else {
-                that.save(next);
+                callback(err);
             }
+            return callback(null, salt.toString('base64'));
         });
     }
 };

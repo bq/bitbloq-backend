@@ -42,30 +42,30 @@ function getThreadsInCategory(category, next) {
         .lean()
         .populate('creator', 'username')
         .sort('-updatedAt').exec(function(err, threads) {
-            if (err) {
-                next(err);
-            } else {
-                async.map(threads, function(thread, next) {
-                    async.parallel([
-                        countAnswersThread.bind(null, thread),
-                        getLastAnswer.bind(null, thread)
-                    ], function(err, results) {
-                        if (results) {
-                            thread.numberOfAnswers = results[0];
-                            thread.lastAnswer = results[1] || {};
-                            next(err, thread);
-                        } else {
-                            next(err, []);
-                        }
-                    });
-                }, function(err, completedThreads) {
-                    next(err, {
-                        category: category,
-                        threads: completedThreads
-                    });
-                })
-            }
-        });
+        if (err) {
+            next(err);
+        } else {
+            async.map(threads, function(thread, next) {
+                async.parallel([
+                    countAnswersThread.bind(null, thread),
+                    getLastAnswer.bind(null, thread)
+                ], function(err, results) {
+                    if (results) {
+                        thread.numberOfAnswers = results[0];
+                        thread.lastAnswer = results[1] || {};
+                        next(err, thread);
+                    } else {
+                        next(err, []);
+                    }
+                });
+            }, function(err, completedThreads) {
+                next(err, {
+                    category: category,
+                    threads: completedThreads
+                });
+            })
+        }
+    });
 }
 
 function getCompletedThread(id, next) {
@@ -616,18 +616,18 @@ exports.createAllCategories = function(req, res) {
 exports.deleteAllCategories = function(req, res) {
     Category.find({})
         .exec(function(err, categories) {
-        if (err) {
-            console.log(err);
-            err.code = parseInt(err.code) || 500;
-            res.status(err.code).send(err);
-        } else {
-            async.map(categories, function(category, callBack) {
-                category.delete(callBack);
-            }, function() {
-                res.sendStatus(200);
-            });
-        }
-    });
+            if (err) {
+                console.log(err);
+                err.code = parseInt(err.code) || 500;
+                res.status(err.code).send(err);
+            } else {
+                async.map(categories, function(category, callBack) {
+                    category.delete(callBack);
+                }, function() {
+                    res.sendStatus(200);
+                });
+            }
+        });
 };
 
 exports.createForceThread = function(req, res) {

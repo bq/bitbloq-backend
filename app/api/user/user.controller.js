@@ -880,13 +880,18 @@ exports.createAll = function(req, res) {
 };
 
 exports.deleteAll = function(req, res) {
-    User.remove({}, function(err) {
-        if (err) {
-            console.log(err);
-            err.code = parseInt(err.code) || 500;
-            res.status(err.code).send(err);
-        } else {
-            res.sendStatus(200);
-        }
-    });
+    User.find({})
+        .exec(function(err, users) {
+            if (err) {
+                console.log(err);
+                err.code = parseInt(err.code) || 500;
+                res.status(err.code).send(err);
+            } else {
+                async.map(users, function(user, callBack) {
+                    user.delete(callBack);
+                }, function() {
+                    res.sendStatus(200);
+                });
+            }
+        });
 };

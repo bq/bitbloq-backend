@@ -101,7 +101,6 @@ ProjectSchema.pre('findOneAndUpdate', findNotDeletedMiddleware);
 ProjectSchema.pre('count', findNotDeletedMiddleware);
 
 
-
 /**
  * Pre-save hook
  */

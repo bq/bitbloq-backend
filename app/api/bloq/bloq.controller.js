@@ -45,16 +45,16 @@ exports.createAll = function(req, res) {
 exports.deleteAll = function(req, res) {
     Bloq.find({})
         .exec(function(err, bloqs) {
-        if (err) {
-            console.log(err);
-            err.code = parseInt(err.code) || 500;
-            res.status(err.code).send(err);
-        } else {
-            async.map(bloqs, function(bloq, callBack) {
-                bloq.delete(callBack);
-            }, function() {
-                res.sendStatus(200);
-            });
-        }
-    });
+            if (err) {
+                console.log(err);
+                err.code = parseInt(err.code) || 500;
+                res.status(err.code).send(err);
+            } else {
+                async.map(bloqs, function(bloq, callBack) {
+                    bloq.delete(callBack);
+                }, function() {
+                    res.sendStatus(200);
+                });
+            }
+        });
 };
