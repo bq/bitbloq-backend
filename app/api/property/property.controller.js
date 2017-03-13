@@ -1,6 +1,7 @@
 'use strict';
 
-var Property = require('./property.model.js');
+var Property = require('./property.model.js'),
+    async = require('async');
 
 var perPage = 20;
 
