@@ -7,7 +7,4 @@ var express = require('express'),
 
 router.get('/:robot/:version', controller.get);
 
-router.post('/:robot/:version', auth.hasRole('admin'), controller.getMulterCreator().single('file'), controller.create);
-router.delete('/:robot/:version', auth.hasRole('admin'), controller.delete);
-
 module.exports = router;

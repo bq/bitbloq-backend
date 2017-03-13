@@ -1,8 +1,6 @@
 'use strict';
 var path = require('path'),
-    fs = require('fs'),
-    robotsFirmwarePath = path.join(__dirname, '..', '..', 'res', 'robotsFirmware'),
-    multer = require('multer');
+    robotsFirmwarePath = path.join(__dirname, '..', '..', 'res', 'robotsFirmware');
 
 function getRobotFirmwareFolder(robot) {
     return path.join(robotsFirmwarePath, robot);
@@ -24,39 +22,4 @@ exports.get = function(req, res) {
         version = req.params.version;
 
     res.sendFile(getRobotFirmware(robot, version));
-};
-
-exports.getMulterCreator = function() {
-    var storage = multer.diskStorage({
-        destination: function(req, file, cb) {
-            var robot = req.params.robot;
-            cb(null, getRobotFirmwareFolder(robot))
-        },
-        filename: function(req, file, cb) {
-            var version = req.params.version;
-            cb(null, getRobotFirmwareName(version))
-        }
-    });
-    return multer({
-        storage: storage
-    });
-};
-
-exports.create = function(req, res) {
-    res.sendStatus(200);
-};
-
-exports.delete = function(req, res) {
-    var robot = req.params.robot,
-        version = req.params.version;
-
-    fs.unlink(getRobotFirmware(robot, version), function(err) {
-        if (err) {
-            console.log(err);
-            err.code = parseInt(err.code) || 500;
-            res.status(err.code).send(err);
-        } else {
-            res.sendStatus(200);
-        }
-    })
 };
