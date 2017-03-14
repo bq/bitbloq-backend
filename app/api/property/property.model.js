@@ -8,11 +8,11 @@ var PropertySchema = new mongoose.Schema({
     robotsFirmwareVersion: {},
     boardsFirmwareVersion: {},
     bloqsSortTree: {},
+    currentweb2boardVersion: String,
     deleted: Boolean
 }, {
     timestamps: true
 });
-
 
 /**
  * Pre hook
@@ -27,7 +27,6 @@ PropertySchema.pre('find', findNotDeletedMiddleware);
 PropertySchema.pre('findOne', findNotDeletedMiddleware);
 PropertySchema.pre('findOneAndUpdate', findNotDeletedMiddleware);
 PropertySchema.pre('count', findNotDeletedMiddleware);
-
 
 /**
  * Methods
