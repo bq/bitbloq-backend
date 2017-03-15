@@ -210,7 +210,6 @@ function findUserBySocialNetwork(provider, token, next) {
                 }]
             }, function(err, user) {
                 if (!user) {
-                    console.log('no hay user');
                     next(err, userSocial);
                 } else {
                     next(err, user);
@@ -333,6 +332,7 @@ exports.socialLogin = function(req, res) {
         token = req.body.accessToken,
         register = req.body.register,
         username = req.body.username,
+        email = req.body.email,
         hasBeenAskedIfTeacher = req.body.hasBeenAskedIfTeacher;
 
     findUserBySocialNetwork(provider, token, function(err, user) {
@@ -387,6 +387,11 @@ exports.socialLogin = function(req, res) {
                                         }, {
                                             'hasBeenAskedIfTeacher': hasBeenAskedIfTeacher
                                         });
+                                        if (email) {
+                                            _.extend(newUser, {
+                                                'email': email
+                                            });
+                                        }
                                         async.waterfall([
                                             function(saveCallback) {
                                                 getSocialAvatar(provider, user, saveCallback);
@@ -414,7 +419,10 @@ exports.socialLogin = function(req, res) {
                                             }
                                         });
                                     } else {
-                                        res.sendStatus(204);
+                                        res.status(200).json({
+                                            next: 'register',
+                                            email: user.email
+                                        });
                                     }
                                 } else {
                                     updateWithSocialNetwork(provider, localUser._id, user.id, function(err) {
@@ -448,9 +456,32 @@ exports.socialLogin = function(req, res) {
 };
 
 /**
- * Returns if a user exists
+ * Returns if an email exists
  */
-exports.usernameExists = function(req, res) {
+exports.checkEmailExists = function(req, res) {
+    User.findOne({
+        email: req.params.email
+    }, function(err, user) {
+        if (err) {
+            console.log(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
+        } else if (user) {
+            res.status(200).set({
+                'exists': true
+            }).send();
+        } else {
+            res.status(204).set({
+                'exists': false
+            }).send();
+        }
+    });
+};
+
+/**
+ * Returns if a username exists
+ */
+exports.checkUsernameExists = function(req, res) {
     var username = req.params.username;
 
     User.findOne({

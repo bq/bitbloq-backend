@@ -11,7 +11,8 @@ router.delete('/all', auth.hasRole('admin'), controller.deleteAll);
 router.delete('/:id', auth.hasRole('admin'), controller.destroy);
 
 // HEAD
-router.head('/:username', controller.usernameExists);
+router.head('/username/:username', controller.checkUsernameExists);
+router.head('/email/:email', controller.checkEmailExists);
 router.head('/:id/ban', auth.hasRole('admin'), controller.banUserInForum);
 router.head('/:id/unban', auth.hasRole('admin'), controller.unbanUserInForum);
 
