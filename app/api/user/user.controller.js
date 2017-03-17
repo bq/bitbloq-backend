@@ -243,10 +243,13 @@ function generateSocialUser(provider, user) {
             userData.social.google.id = user.id;
             break;
         case 'facebook':
+            console.log('caso facebook: ', user);
+            console.log('caso facebook: ', user.age_range);
             userData.firstName = user.first_name;
             userData.lastName = user.last_name;
             userData.email = user.email;
             userData.social.facebook.id = user.id;
+            userData.social.facebook.ageRange = user.age_range;
             break;
     }
 
@@ -281,8 +284,7 @@ function getSocialAvatar(provider, user, callback) {
     }
 }
 
-function updateWithSocialNetwork(provider, userId, socialId, userCallback) {
-
+function updateWithSocialNetwork(provider, userId, socialUser, userCallback) {
     switch (provider) {
         case 'google':
             User.update({
@@ -290,7 +292,7 @@ function updateWithSocialNetwork(provider, userId, socialId, userCallback) {
             }, {
                 $set: {
                     'social.google': {
-                        id: socialId
+                        id: socialUser.id
                     }
                 }
             }, userCallback);
@@ -301,7 +303,8 @@ function updateWithSocialNetwork(provider, userId, socialId, userCallback) {
             }, {
                 $set: {
                     'social.facebook': {
-                        id: socialId
+                        id: socialUser.id,
+                        ageRange: socialUser.age_range
                     }
                 }
             }, userCallback);
@@ -362,7 +365,7 @@ exports.socialLogin = function(req, res) {
                     // user doesn't exist in our bbdd
                     if (req.user) {
                         //user is registed with an email and user link with other email
-                        updateWithSocialNetwork(provider, req.user._id, user.id, function(err) {
+                        updateWithSocialNetwork(provider, req.user._id, user, function(err) {
                             if (err) {
                                 console.log(err);
                                 res.sendStatus(err.code);
@@ -425,7 +428,7 @@ exports.socialLogin = function(req, res) {
                                         });
                                     }
                                 } else {
-                                    updateWithSocialNetwork(provider, localUser._id, user.id, function(err) {
+                                    updateWithSocialNetwork(provider, localUser._id, user, function(err) {
                                         if (err) {
                                             console.log(err);
                                             err.code = parseInt(err.code) || 500;

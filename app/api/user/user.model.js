@@ -40,7 +40,8 @@ var UserSchema = new mongoose.Schema({
             id: {
                 type: String,
                 default: ''
-            }
+            },
+            ageRange: {}
         }
     },
     twitterApp: {
@@ -153,11 +154,11 @@ UserSchema
                     id: this.social.google.id
                 },
                 'facebook': {
-                    id: this.social.facebook.id
+                    id: this.social.facebook.id,
+                    ageRange: this.social.facebook.ageRange
                 }
             },
             'googleEmail': this.googleEmail,
-            'facebookEmail': this.facebookEmail,
             'bannedInForum': this.bannedInForum,
             'newsletter': this.newsletter,
             'chromeapp': this.chromeapp,
@@ -218,16 +219,7 @@ UserSchema
     .validate(function(value, respond) {
         var self = this;
         var query = this.constructor.where({
-            $or: [{
-                email: value
-            }, {
-                google: {
-                    email: value
-                },
-                facebook: {
-                    email: value
-                }
-            }]
+            email: value
         });
         return this.constructor.findOne(query, function(err, user) {
             var result = false;

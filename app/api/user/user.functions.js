@@ -145,7 +145,7 @@ exports.getSocialProfile = function(provider, token, next) {
             request('https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=' + token, next);
             break;
         case 'facebook':
-            request('https://graph.facebook.com/me?access_token=' + token, next);
+            request('https://graph.facebook.com/me?fields=id,name,first_name,email,last_name,age_range&access_token=' + token, next);
             break;
     }
 };
