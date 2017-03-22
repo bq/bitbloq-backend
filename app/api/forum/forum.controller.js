@@ -111,7 +111,8 @@ function countAnswersInCategories(next) {
         }
     }, {
         $match: {
-            main: false
+            main: false,
+            deleted: {$ne: true}
         }
     }, {
         $group: {
