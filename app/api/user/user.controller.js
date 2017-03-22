@@ -348,7 +348,9 @@ exports.socialLogin = function(req, res) {
                 if (user.role) {
                     // it's local user and user is linked by this social network
                     if (req.user) {
-                        res.status(409).json({message: 'Account already linked to other user'});
+                        res.status(409).json({
+                            message: 'Account already linked to other user'
+                        });
                     } else {
                         //login
                         UserFunctions.generateToken(user, function(err, response) {

@@ -5,16 +5,15 @@ var Project = require('./project.model.js'),
     ImageFunctions = require('../image/image.functions.js');
 
 exports.deleteAllByUser = function(userId, next) {
-    Project.find({creator: userId}, function(projects) {
-        if (projects.length > 0) {
+    Project.find({
+        creator: userId
+    }, function(err, projects) {
+        if (projects && projects.length > 0) {
             projects.forEach(function(project) {
                 project.delete();
             });
         } else {
-            next({
-                code: 404,
-                message: 'Exercise not found'
-            });
+            next(err);
         }
     });
 };

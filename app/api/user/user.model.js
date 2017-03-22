@@ -335,7 +335,6 @@ UserSchema
         next();
     });
 
-
 function findNotDeletedMiddleware(next) {
     this.where('deleted').in([false, undefined, null]);
     next();
@@ -382,7 +381,7 @@ UserSchema.methods = {
         var that = this;
         ProjectFunctions.deleteAllByUser(this._id, function(err) {
             if (err) {
-                next(err.code);
+                next(err);
             } else {
                 that.save(next);
             }
