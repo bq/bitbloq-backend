@@ -336,7 +336,10 @@ exports.socialLogin = function(req, res) {
         register = req.body.register,
         username = req.body.username,
         email = req.body.email,
-        hasBeenAskedIfTeacher = req.body.hasBeenAskedIfTeacher;
+        hasBeenAskedIfTeacher = req.body.hasBeenAskedIfTeacher,
+        birthday = req.body.birthday,
+        needValidation = req.body.needValidation,
+        tutor = req.body.tutor;
 
     findUserBySocialNetwork(provider, token, function(err, user) {
         if (err) {
@@ -397,6 +400,11 @@ exports.socialLogin = function(req, res) {
                                                 'email': email
                                             });
                                         }
+                                        _.extend(newUser, {
+                                            'birthday': birthday,
+                                            'needValidation': needValidation,
+                                            'tutor': tutor
+                                        });
                                         async.waterfall([
                                             function(saveCallback) {
                                                 getSocialAvatar(provider, user, saveCallback);
