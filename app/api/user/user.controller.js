@@ -424,6 +424,7 @@ exports.socialLogin = function(req, res) {
                                     } else {
                                         res.status(200).json({
                                             next: 'register',
+                                            id: user.id,
                                             email: user.email
                                         });
                                     }
