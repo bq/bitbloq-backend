@@ -92,6 +92,10 @@ function countThreadsInCategories(next) {
             as: 'category'
         }
     }, {
+        $match: {
+            deleted: {$ne: true}
+        }
+    }, {
         $group: {
             _id: '$category._id',
             numberOfThreads: {
@@ -131,6 +135,10 @@ function getLastThreads(next) {
             localField: 'creator',
             foreignField: '_id',
             as: 'user'
+        }
+    }, {
+        $match: {
+            deleted: {$ne: true}
         }
     }, {
         $group: {
