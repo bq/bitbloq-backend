@@ -61,11 +61,13 @@ exports.create = function(req, res) {
                                 err.code = parseInt(err.code) || 500;
                                 res.status(err.code).send(err);
                             } else {
-                                generateAndSendToken(user, res);
+                                var tokenObject = generateToken(user);
+                                res.status(200).send(tokenObject);
                             }
                         });
                     } else {
-                        generateAndSendToken(user, res);
+                        var tokenObject = generateToken(user);
+                        res.status(200).send(tokenObject);
                     }
                 } else {
                     res.sendStatus(404);
@@ -158,15 +160,18 @@ exports.getUser = function(req, res) {
     });
 };
 
-function generateAndSendToken(user, res) {
+
+function generateToken(user) {
     var token = jwt.sign({
         _id: user._id
     }, config.secrets.session, {
         expiresIn: 600 * 240
     });
-    res.json({
-        token: token
-    });
+
+    return {
+        token: token,
+        user: user.owner
+    };
 }
 
 function sendEmailTutorAuthorization(user, next) {
@@ -356,15 +361,8 @@ exports.socialLogin = function(req, res) {
                         });
                     } else {
                         //login
-                        UserFunctions.generateToken(user, function(err, response) {
-                            if (err) {
-                                console.log(err);
-                                err.code = parseInt(err.code) || 500;
-                                res.status(err.code).send(err);
-                            } else {
-                                res.status(200).send(response);
-                            }
-                        });
+                        var tokenObject = generateToken(user);
+                        res.status(200).send(tokenObject);
                     }
                 } else {
                     // user doesn't exist in our bbdd
@@ -420,7 +418,21 @@ exports.socialLogin = function(req, res) {
                                                 });
                                             },
                                             function(user, saveCallback) {
-                                                UserFunctions.generateToken(user, saveCallback);
+                                                if (newUser.needValidation) {
+                                                    sendEmailTutorAuthorization(user, function(err) {
+                                                        if (err) {
+                                                            console.log(err);
+                                                            err.code = parseInt(err.code) || 500;
+                                                            res.status(err.code).send(err);
+                                                        } else {
+                                                            var tokenObject = generateToken(user);
+                                                            saveCallback(null, tokenObject);
+                                                        }
+                                                    });
+                                                } else {
+                                                    var tokenObject = generateToken(user);
+                                                    saveCallback(null, tokenObject);
+                                                }
                                             }
 
                                         ], function(err, token) {
@@ -445,15 +457,8 @@ exports.socialLogin = function(req, res) {
                                             err.code = parseInt(err.code) || 500;
                                             res.status(err.code).send(err);
                                         } else {
-                                            UserFunctions.generateToken(localUser, function(err, responseToken) {
-                                                if (err) {
-                                                    console.log(err);
-                                                    err.code = parseInt(err.code) || 500;
-                                                    res.status(err.code).send(err);
-                                                } else {
-                                                    res.status(200).send(responseToken);
-                                                }
-                                            });
+                                            var tokenObject = generateToken(localUser);
+                                            res.status(200).send(tokenObject);
                                         }
                                     });
                                 }

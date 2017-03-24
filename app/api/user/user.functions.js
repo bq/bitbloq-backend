@@ -118,20 +118,6 @@ exports.getAllUsersByEmails = function(emails, next) {
 };
 
 
-exports.generateToken = function(user, next) {
-    var token = jwt.sign({
-        _id: user._id
-    }, config.secrets.session, {
-        expiresIn: 600 * 240
-    });
-
-    next(null, {
-        token: token,
-        user: user.owner
-    });
-};
-
-
 /**
  * Get google user data with token
  * @param {String} provider
