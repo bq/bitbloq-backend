@@ -206,6 +206,9 @@ function findUserBySocialNetwork(provider, token, next) {
             next(err, response);
         } else {
             var userSocial = JSON.parse(response.body);
+            if (provider === 'google') {
+                userSocial.email = userSocial.emails[0].value;
+            }
             User.findOne({
                 $or: [{
                     'social.facebook.id': userSocial.id
@@ -228,46 +231,44 @@ function generateSocialUser(provider, user) {
     var userData = {
         firstName: '',
         lastName: '',
-        email: '',
+        email: user.email,
         social: {
             google: {
-                id: ''
+                id: '',
+                ageRange: {}
             },
             facebook: {
-                id: ''
+                id: '',
+                ageRange: {}
             }
         }
-
     };
+
+    if (userData.birthday && userData.birthday.includes('0000-')) {
+        userData.birthday = user.birthday;
+    }
 
     switch (provider) {
         case 'google':
-            userData.firstName = user.given_name;
-            userData.lastName = user.family_name;
-            userData.email = user.email;
+            userData.firstName = user.name.givenName;
+            userData.lastName = user.name.familyName;
             userData.social.google.id = user.id;
+            userData.social.google.ageRange = user.ageRange;
             break;
         case 'facebook':
-            console.log('caso facebook: ', user);
-            console.log('caso facebook: ', user.age_range);
             userData.firstName = user.first_name;
             userData.lastName = user.last_name;
-            userData.email = user.email;
             userData.social.facebook.id = user.id;
             userData.social.facebook.ageRange = user.age_range;
             break;
     }
-
-    var newUser = new User(userData);
-    newUser.role = 'user';
-    return newUser;
-
+    return userData;
 }
 
 function getSocialAvatar(provider, user, callback) {
     switch (provider) {
         case 'google':
-            callback(null, user.picture);
+            callback(null, user.image.url.split('?')[0]);
             break;
         case 'facebook':
             UserFunctions.getFacebookAvatar(user.id, function(err, response) {
@@ -297,7 +298,8 @@ function updateWithSocialNetwork(provider, userId, socialUser, userCallback) {
             }, {
                 $set: {
                     'social.google': {
-                        id: socialUser.id
+                        id: socialUser.id,
+                        ageRange: socialUser.ageRange
                     }
                 }
             }, userCallback);
@@ -367,7 +369,7 @@ exports.socialLogin = function(req, res) {
                 } else {
                     // user doesn't exist in our bbdd
                     if (req.user) {
-                        //user is registed with an email and user link with other email
+                        //user is registered with an email and user link with other email
                         updateWithSocialNetwork(provider, req.user._id, user, function(err) {
                             if (err) {
                                 console.log(err);
@@ -386,8 +388,9 @@ exports.socialLogin = function(req, res) {
                                 res.status(err.code).send(err);
                             } else {
                                 if (!localUser) {
+                                    var userData = generateSocialUser(provider, user);
                                     if (register) {
-                                        var newUser = generateSocialUser(provider, user);
+                                        var newUser = new User(userData);
                                         _.extend(newUser, {
                                             'username': username
                                         }, {
@@ -446,8 +449,7 @@ exports.socialLogin = function(req, res) {
                                     } else {
                                         res.status(200).json({
                                             next: 'register',
-                                            id: user.id,
-                                            email: user.email
+                                            user: userData
                                         });
                                     }
                                 } else {

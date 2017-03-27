@@ -34,7 +34,8 @@ var UserSchema = new mongoose.Schema({
             id: {
                 type: String,
                 default: ''
-            }
+            },
+            ageRange: {}
         },
         facebook: {
             id: {
