@@ -244,7 +244,7 @@ function generateSocialUser(provider, user) {
         }
     };
 
-    if (userData.birthday && userData.birthday.includes('0000-')) {
+    if (user.birthday && !user.birthday.includes('0000-')) {
         userData.birthday = user.birthday;
     }
 
