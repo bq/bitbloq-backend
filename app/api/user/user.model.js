@@ -119,6 +119,20 @@ var UserSchema = new mongoose.Schema({
         }
     },
     anonymous: String,
+    hardware: {
+        robots: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Robots'
+        }],
+        boards: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Boards'
+        }],
+        components: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Components'
+        }]
+    },
     deleted: Boolean
 }, {
     timestamps: true
@@ -481,9 +495,8 @@ UserSchema.methods = {
                 var createdDay = new Date(this.createdAt);
                 createdDay.setDate(createdDay.getDate() + 15);
                 if (createdDay.getTime() < Date.now()) {
-                    this.anonymize('rejectInValidation', function() {
-                        return false
-                    });
+                    this.anonymize('rejectInValidation');
+                    return false;
                 } else {
                     return true;
                 }
