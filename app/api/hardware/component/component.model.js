@@ -3,7 +3,11 @@
 var mongoose = require('mongoose');
 
 var ComponentSchema = new mongoose.Schema({
-    uuid: String,
+    _id: {
+        type: String,
+        trim: true,
+        required: true
+    },
     manufacturer: String,
     category: String,
     type: String,

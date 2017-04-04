@@ -12,8 +12,7 @@ var Robot = require('../api/hardware/robot/robot.model');
 
 Board.find({}).remove(function() {
     Board.create({
-        "uuid": "bqZUM",
-        "name": "bq ZUM",
+        "_id": "bqZUM",
         "mcu": "bt328",
         "vendorIds": ["0x403"],
         "productIds": ["0x6001"],
@@ -173,8 +172,7 @@ Board.find({}).remove(function() {
             }]
         }
     }, {
-        "uuid": "FreaduinoUNO",
-        "name": "Freaduino UNO",
+        "_id": "FreaduinoUNO",
         "mcu": "uno",
         "vendorIds": ["0x2341"],
         "productIds": ["0x1"],
@@ -334,8 +332,7 @@ Board.find({}).remove(function() {
             }]
         }
     }, {
-        "uuid": "ArduinoUNO",
-        "name": "Arduino UNO",
+        "_id": "ArduinoUNO",
         "mcu": "uno",
         "vendorIds": ["0x2341"],
         "productIds": ["0x43"],
@@ -485,8 +482,7 @@ Board.find({}).remove(function() {
             }]
         }
     }, {
-        "uuid": "mcore",
-        "name": "MCore",
+        "_id": "mcore",
         "mcu": "uno",
         "manufacturer": "makeblock",
         "vendorIds": ["0x1A86"],
@@ -588,8 +584,7 @@ Board.find({}).remove(function() {
             }]
         }
     }, {
-        "uuid": "meauriga",
-        "name": "Me Auriga",
+        "_id": "meauriga",
         "mcu": "mega",
         "manufacturer": "makeblock",
         "vendorIds": ["0x1A86"],
@@ -796,8 +791,7 @@ Board.find({}).remove(function() {
             }]
         }
     }, {
-        "uuid": "meorion",
-        "name": "Me Orion",
+        "_id": "meorion",
         "mcu": "uno",
         "vendorIds": ["0x1A86"],
         "productIds": ["0x7523"],
@@ -892,8 +886,7 @@ Board.find({}).remove(function() {
             }]
         }
     }, {
-        "uuid": "ArduinoMEGA2560",
-        "name": "Arduino MEGA 2560",
+        "_id": "ArduinoMEGA2560",
         "mcu": "mega",
         "underDevelopment": false,
         "showInToolbox": true,
@@ -1294,8 +1287,7 @@ Board.find({}).remove(function() {
             }]
         }
     }, {
-        "uuid": "ArduinoLeonardo",
-        "name": "Arduino Leonardo",
+        "_id": "ArduinoLeonardo",
         "mcu": "leonardo",
         "underDevelopment": true,
         "showInToolbox": true,
@@ -1446,8 +1438,7 @@ Board.find({}).remove(function() {
             }]
         }
     }, {
-        "uuid": "ArduinoNano",
-        "name": "Arduino Nano",
+        "_id": "ArduinoNano",
         "mcu": "nano",
         "underDevelopment": true,
         "showInToolbox": true,
@@ -1604,7 +1595,7 @@ Board.find({}).remove(function() {
 
 Component.find({}).remove(function() {
     Component.create({
-        "uuid": "led",
+        "_id": "led",
         "manufacturer": "standard",
         "category": "leds",
         "width": 55,
@@ -1615,7 +1606,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "RGBled",
+        "_id": "RGBled",
         "manufacturer": "standard",
         "category": "rgbs",
         "width": 67,
@@ -1628,7 +1619,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "us",
+        "_id": "us",
         "manufacturer": "standard",
         "category": "sensors",
         "type": "US",
@@ -1642,7 +1633,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "button",
+        "_id": "button",
         "manufacturer": "standard",
         "category": "sensors",
         "type": "digital",
@@ -1655,7 +1646,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "limitswitch",
+        "_id": "limitswitch",
         "manufacturer": "standard",
         "category": "sensors",
         "type": "digital",
@@ -1668,7 +1659,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "encoder",
+        "_id": "encoder",
         "manufacturer": "standard",
         "category": "sensors",
         "type": "encoder",
@@ -1687,7 +1678,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "sound",
+        "_id": "sound",
         "manufacturer": "standard",
         "category": "sensors",
         "type": "digital",
@@ -1700,7 +1691,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "buttons",
+        "_id": "buttons",
         "manufacturer": "standard",
         "category": "sensors",
         "type": "ButtonPad",
@@ -1713,7 +1704,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "irs",
+        "_id": "irs",
         "manufacturer": "standard",
         "category": "sensors",
         "type": "digital",
@@ -1726,7 +1717,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "irs2",
+        "_id": "irs2",
         "manufacturer": "standard",
         "category": "sensors",
         "type": "LineFollower",
@@ -1740,7 +1731,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "joystick",
+        "_id": "joystick",
         "manufacturer": "standard",
         "category": "sensors",
         "type": "Joystick",
@@ -1757,7 +1748,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "ldrs",
+        "_id": "ldrs",
         "manufacturer": "standard",
         "category": "sensors",
         "type": "analog",
@@ -1770,7 +1761,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "pot",
+        "_id": "pot",
         "manufacturer": "standard",
         "category": "sensors",
         "type": "analog",
@@ -1783,7 +1774,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "rtc",
+        "_id": "rtc",
         "manufacturer": "standard",
         "category": "clocks",
         "type": "analog",
@@ -1802,7 +1793,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "hts221",
+        "_id": "hts221",
         "manufacturer": "standard",
         "category": "hts221",
         "type": "digital",
@@ -1821,7 +1812,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "buzz",
+        "_id": "buzz",
         "manufacturer": "standard",
         "category": "buzzers",
         "type": "digital",
@@ -1833,7 +1824,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "servo",
+        "_id": "servo",
         "manufacturer": "standard",
         "category": "servos",
         "width": 125,
@@ -1845,7 +1836,7 @@ Component.find({}).remove(function() {
         },
         "oscillator": false
     }, {
-        "uuid": "servocont",
+        "_id": "servocont",
         "manufacturer": "standard",
         "category": "continuousServos",
         "width": 125,
@@ -1856,7 +1847,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "lcd",
+        "_id": "lcd",
         "manufacturer": "standard",
         "category": "lcds",
         "width": 170,
@@ -1874,7 +1865,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "bt",
+        "_id": "bt",
         "manufacturer": "standard",
         "category": "serialElements",
         "baudRate": 9600,
@@ -1887,7 +1878,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "sp",
+        "_id": "sp",
         "manufacturer": "standard",
         "category": "serialElements",
         "baudRate": 9600,
@@ -1902,7 +1893,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "device",
+        "_id": "device",
         "manufacturer": "standard",
         "category": "serialElements",
         "baudRate": 9600,
@@ -1911,7 +1902,7 @@ Component.find({}).remove(function() {
         "height": 102,
         "pins": {}
     }, {
-        "uuid": "mkb_lightsensor",
+        "_id": "mkb_lightsensor",
         "category": "mkb_lightsensor",
         "type": "analog",
         "manufacturer": "makeblock",
@@ -1924,7 +1915,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "mkb_linefollower",
+        "_id": "mkb_linefollower",
         "category": "mkb_linefollower",
         "manufacturer": "makeblock",
         "type": "mkb_linefollower",
@@ -1937,7 +1928,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "mkb_ultrasound",
+        "_id": "mkb_ultrasound",
         "category": "mkb_ultrasound",
         "manufacturer": "makeblock",
         "width": 134.5,
@@ -1949,7 +1940,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "mkb_integrated_analogPinButton",
+        "_id": "mkb_integrated_analogPinButton",
         "manufacturer": "makeblock",
         "category": "sensors",
         "type": "mkb_integrated_analogPinButton",
@@ -1962,7 +1953,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "mkb_integrated_lightsensor",
+        "_id": "mkb_integrated_lightsensor",
         "manufacturer": "makeblock",
         "category": "mkb_lightsensor",
         "type": "mkb_integrated_lightsensor",
@@ -1975,7 +1966,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "mkb_integrated_buzz",
+        "_id": "mkb_integrated_buzz",
         "manufacturer": "makeblock",
         "category": "mkb_integrated_buzz",
         "width": 0,
@@ -1986,7 +1977,7 @@ Component.find({}).remove(function() {
             ]
         }
     }, {
-        "uuid": "mkb_integrated_RGB",
+        "_id": "mkb_integrated_RGB",
         "manufacturer": "makeblock",
         "category": "mkb_integrated_RGB",
         "type": "mkb_integrated",
@@ -2004,20 +1995,17 @@ Component.find({}).remove(function() {
 
 Robot.find({}).remove(function() {
     Robot.create({
-        "uuid": "zowi",
-        "name": "Zowi",
+        "_id": "zowi",
         "board": "ArduinoUNO",
         "width": 75,
         "height": 86
     }, {
-        "uuid": "evolution",
-        "name": "Evolution",
+        "_id": "evolution",
         "board": "bqZUM",
         "width": 75,
         "height": 86
     }, {
-        "uuid": "mbot",
-        "name": "mBot",
+        "_id": "mbot",
         "board": "mcore",
         "family": "mBot",
         "thirdParty": true,
@@ -2026,8 +2014,7 @@ Robot.find({}).remove(function() {
         "width": 75,
         "height": 86
     }, {
-        "uuid": "rangerlandraider",
-        "name": "mRanger Land Raider",
+        "_id": "rangerlandraider",
         "board": "meauriga",
         "family": "mRanger",
         "thirdParty": true,
@@ -2035,8 +2022,7 @@ Robot.find({}).remove(function() {
         "width": 75,
         "height": 86
     }, {
-        "uuid": "rangerraptor",
-        "name": "mRanger Raptor",
+        "_id": "rangerraptor",
         "board": "meauriga",
         "family": "mRanger",
         "thirdParty": true,
@@ -2044,8 +2030,7 @@ Robot.find({}).remove(function() {
         "width": 75,
         "height": 86
     }, {
-        "uuid": "rangernervousbird",
-        "name": "mRanger Nervous bird",
+        "_id": "rangernervousbird",
         "board": "meauriga",
         "family": "mRanger",
         "thirdParty": true,
@@ -2053,8 +2038,7 @@ Robot.find({}).remove(function() {
         "width": 75,
         "height": 86
     }, {
-        "uuid": "startertank",
-        "name": "Starter kit Modo tanke",
+        "_id": "startertank",
         "board": "meorion",
         "family": "starterKit",
         "thirdParty": true,
@@ -2062,8 +2046,7 @@ Robot.find({}).remove(function() {
         "width": 75,
         "height": 86
     }, {
-        "uuid": "starterthreewheels",
-        "name": "Starter kit Modo 3 ruedas",
+        "_id": "starterthreewheels",
         "family": "starterKit",
         "thirdParty": true,
         "board": "meorion",
@@ -2077,28 +2060,28 @@ Robot.find({}).remove(function() {
 
 Kit.find({}).remove(function() {
     Kit.create({
-        "uuid": "Kitgeneric",
+        "_id": "Kitgeneric",
         "purchaseUrl": "http://www.elecfreaks.com/estore/arduino-advanced-kit.html",
         "board": ["bqZUM", "FreaduinoUNO", "ArduinoUNO"],
         "components": ["led", "encoder", "joystick", "button", "RGBled", "irs", "sound",
             "rtc", "limitswitch", "ldrs", "irs2", "lcd", "us", "buttons", "pot", "servo",
             "servocont", "device", "buzz", "sp", "hts221", "bt"]
     }, {
-        "uuid": "bqzumbox",
+        "_id": "bqzumbox",
         "purchaseUrl": "https://www.bq.com/es/zum-kit",
         "manufacturer": "bq",
         "board": "Zum Core",
         "components": ["irs", "button", "ldrs", "buzz", "us", "pot", "led", "servo",
             "servocont"]
     }, {
-        "uuid": "elecfreakstarterkit",
+        "_id": "elecfreakstarterkit",
         "purchaseUrl": "http://www.elecfreaks.com/estore/arduino-starter-kit-absolute-beginner.html",
         "manufacturer": "elecfreaks",
         "board": ["FreaduinoUNO"],
         "components": ["led", "button", "ldrs", "buzz", "encoder", "servo", "hts221",
             "servo"]
     }, {
-        "uuid": "elecfreakadvancedKit",
+        "_id": "elecfreakadvancedKit",
         "purchaseUrl": "http://www.elecfreaks.com/estore/arduino-advanced-kit.html",
         "manufacturer": "elecfreaks",
         "board": ["FreaduinoUNO"],

@@ -3,8 +3,11 @@
 var mongoose = require('mongoose');
 
 var BoardSchema = new mongoose.Schema({
-    uuid: String,
-    name: String,
+    _id: {
+        type: String,
+        trim: true,
+        required: true
+    },
     mcu: String,
     manufacturer: String,
     vendorIds: Array,
