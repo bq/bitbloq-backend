@@ -2060,7 +2060,7 @@ Robot.find({}).remove(function() {
 
 Kit.find({}).remove(function() {
     Kit.create({
-        "_id": "Kitgeneric",
+        "_id": "kitgeneric",
         "purchaseUrl": "http://www.elecfreaks.com/estore/arduino-advanced-kit.html",
         "board": ["bqZUM", "FreaduinoUNO", "ArduinoUNO"],
         "components": ["led", "encoder", "joystick", "button", "RGBled", "irs", "sound",

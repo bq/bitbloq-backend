@@ -3,8 +3,11 @@
 var mongoose = require('mongoose');
 
 var RobotSchema = new mongoose.Schema({
-    uuid: String,
-    name: String,
+    _id: {
+        type: String,
+        trim: true,
+        required: true
+    },
     board: String,
     manufacturer: String,
     family: String,
