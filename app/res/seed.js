@@ -2074,3 +2074,36 @@ Robot.find({}).remove(function() {
         console.log('finished populating robots');
     });
 });
+
+Kit.find({}).remove(function() {
+    Kit.create({
+        "uuid": "Kitgeneric",
+        "purchaseUrl": "http://www.elecfreaks.com/estore/arduino-advanced-kit.html",
+        "board": ["bqZUM", "FreaduinoUNO", "ArduinoUNO"],
+        "components": ["led", "encoder", "joystick", "button", "RGBled", "irs", "sound",
+            "rtc", "limitswitch", "ldrs", "irs2", "lcd", "us", "buttons", "pot", "servo",
+            "servocont", "device", "buzz", "sp", "hts221", "bt"]
+    }, {
+        "uuid": "bqzumbox",
+        "purchaseUrl": "https://www.bq.com/es/zum-kit",
+        "manufacturer": "bq",
+        "board": "Zum Core",
+        "components": ["irs", "button", "ldrs", "buzz", "us", "pot", "led", "servo",
+            "servocont"]
+    }, {
+        "uuid": "elecfreakstarterkit",
+        "purchaseUrl": "http://www.elecfreaks.com/estore/arduino-starter-kit-absolute-beginner.html",
+        "manufacturer": "elecfreaks",
+        "board": ["FreaduinoUNO"],
+        "components": ["led", "button", "ldrs", "buzz", "encoder", "servo", "hts221",
+            "servo"]
+    }, {
+        "uuid": "elecfreakadvancedKit",
+        "purchaseUrl": "http://www.elecfreaks.com/estore/arduino-advanced-kit.html",
+        "manufacturer": "elecfreaks",
+        "board": ["FreaduinoUNO"],
+        "components": ["lcd", "buttons", "buzz"]
+    }, function() {
+        console.log('finished populating kits');
+    });
+});

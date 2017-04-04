@@ -4,10 +4,10 @@ var mongoose = require('mongoose');
 
 var KitSchema = new mongoose.Schema({
     uuid: String,
-    name: String,
-    manufacturer: String,
-    board: String,
+    board: Array,
     components: Array,
+    purchaseUrl: String,
+    manufacturer: String,
     underDevelopment: Boolean,
     deleted: Boolean
 }, {
