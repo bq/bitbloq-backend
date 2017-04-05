@@ -122,15 +122,15 @@ var UserSchema = new mongoose.Schema({
     hardware: {
         robots: [{
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Robots'
+            ref: 'hardware-robot'
         }],
         boards: [{
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Boards'
+            ref: 'hardware-board'
         }],
         components: [{
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Components'
+            ref: 'hardware-component'
         }]
     },
     deleted: Boolean

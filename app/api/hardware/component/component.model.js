@@ -3,10 +3,9 @@
 var mongoose = require('mongoose');
 
 var ComponentSchema = new mongoose.Schema({
-    _id: {
+    uuid: {
         type: String,
-        trim: true,
-        required: true
+        unique: true
     },
     manufacturer: String,
     category: String,

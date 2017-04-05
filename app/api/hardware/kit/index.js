@@ -5,5 +5,6 @@ var express = require('express'),
     router = express.Router();
 
 router.get('/', controller.get);
+router.get('/populate', controller.getPopulado);
 
 module.exports = router;

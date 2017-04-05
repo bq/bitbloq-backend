@@ -3,13 +3,18 @@
 var mongoose = require('mongoose');
 
 var KitSchema = new mongoose.Schema({
-    _id: {
+    uuid: {
         type: String,
-        trim: true,
-        required: true
+        unique: true
     },
-    board: Array,
-    components: Array,
+    boards: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'hardware-board'
+    }],
+    components: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'hardware-component'
+    }],
     purchaseUrl: String,
     manufacturer: String,
     underDevelopment: Boolean,
