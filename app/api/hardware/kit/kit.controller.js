@@ -28,21 +28,3 @@ exports.get = function(req, res) {
     });
 
 };
-
-exports.getPopulado = function(req, res) {
-    var query = req.query.query ? JSON.parse(req.query.query) : {},
-        page = req.query.page || 0,
-        pageSize = req.query.pageSize || perPage;
-
-    Kit.find(query)
-        .populate('board').exec(function(err, kits) {
-        if (err) {
-            console.log(err);
-            err.code = parseInt(err.code) || 500;
-            res.status(err.code).send(err);
-        } else {
-            res.status(200).json(kits);
-        }
-    });
-
-};

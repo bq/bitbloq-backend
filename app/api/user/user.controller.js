@@ -5,7 +5,7 @@ var User = require('./user.model.js'),
     ImageFunctions = require('../image/image.functions.js'),
     Token = require('../recovery/token.model.js'),
     AuthorizationToken = require('../authorization/token.model.js'),
-    HardwareFunctions = require('../hardware/harware.functions.js'),
+    HardwareFunctions = require('../hardware/hardware.functions.js'),
     config = require('../../res/config.js'),
     jwt = require('jsonwebtoken'),
     mailer = require('../../components/mailer'),
@@ -676,7 +676,7 @@ exports.changePasswordAuthenticated = function(req, res) {
 exports.me = function(req, res) {
     var userId = req.user.id;
     async.waterfall([
-        function(next){
+        function(next) {
             User.findById(userId,
                 '-salt -password',
                 next);
@@ -695,7 +695,7 @@ exports.me = function(req, res) {
                 next(401);
             }
         }
-    ],function(err, result){
+    ], function(err, result) {
         if (err) {
             console.log(err);
             err.code = parseInt(err.code) || 500;
@@ -706,7 +706,7 @@ exports.me = function(req, res) {
     });
 };
 
-function _hardwareIsEmpty(hardware){
+function _hardwareIsEmpty(hardware) {
     var emptyHardware = {
         robots: [],
         boards: [],
