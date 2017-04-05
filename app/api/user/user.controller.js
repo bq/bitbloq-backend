@@ -160,7 +160,6 @@ exports.getUser = function(req, res) {
     });
 };
 
-
 function generateToken(user) {
     var token = jwt.sign({
         _id: user._id
@@ -954,3 +953,32 @@ exports.deleteAll = function(req, res) {
             }
         });
 };
+
+exports.addHardware = function(req, res) {
+    var userId = req.user._id,
+        hardware = req.body.hardware;
+
+    User.findById(userId, function(err, user) {
+        if (err) {
+            console.log(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
+        } else {
+            if (user) {
+                user.hardware = hardware;
+                user.save({
+                    validateBeforeSave: false
+                }, function(err, user) {
+                    if (err) {
+                        console.log(err);
+                        err.code = parseInt(err.code) || 500;
+                        res.status(err.code).send(err);
+                    } else {
+                        res.status(200).json(user.hardware);
+                    }
+                });
+
+            }
+        }
+    });
+}
