@@ -1,8 +1,7 @@
 'use strict';
 
 var Project = require('./project.model.js'),
-    async = require('async'),
-    ImageFunctions = require('../image/image.functions.js');
+    async = require('async');
 
 exports.deleteAllByUser = function(userId, next) {
     Project.find({

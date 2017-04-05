@@ -193,7 +193,8 @@ UserSchema
                 consumerSecret: this.twitterApp.consumerSecret,
                 accessToken: this.twitterApp.accessToken,
                 accessTokenSecret: this.twitterApp.accessTokenSecret
-            }
+            },
+            'hardware': this.hardware
         };
     });
 
@@ -352,13 +353,18 @@ UserSchema
 
 function findNotDeletedMiddleware(next) {
     this.where('deleted').in([false, undefined, null]);
+    this.populate('hardware.robots');
+    this.populate('hardware.boads');
+    this.populate('hardware.components');
     next();
 }
+
 
 UserSchema.pre('find', findNotDeletedMiddleware);
 UserSchema.pre('findOne', findNotDeletedMiddleware);
 UserSchema.pre('findOneAndUpdate', findNotDeletedMiddleware);
 UserSchema.pre('count', findNotDeletedMiddleware);
+
 
 /**
  * Methods

@@ -5,6 +5,7 @@ var User = require('./user.model.js'),
     ImageFunctions = require('../image/image.functions.js'),
     Token = require('../recovery/token.model.js'),
     AuthorizationToken = require('../authorization/token.model.js'),
+    HardwareFunctions = require('../hardware/harware.functions.js'),
     config = require('../../res/config.js'),
     jwt = require('jsonwebtoken'),
     mailer = require('../../components/mailer'),
@@ -674,27 +675,49 @@ exports.changePasswordAuthenticated = function(req, res) {
  */
 exports.me = function(req, res) {
     var userId = req.user.id;
-    User.findById(userId,
-        '-salt -password',
-        function(err, user) {
-            if (err) {
-                console.log(err);
-                err.code = parseInt(err.code) || 500;
-                res.status(err.code).send(err);
-            } else {
-                if (!user) {
-                    res.sendStatus(401);
+    async.waterfall([
+        function(next){
+            User.findById(userId,
+                '-salt -password',
+                next);
+        },
+        function(user, next) {
+            if (user) {
+                if (_hardwareIsEmpty(user.hardware)) {
+                    HardwareFunctions.getDefault(function(err, hardware) {
+                        user.hardware = hardware;
+                        next(err, user.owner);
+                    });
                 } else {
-                    res.status(200).json(user.owner);
+                    next(null, user.owner);
                 }
+            } else {
+                next(401);
             }
-        });
+        }
+    ],function(err, result){
+        if (err) {
+            console.log(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
+        } else {
+            res.status(200).json(result);
+        }
+    });
 };
+
+function _hardwareIsEmpty(hardware){
+    var emptyHardware = {
+        robots: [],
+        boards: [],
+        components: []
+    };
+    return !_.isEqual(emptyHardware, hardware);
+}
 
 /**
  * Update my user
  */
-
 exports.updateMe = function(req, res) {
 
     var reqUser = req.body,
