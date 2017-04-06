@@ -11,3 +11,9 @@ exports.getAllWithoutDevelopment = function(next) {
         .where('underDevelopment').in([false, undefined, null])
         .exec(next);
 };
+
+exports.getRobotsInArray = function(arrayId, next) {
+    Robot.find({})
+        .where('_id').in(arrayId)
+        .exec(next);
+};

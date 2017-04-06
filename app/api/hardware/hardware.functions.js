@@ -21,3 +21,18 @@ exports.getDefault = function(next) {
     });
 };
 
+exports.getHardware = function(hardware, next) {
+    async.parallel([
+        RobotFunctions.getRobotsInArray.bind(RobotFunctions, hardware.robots),
+        BoardFunctions.getBoardsInArray.bind(BoardFunctions, hardware.boards),
+        ComponentFunctions.getComponentsInArray.bind(ComponentFunctions, hardware.components)
+    ], function(err, result) {
+        var hardware = {
+            robots: result[0],
+            boards: result[1],
+            components: result[2]
+        };
+        next(err, hardware);
+    });
+};
+

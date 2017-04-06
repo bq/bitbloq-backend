@@ -354,7 +354,7 @@ UserSchema
 function findNotDeletedMiddleware(next) {
     this.where('deleted').in([false, undefined, null]);
     this.populate('hardware.robots');
-    this.populate('hardware.boads');
+    this.populate('hardware.boards');
     this.populate('hardware.components');
     next();
 }

@@ -677,9 +677,9 @@ exports.me = function(req, res) {
     var userId = req.user.id;
     async.waterfall([
         function(next) {
-            User.findById(userId,
-                '-salt -password',
-                next);
+            User.findById(userId)
+                .select('-salt -password')
+                .exec(next);
         },
         function(user, next) {
             if (user) {
@@ -1008,5 +1008,5 @@ function _hardwareIsEmpty(hardware) {
         boards: [],
         components: []
     };
-    return _.isEqual(emptyHardware, hardware);
+    return (!hardware || !_.isEqual(emptyHardware, hardware));
 }

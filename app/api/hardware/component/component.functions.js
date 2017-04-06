@@ -11,3 +11,9 @@ exports.getAllWithoutDevelopment = function(next) {
         .where('underDevelopment').in([false, undefined, null])
         .exec(next);
 };
+
+exports.getComponentsInArray = function(arrayId, next) {
+    Component.find({})
+        .where('_id').in(arrayId)
+        .exec(next);
+};
