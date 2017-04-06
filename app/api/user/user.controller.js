@@ -706,15 +706,6 @@ exports.me = function(req, res) {
     });
 };
 
-function _hardwareIsEmpty(hardware) {
-    var emptyHardware = {
-        robots: [],
-        boards: [],
-        components: []
-    };
-    return !_.isEqual(emptyHardware, hardware);
-}
-
 /**
  * Update my user
  */
@@ -1004,4 +995,18 @@ exports.addHardware = function(req, res) {
             }
         }
     });
+};
+
+
+/************************
+ * PRIVATE FUNCTIONS
+ ************************/
+
+function _hardwareIsEmpty(hardware) {
+    var emptyHardware = {
+        robots: [],
+        boards: [],
+        components: []
+    };
+    return _.isEqual(emptyHardware, hardware);
 }
