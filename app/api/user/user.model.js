@@ -119,6 +119,20 @@ var UserSchema = new mongoose.Schema({
         }
     },
     anonymous: String,
+    hardware: {
+        robots: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'hardware-robot'
+        }],
+        boards: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'hardware-board'
+        }],
+        components: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'hardware-component'
+        }]
+    },
     deleted: Boolean
 }, {
     timestamps: true
@@ -179,7 +193,8 @@ UserSchema
                 consumerSecret: this.twitterApp.consumerSecret,
                 accessToken: this.twitterApp.accessToken,
                 accessTokenSecret: this.twitterApp.accessTokenSecret
-            }
+            },
+            'hardware': this.hardware
         };
     });
 
@@ -338,13 +353,18 @@ UserSchema
 
 function findNotDeletedMiddleware(next) {
     this.where('deleted').in([false, undefined, null]);
+    this.populate('hardware.robots');
+    this.populate('hardware.boards');
+    this.populate('hardware.components');
     next();
 }
+
 
 UserSchema.pre('find', findNotDeletedMiddleware);
 UserSchema.pre('findOne', findNotDeletedMiddleware);
 UserSchema.pre('findOneAndUpdate', findNotDeletedMiddleware);
 UserSchema.pre('count', findNotDeletedMiddleware);
+
 
 /**
  * Methods
@@ -481,9 +501,8 @@ UserSchema.methods = {
                 var createdDay = new Date(this.createdAt);
                 createdDay.setDate(createdDay.getDate() + 15);
                 if (createdDay.getTime() < Date.now()) {
-                    this.anonymize('rejectInValidation', function() {
-                        return false
-                    });
+                    this.anonymize('rejectInValidation');
+                    return false;
                 } else {
                     return true;
                 }

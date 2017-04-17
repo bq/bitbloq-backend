@@ -5,6 +5,7 @@ var User = require('./user.model.js'),
     ImageFunctions = require('../image/image.functions.js'),
     Token = require('../recovery/token.model.js'),
     AuthorizationToken = require('../authorization/token.model.js'),
+    HardwareFunctions = require('../hardware/hardware.functions.js'),
     config = require('../../res/config.js'),
     jwt = require('jsonwebtoken'),
     mailer = require('../../components/mailer'),
@@ -159,7 +160,6 @@ exports.getUser = function(req, res) {
 
     });
 };
-
 
 function generateToken(user) {
     var token = jwt.sign({
@@ -675,27 +675,40 @@ exports.changePasswordAuthenticated = function(req, res) {
  */
 exports.me = function(req, res) {
     var userId = req.user.id;
-    User.findById(userId,
-        '-salt -password',
-        function(err, user) {
-            if (err) {
-                console.log(err);
-                err.code = parseInt(err.code) || 500;
-                res.status(err.code).send(err);
-            } else {
-                if (!user) {
-                    res.sendStatus(401);
+    async.waterfall([
+        function(next) {
+            User.findById(userId)
+                .select('-salt -password')
+                .exec(next);
+        },
+        function(user, next) {
+            if (user) {
+                if (_hardwareIsEmpty(user.hardware)) {
+                    HardwareFunctions.getDefault(function(err, hardware) {
+                        user.hardware = hardware;
+                        next(err, user.owner);
+                    });
                 } else {
-                    res.status(200).json(user.owner);
+                    next(null, user.owner);
                 }
+            } else {
+                next(401);
             }
-        });
+        }
+    ], function(err, result) {
+        if (err) {
+            console.log(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
+        } else {
+            res.status(200).json(result);
+        }
+    });
 };
 
 /**
  * Update my user
  */
-
 exports.updateMe = function(req, res) {
 
     var reqUser = req.body,
@@ -954,3 +967,46 @@ exports.deleteAll = function(req, res) {
             }
         });
 };
+
+exports.addHardware = function(req, res) {
+    var userId = req.user._id,
+        hardware = req.body.hardware;
+
+    User.findById(userId, function(err, user) {
+        if (err) {
+            console.log(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
+        } else {
+            if (user) {
+                user.hardware = hardware;
+                user.save({
+                    validateBeforeSave: false
+                }, function(err, user) {
+                    if (err) {
+                        console.log(err);
+                        err.code = parseInt(err.code) || 500;
+                        res.status(err.code).send(err);
+                    } else {
+                        res.status(200).json(user.hardware);
+                    }
+                });
+
+            }
+        }
+    });
+};
+
+
+/************************
+ * PRIVATE FUNCTIONS
+ ************************/
+
+function _hardwareIsEmpty(hardware) {
+    var emptyHardware = {
+        robots: [],
+        boards: [],
+        components: []
+    };
+    return (!hardware || !_.isEqual(emptyHardware, hardware));
+}

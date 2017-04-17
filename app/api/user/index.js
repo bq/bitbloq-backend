@@ -34,6 +34,7 @@ router.post('/all', auth.hasRole('admin'), controller.createAll);
 // PUT
 router.put('/me', auth.isAuthenticated(), controller.updateMe);
 router.put('/me/password', auth.isAuthenticated(), controller.changePasswordAuthenticated);
+router.put('/me/hardware', auth.isAuthenticated(), controller.addHardware);
 router.put('/:id/password', auth.isAuthenticated(), controller.changePassword);
 router.put('/:id/social', auth.isAuthenticated(), controller.turnToLocal);
 router.put('/under14authorization', controller.authorizeUser);
