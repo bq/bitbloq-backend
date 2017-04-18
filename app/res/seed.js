@@ -1598,7 +1598,6 @@ function createBoards(next) {
     });
 }
 
-
 function createComponents(next) {
     Component.find({}).remove(function() {
         Component.create({
@@ -2002,81 +2001,16 @@ function createComponents(next) {
     });
 }
 
-function createRobots() {
-    Robot.find({}).remove(function() {
-        Robot.create({
-            "uuid": "zowi",
-            "board": "ArduinoUNO",
-            "width": 75,
-            "height": 86
-        }, {
-            "uuid": "evolution",
-            "board": "bqZUM",
-            "width": 75,
-            "height": 86
-        }, {
-            "uuid": "mbot",
-            "board": "mcore",
-            "family": "mBot",
-            "thirdParty": true,
-            "manufacturer": "makeblock",
-            "useBoardImage": true,
-            "width": 75,
-            "height": 86
-        }, {
-            "uuid": "rangerlandraider",
-            "board": "meauriga",
-            "family": "mRanger",
-            "thirdParty": true,
-            "useBoardImage": true,
-            "width": 75,
-            "height": 86
-        }, {
-            "uuid": "rangerraptor",
-            "board": "meauriga",
-            "family": "mRanger",
-            "thirdParty": true,
-            "useBoardImage": true,
-            "width": 75,
-            "height": 86
-        }, {
-            "uuid": "rangernervousbird",
-            "board": "meauriga",
-            "family": "mRanger",
-            "thirdParty": true,
-            "useBoardImage": true,
-            "width": 75,
-            "height": 86
-        }, {
-            "uuid": "startertank",
-            "board": "meorion",
-            "family": "starterKit",
-            "thirdParty": true,
-            "useBoardImage": true,
-            "width": 75,
-            "height": 86
-        }, {
-            "uuid": "starterthreewheels",
-            "family": "starterKit",
-            "thirdParty": true,
-            "board": "meorion",
-            "useBoardImage": true,
-            "width": 75,
-            "height": 86
-        }, function() {
-            console.log('finished populating robots');
-        });
-    });
-}
-
-createRobots();
-
 async.parallel([
     createBoards,
     createComponents
 ], function() {
     Kit.find({}).remove(function() {
-        Board.find({"uuid": {$in: ["bqZUM", "FreaduinoUNO", "ArduinoUNO"]}}).exec(function(err, boards) {
+        Board.find({
+            "uuid": {
+                $in: ["bqZUM", "FreaduinoUNO", "ArduinoUNO"]
+            }
+        }).exec(function(err, boards) {
             Component.find({}).exec(function(err, components) {
                 var boardByUuid = _.groupBy(boards, 'uuid'),
                     componentsByUuid = _.groupBy(components, 'uuid');
@@ -2091,7 +2025,8 @@ async.parallel([
                         componentsByUuid['us'][0]._id, componentsByUuid['buttons'][0]._id, componentsByUuid['pot'][0]._id,
                         componentsByUuid['servo'][0]._id, componentsByUuid['servocont'][0]._id, componentsByUuid['device'][0]._id,
                         componentsByUuid['buzz'][0]._id, componentsByUuid['sp'][0]._id, componentsByUuid['hts221'][0]._id,
-                        componentsByUuid['bt'][0]._id]
+                        componentsByUuid['bt'][0]._id
+                    ]
                 }, {
                     "uuid": "bqzumbox",
                     "purchaseUrl": "https://www.bq.com/es/zum-kit",
@@ -2099,7 +2034,8 @@ async.parallel([
                     "boards": [boardByUuid['bqZUM'][0]._id],
                     "components": [componentsByUuid['irs'][0]._id, componentsByUuid['button'][0]._id, componentsByUuid['ldrs'][0]._id,
                         componentsByUuid['buzz'][0]._id, componentsByUuid['us'][0]._id, componentsByUuid['pot'][0]._id,
-                        componentsByUuid['led'][0]._id, componentsByUuid['servo'][0]._id, componentsByUuid['servocont'][0]._id]
+                        componentsByUuid['led'][0]._id, componentsByUuid['servo'][0]._id, componentsByUuid['servocont'][0]._id
+                    ]
                 }, {
                     "uuid": "elecfreakstarterkit",
                     "purchaseUrl": "http://www.elecfreaks.com/estore/arduino-starter-kit-absolute-beginner.html",
@@ -2107,7 +2043,8 @@ async.parallel([
                     "boards": [boardByUuid['FreaduinoUNO'][0]._id],
                     "components": [componentsByUuid['led'][0]._id, componentsByUuid['button'][0]._id, componentsByUuid['ldrs'][0]._id,
                         componentsByUuid['buzz'][0]._id, componentsByUuid['encoder'][0]._id, componentsByUuid['servo'][0]._id,
-                        componentsByUuid['hts221'][0]._id]
+                        componentsByUuid['hts221'][0]._id
+                    ]
                 }, {
                     "uuid": "elecfreakadvancedKit",
                     "purchaseUrl": "http://www.elecfreaks.com/estore/arduino-advanced-kit.html",
@@ -2116,6 +2053,102 @@ async.parallel([
                     "components": [componentsByUuid['lcd'][0]._id, componentsByUuid['buttons'][0]._id, componentsByUuid['buzz'][0]._id]
                 }, function() {
                     console.log('finished populating kits');
+                });
+
+                Robot.find({}).remove(function() {
+                    Robot.create({
+                        "uuid": "zowi",
+                        "board": "ArduinoUNO",
+                        "width": 75,
+                        "height": 86
+                    }, {
+                        "uuid": "evolution",
+                        "board": "bqZUM",
+                        "width": 75,
+                        "height": 86
+                    }, {
+                        "uuid": "mbot",
+                        "board": "mcore",
+                        "family": "mBot",
+                        "thirdParty": true,
+                        "manufacturer": "makeblock",
+                        "useBoardImage": true,
+                        "includedComponents": [
+                            componentsByUuid['sp'][0]._id,
+                            componentsByUuid['mkb_ultrasound'][0]._id,
+                            componentsByUuid['mkb_linefollower'][0]._id,
+                        ],
+                        "width": 75,
+                        "height": 86
+                    }, {
+                        "uuid": "rangerlandraider",
+                        "board": "meauriga",
+                        "family": "mRanger",
+                        "thirdParty": true,
+                        "useBoardImage": true,
+                        "includedComponents": [
+                            componentsByUuid['sp'][0]._id,
+                            componentsByUuid['mkb_ultrasound'][0]._id,
+                            componentsByUuid['mkb_linefollower'][0]._id,
+                            componentsByUuid['mkb_lightsensor'][0]._id
+                        ],
+                        "width": 75,
+                        "height": 86
+                    }, {
+                        "uuid": "rangerraptor",
+                        "board": "meauriga",
+                        "family": "mRanger",
+                        "thirdParty": true,
+                        "useBoardImage": true,
+                        "includedComponents": [
+                            componentsByUuid['sp'][0]._id,
+                            componentsByUuid['mkb_ultrasound'][0]._id,
+                            componentsByUuid['mkb_linefollower'][0]._id,
+                            componentsByUuid['mkb_lightsensor'][0]._id
+                        ],
+                        "width": 75,
+                        "height": 86
+                    }, {
+                        "uuid": "rangernervousbird",
+                        "board": "meauriga",
+                        "family": "mRanger",
+                        "thirdParty": true,
+                        "useBoardImage": true,
+                        "includedComponents": [
+                            componentsByUuid['sp'][0]._id,
+                            componentsByUuid['mkb_ultrasound'][0]._id,
+                            componentsByUuid['mkb_linefollower'][0]._id,
+                            componentsByUuid['mkb_lightsensor'][0]._id
+                        ],
+                        "width": 75,
+                        "height": 86
+                    }, {
+                        "uuid": "startertank",
+                        "board": "meorion",
+                        "family": "starterKit",
+                        "thirdParty": true,
+                        "useBoardImage": true,
+                        "includedComponents": [
+                            componentsByUuid['sp'][0]._id,
+                            componentsByUuid['mkb_ultrasound'][0]._id
+                        ],
+                        "width": 75,
+                        "height": 86
+                    }, {
+                        "uuid": "starterthreewheels",
+                        "family": "starterKit",
+                        "thirdParty": true,
+                        "board": "meorion",
+                        "useBoardImage": true,
+                        "includedComponents": [
+                            componentsByUuid['sp'][0]._id,
+                            componentsByUuid['mkb_ultrasound'][0]._id
+                        ],
+                        "width": 75,
+                        "height": 86
+                    }, function() {
+                        console.log('finished populating robots');
+                    });
                 });
 
             });

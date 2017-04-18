@@ -682,8 +682,13 @@ exports.me = function(req, res) {
                 .exec(next);
         },
         function(user, next) {
+            console.log('user');
+            console.log(user);
             if (user) {
+                console.log('----user.hardware-----');
+                console.log(user.hardware);
                 if (_hardwareIsEmpty(user.hardware)) {
+                    console.log("entro aqui y no debería");
                     HardwareFunctions.getDefault(function(err, hardware) {
                         user.hardware = hardware;
                         next(err, user.owner);
@@ -972,6 +977,9 @@ exports.addHardware = function(req, res) {
     var userId = req.user._id,
         hardware = req.body.hardware;
 
+    console.log('me viene el siguiente hardware-----');
+    console.log(hardware);
+
     User.findById(userId, function(err, user) {
         if (err) {
             console.log(err);
@@ -979,16 +987,30 @@ exports.addHardware = function(req, res) {
             res.status(err.code).send(err);
         } else {
             if (user) {
-                user.hardware = hardware;
-                user.save({
-                    validateBeforeSave: false
-                }, function(err, user) {
+                console.log('hardware aqui');
+                console.log(hardware);
+                var userToUpdate = user;
+                userToUpdate.hardware = hardware;
+                console.log('userToUpdate');
+                console.log(userToUpdate);
+                user.update(userToUpdate, function(err, updated) {
+                    console.log('user')
                     if (err) {
                         console.log(err);
                         err.code = parseInt(err.code) || 500;
                         res.status(err.code).send(err);
                     } else {
-                        res.status(200).json(user.hardware);
+                        HardwareFunctions.getHardware(userToUpdate.hardware, function(err, userHardware) {
+                            if (err) {
+                                console.log(err);
+                                err.code = parseInt(err.code) || 500;
+                                res.status(err.code).send(err);
+                            } else {
+                                console.log('userHardware');
+                                console.log(userHardware);
+                                res.status(200).json(userHardware);
+                            }
+                        });
                     }
                 });
 
@@ -997,16 +1019,17 @@ exports.addHardware = function(req, res) {
     });
 };
 
-
 /************************
  * PRIVATE FUNCTIONS
  ************************/
 
 function _hardwareIsEmpty(hardware) {
+    console.log('el hardware que entra es');
+    console.log(hardware);
     var emptyHardware = {
         robots: [],
         boards: [],
         components: []
     };
-    return (!hardware || !_.isEqual(emptyHardware, hardware));
+    return (!hardware || _.isEqual(emptyHardware, hardware));
 }

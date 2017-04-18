@@ -13,7 +13,11 @@ exports.getAllWithoutDevelopment = function(next) {
 };
 
 exports.getComponentsInArray = function(arrayId, next) {
-    Component.find({})
-        .where('_id').in(arrayId)
-        .exec(next);
+    if (arrayId.length > 0) {
+        Component.find({})
+            .where('_id').in(arrayId)
+            .exec(next);
+    } else {
+        next(null, []);
+    }
 };

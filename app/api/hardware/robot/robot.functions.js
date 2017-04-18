@@ -13,7 +13,12 @@ exports.getAllWithoutDevelopment = function(next) {
 };
 
 exports.getRobotsInArray = function(arrayId, next) {
-    Robot.find({})
-        .where('_id').in(arrayId)
-        .exec(next);
+    if (arrayId.length > 0) {
+        Robot.find({})
+            .where('_id').in(arrayId)
+            .exec(next);
+    } else {
+        next(null, []);
+    }
+
 };
