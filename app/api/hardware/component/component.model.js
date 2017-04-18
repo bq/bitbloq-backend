@@ -18,7 +18,8 @@ var ComponentSchema = new mongoose.Schema({
     pin: {},
     pins: {},
     underDevelopment: Boolean,
-    deleted: Boolean
+    deleted: Boolean,
+    dragType: String
 }, {
     timestamps: true
 });
@@ -36,7 +37,6 @@ ComponentSchema.pre('find', findNotDeletedMiddleware);
 ComponentSchema.pre('findOne', findNotDeletedMiddleware);
 ComponentSchema.pre('findOneAndUpdate', findNotDeletedMiddleware);
 ComponentSchema.pre('count', findNotDeletedMiddleware);
-
 
 /**
  * Methods
