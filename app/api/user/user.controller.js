@@ -682,13 +682,8 @@ exports.me = function(req, res) {
                 .exec(next);
         },
         function(user, next) {
-            console.log('user');
-            console.log(user);
             if (user) {
-                console.log('----user.hardware-----');
-                console.log(user.hardware);
                 if (_hardwareIsEmpty(user.hardware)) {
-                    console.log("entro aqui y no debería");
                     HardwareFunctions.getDefault(function(err, hardware) {
                         user.hardware = hardware;
                         next(err, user.owner);
@@ -1024,12 +1019,5 @@ exports.addHardware = function(req, res) {
  ************************/
 
 function _hardwareIsEmpty(hardware) {
-    console.log('el hardware que entra es');
-    console.log(hardware);
-    var emptyHardware = {
-        robots: [],
-        boards: [],
-        components: []
-    };
-    return (!hardware || _.isEqual(emptyHardware, hardware));
+    return (!hardware || (hardware.robots.length === 0 && hardware.boards.length === 0 && hardware.components.length === 0));
 }
