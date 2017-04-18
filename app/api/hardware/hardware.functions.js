@@ -35,4 +35,3 @@ exports.getHardware = function(hardware, next) {
         next(err, hardware);
     });
 };
-

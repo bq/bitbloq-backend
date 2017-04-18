@@ -14,7 +14,11 @@ exports.getAllWithoutDevelopment = function(next) {
 };
 
 exports.getBoardsInArray = function(arrayId, next) {
-    Board.find({})
-    .where('_id').in([arrayId])
-    .exec(next);
+    if (arrayId.length > 0) {
+        Board.find({})
+            .where('_id').in([arrayId])
+            .exec(next);
+    } else {
+        next(null, []);
+    }
 };

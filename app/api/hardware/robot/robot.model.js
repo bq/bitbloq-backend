@@ -15,7 +15,11 @@ var RobotSchema = new mongoose.Schema({
     thirdParty: Boolean,
     useBoardImage: Boolean,
     underDevelopment: Boolean,
-    deleted: Boolean
+    deleted: Boolean,
+    includedComponents: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'hardware-component'
+    }]
 }, {
     timestamps: true
 });
@@ -33,7 +37,6 @@ RobotSchema.pre('find', findNotDeletedMiddleware);
 RobotSchema.pre('findOne', findNotDeletedMiddleware);
 RobotSchema.pre('findOneAndUpdate', findNotDeletedMiddleware);
 RobotSchema.pre('count', findNotDeletedMiddleware);
-
 
 /**
  * Methods

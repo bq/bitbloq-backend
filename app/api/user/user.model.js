@@ -194,7 +194,11 @@ UserSchema
                 accessToken: this.twitterApp.accessToken,
                 accessTokenSecret: this.twitterApp.accessTokenSecret
             },
-            'hardware': this.hardware
+            'hardware': {
+                'robots': this.hardware.robots,
+                'boards': this.hardware.boards,
+                'components': this.hardware.components
+            }
         };
     });
 
@@ -359,12 +363,10 @@ function findNotDeletedMiddleware(next) {
     next();
 }
 
-
 UserSchema.pre('find', findNotDeletedMiddleware);
 UserSchema.pre('findOne', findNotDeletedMiddleware);
 UserSchema.pre('findOneAndUpdate', findNotDeletedMiddleware);
 UserSchema.pre('count', findNotDeletedMiddleware);
-
 
 /**
  * Methods
