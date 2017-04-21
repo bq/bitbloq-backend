@@ -2,8 +2,6 @@
 
 var Component = require('./component.model.js');
 
-var perPage = 20;
-
 /**
  * Get public Component list
  */

@@ -133,6 +133,12 @@ var UserSchema = new mongoose.Schema({
             ref: 'hardware-component'
         }]
     },
+    properties: {
+        hasCenterModeEnabled: {
+            type: Boolean,
+            default: false
+        }
+    },
     deleted: Boolean
 }, {
     timestamps: true
@@ -198,6 +204,9 @@ UserSchema
                 'robots': this.hardware.robots,
                 'boards': this.hardware.boards,
                 'components': this.hardware.components
+            },
+            'properties': {
+                'hasCenterModeEnabled': this.properties.hasCenterModeEnabled
             }
         };
     });

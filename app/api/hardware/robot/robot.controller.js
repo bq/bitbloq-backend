@@ -2,8 +2,6 @@
 
 var Robot = require('./robot.model.js');
 
-var perPage = 20;
-
 /**
  * Get public Robot list
  */

@@ -2,8 +2,6 @@
 
 var Kit = require('./kit.model.js');
 
-var perPage = 20;
-
 /**
  * Get public Kit list
  */

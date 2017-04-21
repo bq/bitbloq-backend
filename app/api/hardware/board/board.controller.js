@@ -2,8 +2,6 @@
 
 var Board = require('./board.model.js');
 
-var perPage = 20;
-
 /**
  * Get public Board list
  */

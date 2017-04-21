@@ -206,23 +206,31 @@ function findUserBySocialNetwork(provider, token, next) {
             next(err, response);
         } else {
             var userSocial = JSON.parse(response.body);
-            if (provider === 'google') {
-                userSocial.email = userSocial.emails[0].value;
-            }
-            User.findOne({
-                $or: [{
-                    'social.facebook.id': userSocial.id
 
-                }, {
-                    'social.google.id': userSocial.id
-                }]
-            }, function(err, user) {
-                if (!user) {
-                    next(err, userSocial);
-                } else {
-                    next(err, user);
+            if (userSocial.error) {
+                next({
+                    'code': 503,
+                    'message': 'literal'
+                });
+            } else {
+                if (provider === 'google') {
+                    userSocial.email = userSocial.emails[0].value;
                 }
-            });
+                User.findOne({
+                    $or: [{
+                        'social.facebook.id': userSocial.id
+
+                    }, {
+                        'social.google.id': userSocial.id
+                    }]
+                }, function(err, user) {
+                    if (!user) {
+                        next(err, userSocial);
+                    } else {
+                        next(err, user);
+                    }
+                });
+            }
         }
     });
 }
