@@ -10,6 +10,7 @@ var ComponentSchema = new mongoose.Schema({
     manufacturer: String,
     category: String,
     type: String,
+    dragType: String,
     width: Number,
     height: Number,
     dataReturnType: String,

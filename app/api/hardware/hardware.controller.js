@@ -4,9 +4,7 @@ var ComponentFunctions = require('./component/component.functions.js'),
     RobotFunctions = require('./robot/robot.functions.js'),
     BoardFunctions = require('./board/board.functions.js'),
     KitFunctions = require('./kit/kit.functions.js'),
-    async = require('async'),
-    _ = require('lodash');
-
+    async = require('async');
 
 /**
  * Get hardware

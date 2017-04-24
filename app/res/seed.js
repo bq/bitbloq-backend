@@ -1902,7 +1902,7 @@ function createComponents(next) {
             "uuid": "device",
             "manufacturer": "standard",
             "category": "serialElements",
-            "baudRate": 9600,
+            "baudRate": 19200,
             "dragType": "btComponent",
             "width": 74,
             "height": 102,
