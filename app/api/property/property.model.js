@@ -8,6 +8,8 @@ var PropertySchema = new mongoose.Schema({
     robotsFirmwareVersion: {},
     boardsFirmwareVersion: {},
     bloqsSortTree: {},
+    bannerClass: String,
+    bannerHTML: String,
     currentweb2boardVersion: String,
     deleted: Boolean
 }, {
