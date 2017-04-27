@@ -17,6 +17,7 @@ var BoardSchema = new mongoose.Schema({
     underDevelopment: Boolean,
     availableComponents: Array,
     integratedComponents: Array,
+    order: Number,
     deleted: Boolean
 }, {
     timestamps: true

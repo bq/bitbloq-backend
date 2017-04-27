@@ -15,11 +15,12 @@ var RobotSchema = new mongoose.Schema({
     thirdParty: Boolean,
     useBoardImage: Boolean,
     underDevelopment: Boolean,
-    deleted: Boolean,
     includedComponents: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'hardware-component'
-    }]
+    }],
+    order: Number,
+    deleted: Boolean
 }, {
     timestamps: true
 });

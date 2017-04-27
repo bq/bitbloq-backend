@@ -10,8 +10,9 @@ exports.get = function(req, res) {
 
     Robot.find(query)
         .sort({
-            name: 'asc'
-        }).exec(function(err, robots) {
+            order: 'asc'
+        })
+        .exec(function(err, robots) {
             if (err) {
                 console.log(err);
                 err.code = parseInt(err.code) || 500;

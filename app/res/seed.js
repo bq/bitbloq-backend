@@ -19,6 +19,7 @@ function createBoards(next) {
             "mcu": "bt328",
             "vendorIds": ["0x403"],
             "productIds": ["0x6001"],
+            "order": 1,
             "integratedComponents": [{
                 "id": "bt",
                 "name": "default-var-name-standard_integrated_bt",
@@ -190,6 +191,7 @@ function createBoards(next) {
             "vendorIds": ["0x2341"],
             "productIds": ["0x1"],
             "showInToolbox": true,
+            "order": 2,
             "pinSize": {
                 "digital": {
                     "w": 9,
@@ -350,6 +352,7 @@ function createBoards(next) {
             "vendorIds": ["0x2341"],
             "productIds": ["0x43"],
             "showInToolbox": true,
+            "order": 3,
             "pinSize": {
                 "digital": {
                     "w": 9,
@@ -501,6 +504,7 @@ function createBoards(next) {
             "vendorIds": ["0x1A86"],
             "productIds": ["0x7523"],
             "showInToolbox": false,
+            "order": 7,
             "underDevelopment": false,
             "availableComponents": [
                 'mkb_infrared',
@@ -604,6 +608,7 @@ function createBoards(next) {
             "productIds": ["0x7523"],
             "underDevelopment": false,
             "showInToolbox": false,
+            "order": 8,
             "availableComponents": [
                 'mkb_infrared',
                 'mkb_lightsensor',
@@ -810,6 +815,7 @@ function createBoards(next) {
             "productIds": ["0x7523"],
             "manufacturer": "makeblock",
             "underDevelopment": false,
+            "order": 9,
             "showInToolbox": false,
             "availableComponents": [
                 'mkb_infrared',
@@ -903,6 +909,7 @@ function createBoards(next) {
             "mcu": "mega",
             "underDevelopment": false,
             "showInToolbox": true,
+            "order": 4,
             "vendorIds": ["0x2341"],
             "productIds": ["0x10", "0x0042", "0x6001", "0x0010"],
             "pinSize": {
@@ -1304,6 +1311,7 @@ function createBoards(next) {
             "mcu": "leonardo",
             "underDevelopment": true,
             "showInToolbox": true,
+            "order": 5,
             "vendorIds": ["0x2341"],
             "productIds": ['0x0036', '0x8036', '0x800c'],
             "pinSize": {
@@ -1455,6 +1463,7 @@ function createBoards(next) {
             "mcu": "nano",
             "underDevelopment": true,
             "showInToolbox": true,
+            "order": 6,
             "vendorIds": ["0x2341"],
             "productIds": ['0x6001', '0x7523'],
             "pinSize": {
@@ -2069,16 +2078,19 @@ async.parallel([
                     Robot.create({
                         "uuid": "zowi",
                         "board": "ArduinoUNO",
+                        "order": 1,
                         "width": 75,
                         "height": 86
                     }, {
                         "uuid": "evolution",
                         "board": "bqZUM",
+                        "order": 2,
                         "width": 75,
                         "height": 86
                     }, {
                         "uuid": "mbot",
                         "board": "mcore",
+                        "order": 3,
                         "family": "mBot",
                         "thirdParty": true,
                         "manufacturer": "makeblock",
@@ -2093,6 +2105,7 @@ async.parallel([
                     }, {
                         "uuid": "rangerlandraider",
                         "board": "meauriga",
+                        "order": 4,
                         "family": "mRanger",
                         "thirdParty": true,
                         "useBoardImage": true,
@@ -2107,6 +2120,7 @@ async.parallel([
                     }, {
                         "uuid": "rangerraptor",
                         "board": "meauriga",
+                        "order": 5,
                         "family": "mRanger",
                         "thirdParty": true,
                         "useBoardImage": true,
@@ -2121,6 +2135,7 @@ async.parallel([
                     }, {
                         "uuid": "rangernervousbird",
                         "board": "meauriga",
+                        "order": 6,
                         "family": "mRanger",
                         "thirdParty": true,
                         "useBoardImage": true,
@@ -2135,6 +2150,7 @@ async.parallel([
                     }, {
                         "uuid": "startertank",
                         "board": "meorion",
+                        "order": 7,
                         "family": "starterKit",
                         "thirdParty": true,
                         "useBoardImage": true,
@@ -2147,6 +2163,7 @@ async.parallel([
                     }, {
                         "uuid": "starterthreewheels",
                         "family": "starterKit",
+                        "order": 8,
                         "thirdParty": true,
                         "board": "meorion",
                         "useBoardImage": true,

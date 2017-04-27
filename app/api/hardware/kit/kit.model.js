@@ -18,6 +18,7 @@ var KitSchema = new mongoose.Schema({
     purchaseUrl: String,
     manufacturer: String,
     underDevelopment: Boolean,
+    order: Number,
     deleted: Boolean
 }, {
     timestamps: true

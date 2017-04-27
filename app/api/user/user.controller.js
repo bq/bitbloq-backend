@@ -979,10 +979,6 @@ exports.deleteAll = function(req, res) {
 exports.addHardware = function(req, res) {
     var userId = req.user._id,
         hardware = req.body.hardware;
-
-    console.log('me viene el siguiente hardware-----');
-    console.log(hardware);
-
     User.findById(userId, function(err, user) {
         if (err) {
             console.log(err);
@@ -990,14 +986,9 @@ exports.addHardware = function(req, res) {
             res.status(err.code).send(err);
         } else {
             if (user) {
-                console.log('hardware aqui');
-                console.log(hardware);
                 var userToUpdate = user;
                 userToUpdate.hardware = hardware;
-                console.log('userToUpdate');
-                console.log(userToUpdate);
-                user.update(userToUpdate, function(err, updated) {
-                    console.log('user')
+                user.update(userToUpdate, function(err) {
                     if (err) {
                         console.log(err);
                         err.code = parseInt(err.code) || 500;
@@ -1009,14 +1000,11 @@ exports.addHardware = function(req, res) {
                                 err.code = parseInt(err.code) || 500;
                                 res.status(err.code).send(err);
                             } else {
-                                console.log('userHardware');
-                                console.log(userHardware);
                                 res.status(200).json(userHardware);
                             }
                         });
                     }
                 });
-
             }
         }
     });
