@@ -19,8 +19,7 @@ var ComponentSchema = new mongoose.Schema({
     pin: {},
     pins: {},
     underDevelopment: Boolean,
-    deleted: Boolean,
-    dragType: String
+    deleted: Boolean
 }, {
     timestamps: true
 });

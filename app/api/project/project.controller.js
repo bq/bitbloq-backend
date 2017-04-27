@@ -18,6 +18,9 @@ function clearProject(project) {
     delete project.timesAdded;
     delete project._acl;
     delete project.__v;
+    for (var i = 0; i < project.hardware.components.length; i++) {
+        delete project.hardware.components[i].$$hashKey;
+    }
     return project;
 }
 
@@ -288,15 +291,19 @@ exports.update = function(req, res) {
             if (project && project.isOwner(req.user._id)) {
                 var projectBody = clearProject(req.body);
                 project = _.extend(project, projectBody);
-                project.save(function(err, project) {
-                    if (err) {
-                        console.log(err);
-                        err.code = parseInt(err.code) || 500;
-                        res.status(err.code).send(err);
-                    } else {
-                        res.sendStatus(200);
-                    }
-                });
+                try {
+                    project.save(function(err) {
+                        if (err) {
+                            console.log(err);
+                            err.code = parseInt(err.code) || 500;
+                            res.status(err.code).send(err);
+                        } else {
+                            res.sendStatus(200);
+                        }
+                    });
+                } catch (err) {
+                    res.sendStatus(500);
+                }
             } else {
                 res.sendStatus(401);
             }
