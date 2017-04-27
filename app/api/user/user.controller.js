@@ -692,10 +692,17 @@ exports.me = function(req, res) {
         function(user, next) {
             if (user) {
                 if (_hardwareIsEmpty(user.hardware)) {
-                    HardwareFunctions.getDefault(function(err, hardware) {
-                        user.hardware = hardware;
-                        next(err, user.owner);
-                    });
+                    if (user.seeBoardsUnderDevelopment) {
+                        HardwareFunctions.getAllHardware(function(err, hardware) {
+                            user.hardware = hardware;
+                            next(err, user.owner);
+                        });
+                    } else {
+                        HardwareFunctions.getDefault(function(err, hardware) {
+                            user.hardware = hardware;
+                            next(err, user.owner);
+                        });
+                    }
                 } else {
                     next(null, user.owner);
                 }
@@ -718,9 +725,9 @@ exports.me = function(req, res) {
  * Update my user
  */
 exports.updateMe = function(req, res) {
-
     var reqUser = req.body,
         userReq = req.user;
+    delete reqUser.hardware;
     async.waterfall([
         function(callback) {
             User.findById(userReq._id, callback);
