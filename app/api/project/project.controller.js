@@ -18,8 +18,10 @@ function clearProject(project) {
     delete project.timesAdded;
     delete project._acl;
     delete project.__v;
-    for (var i = 0; i < project.hardware.components.length; i++) {
-        delete project.hardware.components[i].$$hashKey;
+    if (project.hardware.components) {
+        for (var i = 0; i < project.hardware.components.length; i++) {
+            delete project.hardware.components[i].$$hashKey;
+        }
     }
     return project;
 }
