@@ -1,16 +1,13 @@
-/**
- * Populate DB with sample data on server start
- * to disable, edit config/environment/index.js, and set `seedDB: false`
- */
-/*jshint -W109 */
-
 'use strict';
-var Board = require('../api/hardware/board/board.model'),
-    Component = require('../api/hardware/component/component.model'),
-    Kit = require('../api/hardware/kit/kit.model'),
-    Robot = require('../api/hardware/robot/robot.model'),
+
+
+var Board = require('./board/board.model'),
+    Component = require('./component/component.model'),
+    Kit = require('./kit/kit.model'),
+    Robot = require('./robot/robot.model'),
     _ = require('lodash'),
     async = require('async');
+
 
 function createBoards(next) {
     Board.find({}).remove(function() {
@@ -2020,11 +2017,165 @@ function createComponents(next) {
     });
 }
 
-async.parallel([
-    createBoards,
-    createComponents
-], function() {
+function createkits(boards, components, next) {
     Kit.find({}).remove(function() {
+        Kit.create({
+            "uuid": "kitgeneric",
+            "purchaseUrl": "http://www.elecfreaks.com/estore/arduino-advanced-kit.html",
+            "boards": [boards['bqZUM'][0]._id, boards['FreaduinoUNO'][0]._id, boards['ArduinoUNO'][0]._id],
+            "components": [components['led'][0]._id, components['encoder'][0]._id, components['joystick'][0]._id,
+                components['button'][0]._id, components['RGBled'][0]._id, components['irs'][0]._id,
+                components['sound'][0]._id, components['rtc'][0]._id, components['limitswitch'][0]._id,
+                components['ldrs'][0]._id, components['irs2'][0]._id, components['lcd'][0]._id,
+                components['us'][0]._id, components['buttons'][0]._id, components['pot'][0]._id,
+                components['servo'][0]._id, components['servocont'][0]._id, components['device'][0]._id,
+                components['buzz'][0]._id, components['sp'][0]._id, components['hts221'][0]._id,
+                components['bt'][0]._id
+            ]
+        }, {
+            "uuid": "bqzumbox",
+            "purchaseUrl": "https://www.bq.com/es/zum-kit",
+            "manufacturer": "bq",
+            "boards": [boards['bqZUM'][0]._id],
+            "components": [components['irs'][0]._id, components['button'][0]._id, components['ldrs'][0]._id,
+                components['buzz'][0]._id, components['us'][0]._id, components['pot'][0]._id,
+                components['led'][0]._id, components['servo'][0]._id, components['servocont'][0]._id
+            ]
+        }, {
+            "uuid": "elecfreakstarterkit",
+            "purchaseUrl": "http://www.elecfreaks.com/estore/arduino-starter-kit-absolute-beginner.html",
+            "manufacturer": "elecfreaks",
+            "boards": [boards['FreaduinoUNO'][0]._id],
+            "components": [components['led'][0]._id, components['button'][0]._id, components['ldrs'][0]._id,
+                components['buzz'][0]._id, components['encoder'][0]._id, components['servo'][0]._id,
+                components['hts221'][0]._id
+            ]
+        }, {
+            "uuid": "elecfreakadvancedKit",
+            "purchaseUrl": "http://www.elecfreaks.com/estore/arduino-advanced-kit.html",
+            "manufacturer": "elecfreaks",
+            "boards": [boards['FreaduinoUNO'][0]._id],
+            "components": [components['lcd'][0]._id, components['buttons'][0]._id, components['buzz'][0]._id]
+        }, function() {
+            console.log('finished populating kits');
+            next();
+        });
+    });
+}
+
+function createRobots(components, next) {
+    Robot.find({}).remove(function() {
+        Robot.create({
+            "uuid": "zowi",
+            "board": "ArduinoUNO",
+            "order": 1,
+            "width": 75,
+            "height": 86
+        }, {
+            "uuid": "evolution",
+            "board": "bqZUM",
+            "order": 2,
+            "width": 75,
+            "height": 86
+        }, {
+            "uuid": "mbot",
+            "board": "mcore",
+            "order": 3,
+            "family": "mBot",
+            "thirdParty": true,
+            "manufacturer": "makeblock",
+            "useBoardImage": true,
+            "includedComponents": [
+                components['sp'][0]._id,
+                components['mkb_ultrasound'][0]._id,
+                components['mkb_linefollower'][0]._id
+            ],
+            "width": 75,
+            "height": 86
+        }, {
+            "uuid": "rangerlandraider",
+            "board": "meauriga",
+            "order": 4,
+            "family": "mRanger",
+            "thirdParty": true,
+            "useBoardImage": true,
+            "includedComponents": [
+                components['sp'][0]._id,
+                components['mkb_ultrasound'][0]._id,
+                components['mkb_linefollower'][0]._id,
+                components['mkb_lightsensor'][0]._id
+            ],
+            "width": 75,
+            "height": 86
+        }, {
+            "uuid": "rangerraptor",
+            "board": "meauriga",
+            "order": 5,
+            "family": "mRanger",
+            "thirdParty": true,
+            "useBoardImage": true,
+            "includedComponents": [
+                components['sp'][0]._id,
+                components['mkb_ultrasound'][0]._id,
+                components['mkb_linefollower'][0]._id,
+                components['mkb_lightsensor'][0]._id
+            ],
+            "width": 75,
+            "height": 86
+        }, {
+            "uuid": "rangernervousbird",
+            "board": "meauriga",
+            "order": 6,
+            "family": "mRanger",
+            "thirdParty": true,
+            "useBoardImage": true,
+            "includedComponents": [
+                components['sp'][0]._id,
+                components['mkb_ultrasound'][0]._id,
+                components['mkb_linefollower'][0]._id,
+                components['mkb_lightsensor'][0]._id
+            ],
+            "width": 75,
+            "height": 86
+        }, {
+            "uuid": "startertank",
+            "board": "meorion",
+            "order": 7,
+            "family": "starterKit",
+            "thirdParty": true,
+            "useBoardImage": true,
+            "includedComponents": [
+                components['sp'][0]._id,
+                components['mkb_ultrasound'][0]._id
+            ],
+            "width": 75,
+            "height": 86
+        }, {
+            "uuid": "starterthreewheels",
+            "family": "starterKit",
+            "order": 8,
+            "thirdParty": true,
+            "board": "meorion",
+            "useBoardImage": true,
+            "includedComponents": [
+                components['sp'][0]._id,
+                components['mkb_ultrasound'][0]._id
+            ],
+            "width": 75,
+            "height": 86
+        }, function() {
+            console.log('finished populating robots');
+            next();
+        });
+    });
+}
+
+
+exports.createAllHardware = function(next) {
+    async.parallel([
+        createBoards,
+        createComponents
+    ], function() {
         Board.find({
             "uuid": {
                 $in: ["bqZUM", "FreaduinoUNO", "ArduinoUNO"]
@@ -2033,152 +2184,11 @@ async.parallel([
             Component.find({}).exec(function(err, components) {
                 var boardByUuid = _.groupBy(boards, 'uuid'),
                     componentsByUuid = _.groupBy(components, 'uuid');
-                Kit.create({
-                    "uuid": "kitgeneric",
-                    "purchaseUrl": "http://www.elecfreaks.com/estore/arduino-advanced-kit.html",
-                    "boards": [boardByUuid['bqZUM'][0]._id, boardByUuid['FreaduinoUNO'][0]._id, boardByUuid['ArduinoUNO'][0]._id],
-                    "components": [componentsByUuid['led'][0]._id, componentsByUuid['encoder'][0]._id, componentsByUuid['joystick'][0]._id,
-                        componentsByUuid['button'][0]._id, componentsByUuid['RGBled'][0]._id, componentsByUuid['irs'][0]._id,
-                        componentsByUuid['sound'][0]._id, componentsByUuid['rtc'][0]._id, componentsByUuid['limitswitch'][0]._id,
-                        componentsByUuid['ldrs'][0]._id, componentsByUuid['irs2'][0]._id, componentsByUuid['lcd'][0]._id,
-                        componentsByUuid['us'][0]._id, componentsByUuid['buttons'][0]._id, componentsByUuid['pot'][0]._id,
-                        componentsByUuid['servo'][0]._id, componentsByUuid['servocont'][0]._id, componentsByUuid['device'][0]._id,
-                        componentsByUuid['buzz'][0]._id, componentsByUuid['sp'][0]._id, componentsByUuid['hts221'][0]._id,
-                        componentsByUuid['bt'][0]._id
-                    ]
-                }, {
-                    "uuid": "bqzumbox",
-                    "purchaseUrl": "https://www.bq.com/es/zum-kit",
-                    "manufacturer": "bq",
-                    "boards": [boardByUuid['bqZUM'][0]._id],
-                    "components": [componentsByUuid['irs'][0]._id, componentsByUuid['button'][0]._id, componentsByUuid['ldrs'][0]._id,
-                        componentsByUuid['buzz'][0]._id, componentsByUuid['us'][0]._id, componentsByUuid['pot'][0]._id,
-                        componentsByUuid['led'][0]._id, componentsByUuid['servo'][0]._id, componentsByUuid['servocont'][0]._id
-                    ]
-                }, {
-                    "uuid": "elecfreakstarterkit",
-                    "purchaseUrl": "http://www.elecfreaks.com/estore/arduino-starter-kit-absolute-beginner.html",
-                    "manufacturer": "elecfreaks",
-                    "boards": [boardByUuid['FreaduinoUNO'][0]._id],
-                    "components": [componentsByUuid['led'][0]._id, componentsByUuid['button'][0]._id, componentsByUuid['ldrs'][0]._id,
-                        componentsByUuid['buzz'][0]._id, componentsByUuid['encoder'][0]._id, componentsByUuid['servo'][0]._id,
-                        componentsByUuid['hts221'][0]._id
-                    ]
-                }, {
-                    "uuid": "elecfreakadvancedKit",
-                    "purchaseUrl": "http://www.elecfreaks.com/estore/arduino-advanced-kit.html",
-                    "manufacturer": "elecfreaks",
-                    "boards": [boardByUuid['FreaduinoUNO'][0]._id],
-                    "components": [componentsByUuid['lcd'][0]._id, componentsByUuid['buttons'][0]._id, componentsByUuid['buzz'][0]._id]
-                }, function() {
-                    console.log('finished populating kits');
-                });
-
-                Robot.find({}).remove(function() {
-                    Robot.create({
-                        "uuid": "zowi",
-                        "board": "ArduinoUNO",
-                        "order": 1,
-                        "width": 75,
-                        "height": 86
-                    }, {
-                        "uuid": "evolution",
-                        "board": "bqZUM",
-                        "order": 2,
-                        "width": 75,
-                        "height": 86
-                    }, {
-                        "uuid": "mbot",
-                        "board": "mcore",
-                        "order": 3,
-                        "family": "mBot",
-                        "thirdParty": true,
-                        "manufacturer": "makeblock",
-                        "useBoardImage": true,
-                        "includedComponents": [
-                            componentsByUuid['sp'][0]._id,
-                            componentsByUuid['mkb_ultrasound'][0]._id,
-                            componentsByUuid['mkb_linefollower'][0]._id,
-                        ],
-                        "width": 75,
-                        "height": 86
-                    }, {
-                        "uuid": "rangerlandraider",
-                        "board": "meauriga",
-                        "order": 4,
-                        "family": "mRanger",
-                        "thirdParty": true,
-                        "useBoardImage": true,
-                        "includedComponents": [
-                            componentsByUuid['sp'][0]._id,
-                            componentsByUuid['mkb_ultrasound'][0]._id,
-                            componentsByUuid['mkb_linefollower'][0]._id,
-                            componentsByUuid['mkb_lightsensor'][0]._id
-                        ],
-                        "width": 75,
-                        "height": 86
-                    }, {
-                        "uuid": "rangerraptor",
-                        "board": "meauriga",
-                        "order": 5,
-                        "family": "mRanger",
-                        "thirdParty": true,
-                        "useBoardImage": true,
-                        "includedComponents": [
-                            componentsByUuid['sp'][0]._id,
-                            componentsByUuid['mkb_ultrasound'][0]._id,
-                            componentsByUuid['mkb_linefollower'][0]._id,
-                            componentsByUuid['mkb_lightsensor'][0]._id
-                        ],
-                        "width": 75,
-                        "height": 86
-                    }, {
-                        "uuid": "rangernervousbird",
-                        "board": "meauriga",
-                        "order": 6,
-                        "family": "mRanger",
-                        "thirdParty": true,
-                        "useBoardImage": true,
-                        "includedComponents": [
-                            componentsByUuid['sp'][0]._id,
-                            componentsByUuid['mkb_ultrasound'][0]._id,
-                            componentsByUuid['mkb_linefollower'][0]._id,
-                            componentsByUuid['mkb_lightsensor'][0]._id
-                        ],
-                        "width": 75,
-                        "height": 86
-                    }, {
-                        "uuid": "startertank",
-                        "board": "meorion",
-                        "order": 7,
-                        "family": "starterKit",
-                        "thirdParty": true,
-                        "useBoardImage": true,
-                        "includedComponents": [
-                            componentsByUuid['sp'][0]._id,
-                            componentsByUuid['mkb_ultrasound'][0]._id
-                        ],
-                        "width": 75,
-                        "height": 86
-                    }, {
-                        "uuid": "starterthreewheels",
-                        "family": "starterKit",
-                        "order": 8,
-                        "thirdParty": true,
-                        "board": "meorion",
-                        "useBoardImage": true,
-                        "includedComponents": [
-                            componentsByUuid['sp'][0]._id,
-                            componentsByUuid['mkb_ultrasound'][0]._id
-                        ],
-                        "width": 75,
-                        "height": 86
-                    }, function() {
-                        console.log('finished populating robots');
-                    });
-                });
-
+                async.parallel([
+                    createkits(boardByUuid, componentsByUuid),
+                    createRobots(componentsByUuid)
+                ], next);
             });
         });
     });
-});
+};

@@ -2,8 +2,12 @@
 
 var express = require('express'),
     controller = require('./hardware.controller.js'),
-    router = express.Router();
+    auth = require('../../components/auth/auth.service');
+
+var router = express.Router();
 
 router.get('/', controller.getAllHardware);
+
+router.post('/', auth.hasRole('admin'), controller.createAllHardware);
 
 module.exports = router;
