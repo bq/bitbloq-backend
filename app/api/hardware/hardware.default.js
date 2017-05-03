@@ -2185,8 +2185,8 @@ exports.createAllHardware = function(next) {
                 var boardByUuid = _.groupBy(boards, 'uuid'),
                     componentsByUuid = _.groupBy(components, 'uuid');
                 async.parallel([
-                    createkits(boardByUuid, componentsByUuid),
-                    createRobots(componentsByUuid)
+                    createkits.bind(this, boardByUuid, componentsByUuid),
+                    createRobots.bind(this, componentsByUuid)
                 ], next);
             });
         });
