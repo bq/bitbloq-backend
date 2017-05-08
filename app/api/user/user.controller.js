@@ -903,18 +903,29 @@ exports.unbanUserInForum = function(req, res) {
  * Get all banned users
  */
 exports.showBannedUsers = function(req, res) {
-
+    var youngerDate = new Date();
+    youngerDate.setFullYear(youngerDate.getFullYear() - 14);
     User.find({
-        bannedInForum: true
-    }, function(err, users) {
-        if (err) {
-            console.log(err);
-            err.code = parseInt(err.code) || 500;
-            res.status(err.code).send(err);
-        } else {
-            res.status(200).json(users);
-        }
-    })
+            bannedInForum: true
+        })
+        .or([{
+            birthday: {
+                $lte: youngerDate
+            }
+        }, {
+            birthday: {
+                $exists: false
+            }
+        }])
+        .exec(function(err, users) {
+            if (err) {
+                console.log(err);
+                err.code = parseInt(err.code) || 500;
+                res.status(err.code).send(err);
+            } else {
+                res.status(200).json(users);
+            }
+        })
 };
 
 var numRequests = 0,
