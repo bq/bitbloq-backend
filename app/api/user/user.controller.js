@@ -213,7 +213,7 @@ function findUserBySocialNetwork(provider, token, next) {
                     'message': 'literal'
                 });
             } else {
-                if (provider === 'google') {
+                if (provider === 'google' && userSocial.emails) {
                     userSocial.email = userSocial.emails[0].value;
                 }
                 User.findOne({
@@ -798,10 +798,7 @@ exports.emailToken = function(req, res) {
                     userCallback(err, user);
                 });
             } else {
-                next({
-                    code: 404,
-                    message: 'Not Found'
-                });
+                res.sendStatus(404);
             }
         },
         function(user, userCallback) {
