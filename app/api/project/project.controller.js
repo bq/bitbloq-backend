@@ -18,6 +18,11 @@ function clearProject(project) {
     delete project.timesAdded;
     delete project._acl;
     delete project.__v;
+    if (project.hardware.components) {
+        for (var i = 0; i < project.hardware.components.length; i++) {
+            delete project.hardware.components[i].$$hashKey;
+        }
+    }
     return project;
 }
 
@@ -142,7 +147,7 @@ exports.create = function(req, res) {
 };
 
 /**
- * Create a new project
+ * Download a project (download times are incremented
  */
 exports.download = function(req, res) {
     Project.findById(req.params.id, function(err, project) {
@@ -288,15 +293,19 @@ exports.update = function(req, res) {
             if (project && project.isOwner(req.user._id)) {
                 var projectBody = clearProject(req.body);
                 project = _.extend(project, projectBody);
-                project.save(function(err, project) {
-                    if (err) {
-                        console.log(err);
-                        err.code = parseInt(err.code) || 500;
-                        res.status(err.code).send(err);
-                    } else {
-                        res.sendStatus(200);
-                    }
-                });
+                try {
+                    project.save(function(err) {
+                        if (err) {
+                            console.log(err);
+                            err.code = parseInt(err.code) || 500;
+                            res.status(err.code).send(err);
+                        } else {
+                            res.sendStatus(200);
+                        }
+                    });
+                } catch (err) {
+                    res.sendStatus(500);
+                }
             } else {
                 res.sendStatus(401);
             }
@@ -520,18 +529,19 @@ exports.destroy = function(req, res) {
         function(project, next) {
             if (project) {
                 if (project.isOwner(userId)) {
-                    Project.findByIdAndRemove(projectId, next);
+                    project.delete(next);
                 } else {
-                    res.sendStatus(401);
+                    next({
+                        code: 401,
+                        message: 'Unauthorized'
+                    });
                 }
             } else {
-                res.sendStatus(404);
+                next({
+                    code: 404,
+                    message: 'Exercise not found'
+                });
             }
-        },
-        function(project, next) {
-            ImageFunctions.delete('project', projectId, function() {
-                next();
-            });
         }
 
     ], function(err) {

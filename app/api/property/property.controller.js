@@ -1,6 +1,7 @@
 'use strict';
 
-var Property = require('./property.model.js');
+var Property = require('./property.model.js'),
+    async = require('async');
 
 var perPage = 20;
 
@@ -41,13 +42,18 @@ exports.createAll = function(req, res) {
 };
 
 exports.deleteAll = function(req, res) {
-    Property.remove({}, function(err) {
-        if (err) {
-            console.log(err);
-            err.code = parseInt(err.code) || 500;
-            res.status(err.code).send(err);
-        } else {
-            res.sendStatus(200);
-        }
-    });
+    Property.find({})
+        .exec(function(err, properties) {
+            if (err) {
+                console.log(err);
+                err.code = parseInt(err.code) || 500;
+                res.status(err.code).send(err);
+            } else {
+                async.map(properties, function(property, callBack) {
+                    property.delete(callBack);
+                }, function(err) {
+                    res.sendStatus(200);
+                });
+            }
+        });
 };

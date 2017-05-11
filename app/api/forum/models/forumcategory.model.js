@@ -27,7 +27,8 @@ var ForumCategorySchema = new mongoose.Schema({
         type: Number,
         min: 0,
         max: 1000
-    }
+    },
+    deleted: Boolean
 }, {
     timestamps: true
 });
@@ -46,11 +47,48 @@ ForumCategorySchema
             if (err) {
                 next(err);
             } else if (forumcategory) {
-                next({code:409, message:'Conflict'});
+                next({
+                    code: 409,
+                    message: 'Conflict'
+                });
             } else {
                 next();
             }
         });
     }, 'ForumCategory name already in use');
+
+
+/**
+ * Pre hook
+ */
+
+function findNotDeletedMiddleware(next) {
+    this.where('deleted').in([false, undefined, null]);
+    next();
+}
+
+ForumCategorySchema.pre('find', findNotDeletedMiddleware);
+ForumCategorySchema.pre('findOne', findNotDeletedMiddleware);
+ForumCategorySchema.pre('findOneAndUpdate', findNotDeletedMiddleware);
+ForumCategorySchema.pre('count', findNotDeletedMiddleware);
+
+
+/**
+ * Methods
+ */
+
+ForumCategorySchema.methods = {
+
+    /**
+     * delete - change deleted attribute to true
+     *
+     * @param {Function} next
+     * @api public
+     */
+    delete: function(next) {
+        this.deleted = true;
+        this.save(next);
+    }
+};
 
 module.exports = mongoose.model('ForumCategory', ForumCategorySchema);

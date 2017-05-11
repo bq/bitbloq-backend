@@ -11,7 +11,8 @@ router.delete('/all', auth.hasRole('admin'), controller.deleteAll);
 router.delete('/:id', auth.hasRole('admin'), controller.destroy);
 
 // HEAD
-router.head('/:username', controller.usernameExists);
+router.head('/username/:username', controller.checkUsernameExists);
+router.head('/email/:email', controller.checkEmailExists);
 router.head('/:id/ban', auth.hasRole('admin'), controller.banUserInForum);
 router.head('/:id/unban', auth.hasRole('admin'), controller.unbanUserInForum);
 
@@ -33,6 +34,7 @@ router.post('/all', auth.hasRole('admin'), controller.createAll);
 // PUT
 router.put('/me', auth.isAuthenticated(), controller.updateMe);
 router.put('/me/password', auth.isAuthenticated(), controller.changePasswordAuthenticated);
+router.put('/me/hardware', auth.isAuthenticated(), controller.addHardware);
 router.put('/:id/password', auth.isAuthenticated(), controller.changePassword);
 router.put('/:id/social', auth.isAuthenticated(), controller.turnToLocal);
 router.put('/under14authorization', controller.authorizeUser);

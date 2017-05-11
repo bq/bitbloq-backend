@@ -1,6 +1,7 @@
 'use strict';
 
-var Faq = require('./faq.model.js');
+var Faq = require('./faq.model.js'),
+    async = require('async');
 
 var perPage = 20;
 
@@ -42,13 +43,18 @@ exports.createAll = function(req, res) {
 };
 
 exports.deleteAll = function(req, res) {
-    Faq.remove({}, function(err) {
-        if (err) {
-            console.log(err);
-            err.code = parseInt(err.code) || 500;
-            res.status(err.code).send(err);
-        } else {
-            res.sendStatus(200);
-        }
-    });
+    Faq.find({})
+        .exec(function(err, faqs) {
+            if (err) {
+                console.log(err);
+                err.code = parseInt(err.code) || 500;
+                res.status(err.code).send(err);
+            } else {
+                async.map(faqs, function(faq, callBack) {
+                    faq.delete(callBack);
+                }, function() {
+                    res.sendStatus(200);
+                });
+            }
+        });
 };

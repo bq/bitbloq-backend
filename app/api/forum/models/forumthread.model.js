@@ -27,18 +27,45 @@ var ForumThreadSchema = new mongoose.Schema({
     },
     subscribers: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-    }]
-
+        ref: 'User'
+    }],
+    deleted: Boolean
 }, {
     timestamps: true
 });
+
+
+/**
+ * Pre hook
+ */
+
+function findNotDeletedMiddleware(next) {
+    this.where('deleted').in([false, undefined, null]);
+    next();
+}
+
+ForumThreadSchema.pre('find', findNotDeletedMiddleware);
+ForumThreadSchema.pre('findOne', findNotDeletedMiddleware);
+ForumThreadSchema.pre('findOneAndUpdate', findNotDeletedMiddleware);
+ForumThreadSchema.pre('count', findNotDeletedMiddleware);
+
 
 /**
  * Methods
  */
 
 ForumThreadSchema.methods = {
+
+    /**
+     * delete - change deleted attribute to true
+     *
+     * @param {Function} next
+     * @api public
+     */
+    delete: function(next) {
+        this.deleted = true;
+        this.save(next);
+    },
 
     /**
      * addView - add a visit to Forumthread

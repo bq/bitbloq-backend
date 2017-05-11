@@ -5,6 +5,7 @@ var User = require('./user.model.js'),
     ImageFunctions = require('../image/image.functions.js'),
     Token = require('../recovery/token.model.js'),
     AuthorizationToken = require('../authorization/token.model.js'),
+    HardwareFunctions = require('../hardware/hardware.functions.js'),
     config = require('../../res/config.js'),
     jwt = require('jsonwebtoken'),
     mailer = require('../../components/mailer'),
@@ -61,11 +62,13 @@ exports.create = function(req, res) {
                                 err.code = parseInt(err.code) || 500;
                                 res.status(err.code).send(err);
                             } else {
-                                generateAndSendToken(user, res);
+                                var tokenObject = generateToken(user);
+                                res.status(200).send(tokenObject);
                             }
                         });
                     } else {
-                        generateAndSendToken(user, res);
+                        var tokenObject = generateToken(user);
+                        res.status(200).send(tokenObject);
                     }
                 } else {
                     res.sendStatus(404);
@@ -91,7 +94,10 @@ exports.authorizeUser = function(req, res) {
             if (token) {
                 User.findById(token._id, next);
             } else {
-                next({code:401, message:'Internal Server Error'});
+                next({
+                    code: 401,
+                    message: 'Internal Server Error'
+                });
             }
         },
         function(user, next) {
@@ -104,7 +110,10 @@ exports.authorizeUser = function(req, res) {
                     user.update(userData, next);
                 }
             } else {
-                next({code:404, message:'Not Found'});
+                next({
+                    code: 404,
+                    message: 'Not Found'
+                });
             }
         },
         function(user, next2, next) {
@@ -134,7 +143,10 @@ exports.getUser = function(req, res) {
             if (token) {
                 User.findById(token._id, next);
             } else {
-                next({code:401, message:'Internal Server Error'});
+                next({
+                    code: 401,
+                    message: 'Internal Server Error'
+                });
             }
         }
     ], function(err, user) {
@@ -149,15 +161,17 @@ exports.getUser = function(req, res) {
     });
 };
 
-function generateAndSendToken(user, res) {
+function generateToken(user) {
     var token = jwt.sign({
         _id: user._id
     }, config.secrets.session, {
         expiresIn: 600 * 240
     });
-    res.json({
-        token: token
-    });
+
+    return {
+        token: token,
+        user: user.owner
+    };
 }
 
 function sendEmailTutorAuthorization(user, next) {
@@ -186,92 +200,88 @@ function sendEmailTutorAuthorization(user, next) {
     mailer.sendOne('under14Authorization', params, next);
 }
 
-function findUserBySocialNetwork(provider, token, socialCallback) {
+function findUserBySocialNetwork(provider, token, next) {
+    UserFunctions.getSocialProfile(provider, token, function(err, response) {
+        if (err) {
+            next(err, response);
+        } else {
+            var userSocial = JSON.parse(response.body);
 
-    UserFunctions.getSocialProfile(provider, token, socialCallback).then(function(response) {
-        response = JSON.parse(response);
-        User.findOne({
-            $or: [{
-                'social.facebook.id': response.id
-
-            }, {
-                'social.google.id': response.id
-            }]
-        }, function(err, user) {
-            if (!user) {
-                socialCallback(err, response);
+            if (userSocial.error) {
+                next({
+                    'code': 503,
+                    'message': 'literal'
+                });
             } else {
-                socialCallback(err, user);
-            }
-        });
-    });
-}
+                if (provider === 'google' && userSocial.emails) {
+                    userSocial.email = userSocial.emails[0].value;
+                }
+                User.findOne({
+                    $or: [{
+                        'social.facebook.id': userSocial.id
 
-function existsSocialEmail(provider, user) {
-    var exists = false;
-    if (user.social) {
-        switch (provider) {
-            case 'facebook':
-                if (user.social.facebook && user.social.facebook.id !== '') {
-                    exists = true;
-                }
-                break;
-            case 'google':
-                if (user.social.google && user.social.google.id !== '') {
-                    exists = true;
-                }
-                break;
+                    }, {
+                        'social.google.id': userSocial.id
+                    }]
+                }, function(err, user) {
+                    if (!user) {
+                        next(err, userSocial);
+                    } else {
+                        next(err, user);
+                    }
+                });
+            }
         }
-    }
-    return exists;
+    });
 }
 
 function generateSocialUser(provider, user) {
     var userData = {
         firstName: '',
         lastName: '',
-        email: '',
+        email: user.email,
         social: {
             google: {
-                id: ''
+                id: '',
+                ageRange: {}
             },
             facebook: {
-                id: ''
+                id: '',
+                ageRange: {}
             }
         }
-
     };
+
+    if (user.birthday && !user.birthday.includes('0000-')) {
+        userData.birthday = user.birthday;
+    }
 
     switch (provider) {
         case 'google':
-            userData.firstName = user.given_name;
-            userData.lastName = user.family_name;
-            userData.email = user.email;
+            userData.firstName = user.name.givenName;
+            userData.lastName = user.name.familyName;
             userData.social.google.id = user.id;
+            userData.social.google.ageRange = user.ageRange;
             break;
         case 'facebook':
             userData.firstName = user.first_name;
             userData.lastName = user.last_name;
-            userData.email = user.email;
             userData.social.facebook.id = user.id;
+            userData.social.facebook.ageRange = user.age_range;
             break;
     }
-
-    var newUser = new User(userData);
-    newUser.role = 'user';
-    return newUser;
-
+    return userData;
 }
 
 function getSocialAvatar(provider, user, callback) {
     switch (provider) {
         case 'google':
-            callback(null, user.picture);
+            callback(null, user.image.url.split('?')[0]);
             break;
         case 'facebook':
-            UserFunctions.getFacebookAvatar(user.id).then(function(avatar) {
+            UserFunctions.getFacebookAvatar(user.id, function(err, response) {
                 try {
-                    avatar = JSON.parse(avatar);
+                    var avatar = JSON.parse(response.body);
 
                     if (avatar.data && !avatar.error) {
                         callback(null, avatar.data.url);
@@ -288,8 +298,7 @@ function getSocialAvatar(provider, user, callback) {
     }
 }
 
-function updateWithSocialNetwork(provider, userId, socialId, userCallback) {
-
+function updateWithSocialNetwork(provider, userId, socialUser, userCallback) {
     switch (provider) {
         case 'google':
             User.update({
@@ -297,7 +306,8 @@ function updateWithSocialNetwork(provider, userId, socialId, userCallback) {
             }, {
                 $set: {
                     'social.google': {
-                        id: socialId
+                        id: socialUser.id,
+                        ageRange: socialUser.ageRange
                     }
                 }
             }, userCallback);
@@ -308,7 +318,8 @@ function updateWithSocialNetwork(provider, userId, socialId, userCallback) {
             }, {
                 $set: {
                     'social.facebook': {
-                        id: socialId
+                        id: socialUser.id,
+                        ageRange: socialUser.age_range
                     }
                 }
             }, userCallback);
@@ -335,34 +346,39 @@ function searchSocialByEmail(user, socialCallback) {
  */
 
 exports.socialLogin = function(req, res) {
-    var provider = req.body.provider;
-    var token = req.body.accessToken;
-    var register = req.body.register;
-    var username = req.body.username;
-    var hasBeenAskedIfTeacher = req.body.hasBeenAskedIfTeacher;
+    var provider = req.body.provider,
+        token = req.body.accessToken,
+        register = req.body.register,
+        username = req.body.username,
+        email = req.body.email,
+        hasBeenAskedIfTeacher = req.body.hasBeenAskedIfTeacher,
+        birthday = req.body.birthday,
+        needValidation = req.body.needValidation,
+        tutor = req.body.tutor;
 
     findUserBySocialNetwork(provider, token, function(err, user) {
-        if (user.role) {
-            if (req.user) {
-                if (existsSocialEmail(provider, req.user)) {
-                    UserFunctions.generateToken(user, function(err, response) {
-                        if (err) {
-                            console.log(err);
-                            err.code = parseInt(err.code) || 500;
-                            res.status(err.code).send(err);
-                        } else {
-                            if (response) {
-                                res.status(200).send(response);
-                            } else {
-                                res.sendStatus(409);
-                            }
-                        }
-                    });
-                } else {
-                    if (req.user.email !== user.email) { // Account already linked to other user
-                        res.status(409).end();
+        if (err) {
+            console.log(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
+        } else {
+            if (user) {
+                if (user.role) {
+                    // it's local user and user is linked by this social network
+                    if (req.user) {
+                        res.status(409).json({
+                            message: 'Account already linked to other user'
+                        });
                     } else {
-                        updateWithSocialNetwork(provider, user, function(err) {
+                        //login
+                        var tokenObject = generateToken(user);
+                        res.status(200).send(tokenObject);
+                    }
+                } else {
+                    // user doesn't exist in our bbdd
+                    if (req.user) {
+                        //user is registered with an email and user link with other email
+                        updateWithSocialNetwork(provider, req.user._id, user, function(err) {
                             if (err) {
                                 console.log(err);
                                 res.sendStatus(err.code);
@@ -370,119 +386,98 @@ exports.socialLogin = function(req, res) {
                                 res.sendStatus(200);
                             }
                         });
-                    }
-                }
-            } else {
-                if (existsSocialEmail(provider, user)) {
-                    UserFunctions.generateToken(user, function(err, response) {
-                        if (err) {
-                            console.log(err);
-                            err.code = parseInt(err.code) || 500;
-                            res.status(err.code).send(err);
-                        } else {
-                            res.status(200).send(response);
-                        }
-                    });
-                } else {
-                    async.waterfall([
-                        function(userCallback) {
-                            updateWithSocialNetwork(provider, user, userCallback);
-                        },
-                        function(userSocial, userCallback) {
-                            UserFunctions.generateToken(user, userCallback);
-                        }
 
-                    ], function(err, response) {
-                        if (response) {
-                            res.status(200).send(response);
-                        } else {
-                            console.log(err);
-                            err.code = parseInt(err.code) || 500;
-                            res.status(err.code).send(err);
-                        }
-                    });
-                }
-            }
-        } else {
-            if (req.user) {
-                if (!user.role) {
-                    updateWithSocialNetwork(provider, req.user._id, user.id, function(err) {
-                        if (err) {
-                            console.log(err);
-                            res.sendStatus(err.code);
-                        } else {
-                            res.sendStatus(200);
-                        }
-                    });
-
-                } else {
-                    res.sendStatus(404);
-                }
-            } else {
-                searchSocialByEmail(user, function(err, localUser) {
-                    if (err) {
-                        console.log(err);
-                        err.code = parseInt(err.code) || 500;
-                        res.status(err.code).send(err);
                     } else {
-                        if (!localUser) {
-                            if (register) {
-                                var newUser = generateSocialUser(provider, user);
-                                _.extend(newUser, {
-                                    'username': username
-                                }, {
-                                    'hasBeenAskedIfTeacher': hasBeenAskedIfTeacher
-                                });
-                                async.waterfall([
-                                    function(saveCallback) {
-                                        getSocialAvatar(provider, user, saveCallback);
-                                    },
-                                    function(avatarUrl, saveCallback) {
-                                        newUser.save(function(err, user) {
-                                            saveCallback(err, user, avatarUrl);
-                                        });
-                                    },
-                                    function(user, avatarUrl, saveCallback) {
-                                        ImageFunctions.downloadAndUploadImage(avatarUrl, 'images/avatar/' + user._id.toString(), function(err) {
-                                            saveCallback(err, user);
-                                        });
-                                    },
-                                    function(user, saveCallback) {
-                                        UserFunctions.generateToken(user, saveCallback);
-                                    }
-
-                                ], function(err, response) {
-                                    if (err) {
-                                        console.log(err);
-                                        res.status(422).json(err);
-                                    } else {
-                                        res.status(200).send(response);
-                                    }
-                                });
+                        //register
+                        searchSocialByEmail(user, function(err, localUser) {
+                            if (err) {
+                                console.log(err);
+                                err.code = parseInt(err.code) || 500;
+                                res.status(err.code).send(err);
                             } else {
-                                res.sendStatus(204);
-                            }
-                        } else {
-                            updateWithSocialNetwork(provider, localUser._id, user.id, function(err) {
-                                if (err) {
-                                    console.log(err);
-                                    err.code = parseInt(err.code) || 500;
-                                    res.status(err.code).send(err);
+                                if (!localUser) {
+                                    var userData = generateSocialUser(provider, user);
+                                    if (register) {
+                                        var newUser = new User(userData);
+                                        _.extend(newUser, {
+                                            'username': username
+                                        }, {
+                                            'hasBeenAskedIfTeacher': hasBeenAskedIfTeacher
+                                        });
+                                        if (email) {
+                                            _.extend(newUser, {
+                                                'email': email
+                                            });
+                                        }
+                                        _.extend(newUser, {
+                                            'birthday': birthday,
+                                            'needValidation': needValidation,
+                                            'tutor': tutor
+                                        });
+                                        async.waterfall([
+                                            function(saveCallback) {
+                                                getSocialAvatar(provider, user, saveCallback);
+                                            },
+                                            function(avatarUrl, saveCallback) {
+                                                newUser.save(function(err, user) {
+                                                    saveCallback(err, user, avatarUrl);
+                                                });
+                                            },
+                                            function(user, avatarUrl, saveCallback) {
+                                                ImageFunctions.downloadAndUploadImage(avatarUrl, 'images/avatar/' + user._id.toString(), function(err) {
+                                                    saveCallback(err, user);
+                                                });
+                                            },
+                                            function(user, saveCallback) {
+                                                if (newUser.needValidation) {
+                                                    sendEmailTutorAuthorization(user, function(err) {
+                                                        if (err) {
+                                                            console.log(err);
+                                                            err.code = parseInt(err.code) || 500;
+                                                            res.status(err.code).send(err);
+                                                        } else {
+                                                            var tokenObject = generateToken(user);
+                                                            saveCallback(null, tokenObject);
+                                                        }
+                                                    });
+                                                } else {
+                                                    var tokenObject = generateToken(user);
+                                                    saveCallback(null, tokenObject);
+                                                }
+                                            }
+
+                                        ], function(err, token) {
+                                            if (err) {
+                                                console.log(err);
+                                                res.status(422).json(err);
+                                            } else {
+                                                res.status(200).send(token);
+                                            }
+                                        });
+                                    } else {
+                                        res.status(200).json({
+                                            next: 'register',
+                                            user: userData
+                                        });
+                                    }
                                 } else {
-                                    UserFunctions.generateToken(localUser, function(err, responseToken) {
+                                    updateWithSocialNetwork(provider, localUser._id, user, function(err) {
                                         if (err) {
                                             console.log(err);
                                             err.code = parseInt(err.code) || 500;
                                             res.status(err.code).send(err);
                                         } else {
-                                            res.status(200).send(responseToken);
+                                            var tokenObject = generateToken(localUser);
+                                            res.status(200).send(tokenObject);
                                         }
                                     });
                                 }
-                            });
-                        }
+                            }
+                        })
                     }
-                })
+                }
+            } else {
+                res.sendStatus(404);
             }
         }
     });
@@ -490,9 +485,32 @@ exports.socialLogin = function(req, res) {
 };
 
 /**
- * Returns if a user exists
+ * Returns if an email exists
  */
-exports.usernameExists = function(req, res) {
+exports.checkEmailExists = function(req, res) {
+    User.findOne({
+        email: req.params.email
+    }, function(err, user) {
+        if (err) {
+            console.log(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
+        } else if (user) {
+            res.status(200).set({
+                'exists': true
+            }).send();
+        } else {
+            res.status(204).set({
+                'exists': false
+            }).send();
+        }
+    });
+};
+
+/**
+ * Returns if a username exists
+ */
+exports.checkUsernameExists = function(req, res) {
     var username = req.params.username;
 
     User.findOne({
@@ -665,33 +683,51 @@ exports.changePasswordAuthenticated = function(req, res) {
  */
 exports.me = function(req, res) {
     var userId = req.user.id;
-    User.findOne({
-            _id: userId
+    async.waterfall([
+        function(next) {
+            User.findById(userId)
+                .select('-salt -password')
+                .exec(next);
         },
-        '-salt -password',
-        function(err, user) {
-            if (err) {
-                console.log(err);
-                err.code = parseInt(err.code) || 500;
-                res.status(err.code).send(err);
-            } else {
-                if (!user) {
-                    res.sendStatus(401);
+        function(user, next) {
+            if (user) {
+                if (_hardwareIsEmpty(user.hardware)) {
+                    if (user.seeBoardsUnderDevelopment) {
+                        HardwareFunctions.getAllHardware(function(err, hardware) {
+                            user.hardware = hardware;
+                            next(err, user.owner);
+                        });
+                    } else {
+                        HardwareFunctions.getDefault(function(err, hardware) {
+                            user.hardware = hardware;
+                            next(err, user.owner);
+                        });
+                    }
                 } else {
-                    res.status(200).json(user.owner);
+                    next(null, user.owner);
                 }
+            } else {
+                next(401);
             }
-        });
+        }
+    ], function(err, result) {
+        if (err) {
+            console.log(err);
+            err.code = parseInt(err.code) || 500;
+            res.status(err.code).send(err);
+        } else {
+            res.status(200).json(result);
+        }
+    });
 };
 
 /**
  * Update my user
  */
-
 exports.updateMe = function(req, res) {
-
     var reqUser = req.body,
         userReq = req.user;
+    delete reqUser.hardware;
     async.waterfall([
         function(callback) {
             User.findById(userReq._id, callback);
@@ -757,9 +793,13 @@ exports.emailToken = function(req, res) {
             }, userCallback);
         },
         function(user, userCallback) {
-            Token.findByIdAndRemove(user._id, function(err) {
-                userCallback(err, user);
-            });
+            if (user) {
+                Token.findByIdAndRemove(user._id, function(err) {
+                    userCallback(err, user);
+                });
+            } else {
+                res.sendStatus(404);
+            }
         },
         function(user, userCallback) {
             var token = jwt.sign({
@@ -863,18 +903,29 @@ exports.unbanUserInForum = function(req, res) {
  * Get all banned users
  */
 exports.showBannedUsers = function(req, res) {
-
+    var youngerDate = new Date();
+    youngerDate.setFullYear(youngerDate.getFullYear() - 14);
     User.find({
-        bannedInForum: true
-    }, function(err, users) {
-        if (err) {
-            console.log(err);
-            err.code = parseInt(err.code) || 500;
-            res.status(err.code).send(err);
-        } else {
-            res.status(200).json(users);
-        }
-    })
+            bannedInForum: true
+        })
+        .or([{
+            birthday: {
+                $lte: youngerDate
+            }
+        }, {
+            birthday: {
+                $exists: false
+            }
+        }])
+        .exec(function(err, users) {
+            if (err) {
+                console.log(err);
+                err.code = parseInt(err.code) || 500;
+                res.status(err.code).send(err);
+            } else {
+                res.status(200).json(users);
+            }
+        })
 };
 
 var numRequests = 0,
@@ -924,13 +975,60 @@ exports.createAll = function(req, res) {
 };
 
 exports.deleteAll = function(req, res) {
-    User.remove({}, function(err) {
+    User.find({})
+        .exec(function(err, users) {
+            if (err) {
+                console.log(err);
+                err.code = parseInt(err.code) || 500;
+                res.status(err.code).send(err);
+            } else {
+                async.map(users, function(user, callBack) {
+                    user.delete(callBack);
+                }, function() {
+                    res.sendStatus(200);
+                });
+            }
+        });
+};
+
+exports.addHardware = function(req, res) {
+    var userId = req.user._id,
+        hardware = req.body.hardware;
+    User.findById(userId, function(err, user) {
         if (err) {
             console.log(err);
             err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else {
-            res.sendStatus(200);
+            if (user) {
+                var userToUpdate = user;
+                userToUpdate.hardware = hardware;
+                user.update(userToUpdate, function(err) {
+                    if (err) {
+                        console.log(err);
+                        err.code = parseInt(err.code) || 500;
+                        res.status(err.code).send(err);
+                    } else {
+                        HardwareFunctions.getHardware(userToUpdate.hardware, function(err, userHardware) {
+                            if (err) {
+                                console.log(err);
+                                err.code = parseInt(err.code) || 500;
+                                res.status(err.code).send(err);
+                            } else {
+                                res.status(200).json(userHardware);
+                            }
+                        });
+                    }
+                });
+            }
         }
     });
 };
+
+/************************
+ * PRIVATE FUNCTIONS
+ ************************/
+
+function _hardwareIsEmpty(hardware) {
+    return (!hardware || (hardware.robots.length === 0 && hardware.boards.length === 0 && hardware.components.length === 0));
+}

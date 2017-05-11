@@ -1,6 +1,7 @@
 'use strict';
 
-var Changelog = require('./changelog.model.js');
+var Changelog = require('./changelog.model.js'),
+    async = require('async');
 
 var perPage = 20;
 
@@ -42,13 +43,18 @@ exports.createAll = function(req, res) {
 };
 
 exports.deleteAll = function(req, res) {
-    Changelog.remove({}, function(err) {
-        if (err) {
-            console.log(err);
-            err.code = parseInt(err.code) || 500;
-            res.status(err.code).send(err);
-        } else {
-            res.sendStatus(200);
-        }
-    });
+    Changelog.find({})
+        .exec(function(err, changelog) {
+            if (err) {
+                console.log(err);
+                err.code = parseInt(err.code) || 500;
+                res.status(err.code).send(err);
+            } else {
+                async.map(changelog, function(item, callBack) {
+                    item.delete(callBack);
+                }, function() {
+                    res.sendStatus(200);
+                });
+            }
+        });
 };

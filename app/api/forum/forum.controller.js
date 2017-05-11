@@ -42,30 +42,30 @@ function getThreadsInCategory(category, next) {
         .lean()
         .populate('creator', 'username')
         .sort('-updatedAt').exec(function(err, threads) {
-        if (err) {
-            next(err);
-        } else {
-            async.map(threads, function(thread, next) {
-                async.parallel([
-                    countAnswersThread.bind(null, thread),
-                    getLastAnswer.bind(null, thread)
-                ], function(err, results) {
-                    if (results) {
-                        thread.numberOfAnswers = results[0];
-                        thread.lastAnswer = results[1] || {};
-                        next(err, thread);
-                    } else {
-                        next(err, []);
-                    }
-                });
-            }, function(err, completedThreads) {
-                next(err, {
-                    category: category,
-                    threads: completedThreads
-                });
-            })
-        }
-    });
+            if (err) {
+                next(err);
+            } else {
+                async.map(threads, function(thread, next) {
+                    async.parallel([
+                        countAnswersThread.bind(null, thread),
+                        getLastAnswer.bind(null, thread)
+                    ], function(err, results) {
+                        if (results) {
+                            thread.numberOfAnswers = results[0];
+                            thread.lastAnswer = results[1] || {};
+                            next(err, thread);
+                        } else {
+                            next(err, []);
+                        }
+                    });
+                }, function(err, completedThreads) {
+                    next(err, {
+                        category: category,
+                        threads: completedThreads
+                    });
+                })
+            }
+        });
 }
 
 function getCompletedThread(id, next) {
@@ -92,6 +92,12 @@ function countThreadsInCategories(next) {
             as: 'category'
         }
     }, {
+        $match: {
+            deleted: {
+                $ne: true
+            }
+        }
+    }, {
         $group: {
             _id: '$category._id',
             numberOfThreads: {
@@ -111,7 +117,10 @@ function countAnswersInCategories(next) {
         }
     }, {
         $match: {
-            main: false
+            main: false,
+            deleted: {
+                $ne: true
+            }
         }
     }, {
         $group: {
@@ -130,6 +139,12 @@ function getLastThreads(next) {
             localField: 'creator',
             foreignField: '_id',
             as: 'user'
+        }
+    }, {
+        $match: {
+            deleted: {
+                $ne: true
+            }
         }
     }, {
         $group: {
@@ -214,7 +229,7 @@ exports.createThread = function(req, res) {
 
             newThread.creator = userId;
             async.waterfall([
-                newThread.save,
+                newThread.save.bind(newThread),
                 function(thread, saved, next) {
                     newAnswer.thread = newThread._id;
                     newAnswer.category = newThread.category;
@@ -236,8 +251,7 @@ exports.createThread = function(req, res) {
                     res.status(err.code).send(err);
                 } else {
                     var locals = {
-                        email: config.supportEmail,
-                        emailTObbc: config.emailTObbc,
+                        email: config.emailTObbc,
                         subject: 'Nuevo tema en el foro de Bitbloq',
                         username: req.user.username,
                         forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.thread,
@@ -417,7 +431,7 @@ exports.getThread = function(req, res) {
             err.code = parseInt(err.code) || 500;
             res.status(err.code).send(err);
         } else {
-            if (results) {
+            if (results && results[0] && results[1].length > 0) {
                 var threadObject = results[0];
                 threadObject.numberOfAnswers = results[1].length - 1;
                 if (req.user && (threadObject.creator._id.toString() !== req.user._id.toString())) {
@@ -441,6 +455,8 @@ exports.getThread = function(req, res) {
                         answers: results[1]
                     });
                 }
+            } else {
+                res.sendStatus(404);
             }
         }
     });
@@ -557,7 +573,7 @@ exports.destroyAnswer = function(req, res) {
             res.status(err.code).send(err);
         } else {
             if (answer) {
-                answer.remove(function(err) {
+                answer.delete(function(err) {
                     if (err) {
                         console.log(err);
                         err.code = parseInt(err.code) || 500;
@@ -584,7 +600,7 @@ exports.destroyThread = function(req, res) {
         }),
         function(answers, next) {
             async.each(answers, function(answer, done) {
-                answer.remove(done);
+                answer.delete(done);
             }, next);
         },
         Thread.findByIdAndRemove.bind(Thread, threadId)
@@ -612,15 +628,20 @@ exports.createAllCategories = function(req, res) {
 };
 
 exports.deleteAllCategories = function(req, res) {
-    Category.remove({}, function(err) {
-        if (err) {
-            console.log(err);
-            err.code = parseInt(err.code) || 500;
-            res.status(err.code).send(err);
-        } else {
-            res.sendStatus(200);
-        }
-    });
+    Category.find({})
+        .exec(function(err, categories) {
+            if (err) {
+                console.log(err);
+                err.code = parseInt(err.code) || 500;
+                res.status(err.code).send(err);
+            } else {
+                async.map(categories, function(category, callBack) {
+                    category.delete(callBack);
+                }, function() {
+                    res.sendStatus(200);
+                });
+            }
+        });
 };
 
 exports.createForceThread = function(req, res) {
