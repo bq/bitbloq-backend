@@ -30,7 +30,7 @@ function getCountPublic(res, query) {
     Project.count(query, function(err, counter) {
         if (err) {
             console.log(err);
-            err.code = parseInt(err.code) || 500;
+            err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             res.status(200).json({
@@ -81,7 +81,7 @@ function getSearch(res, params) {
         .exec(function(err, projects) {
             if (err) {
                 console.log(err);
-                err.code = parseInt(err.code) || 500;
+                err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
                 res.status(err.code).send(err);
             } else {
                 res.status(200).json(projects);
@@ -95,7 +95,7 @@ function updateProjectAndReturn(res, project) {
         .exec(function(err, completedProject) {
             if (err) {
                 console.log(err);
-                err.code = parseInt(err.code) || 500;
+                err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
                 res.status(err.code).send(err);
             } else {
                 res.status(200).json(completedProject);
@@ -138,7 +138,7 @@ exports.create = function(req, res) {
     newProject.save(function(err, project) {
         if (err) {
             console.log(err);
-            err.code = parseInt(err.code) || 500;
+            err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             res.status(200).json(project.id);
@@ -157,7 +157,7 @@ exports.download = function(req, res) {
                 project.update(project, function(err) {
                     if (err) {
                         console.log(err);
-                        err.code = parseInt(err.code) || 500;
+                        err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
                         res.status(err.code).send(err);
                     } else {
                         res.status(200).json(project);
@@ -191,7 +191,7 @@ exports.show = function(req, res) {
         .exec(function(err, project) {
             if (err) {
                 console.log(err);
-                err.code = parseInt(err.code) || 500;
+                err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
                 res.status(err.code).send(err);
             } else if (!project) {
                 res.sendStatus(404);
@@ -209,7 +209,7 @@ exports.getPublished = function(req, res) {
         completeQuery(req.query, function(err, query) {
             if (err) {
                 console.log(err);
-                err.code = parseInt(err.code) || 500;
+                err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
                 res.status(err.code).send(err);
             } else {
                 if (req.query.count === '*') {
@@ -243,7 +243,7 @@ exports.me = function(req, res) {
         .exec(function(err, projects) {
             if (err) {
                 console.log(err);
-                err.code = parseInt(err.code) || 500;
+                err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
                 res.status(err.code).send(err);
             } else {
                 res.status(200).json(projects);
@@ -271,7 +271,7 @@ exports.sharedWithMe = function(req, res) {
         .exec(function(err, projects) {
             if (err) {
                 console.log(err);
-                err.code = parseInt(err.code) || 500;
+                err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
                 res.status(err.code).send(err);
             } else {
                 res.status(200).json(projects);
@@ -287,7 +287,7 @@ exports.update = function(req, res) {
     Project.findById(projectId, function(err, project) {
         if (err) {
             console.log(err);
-            err.code = parseInt(err.code) || 500;
+            err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             if (project && project.isOwner(req.user._id)) {
@@ -297,7 +297,7 @@ exports.update = function(req, res) {
                     project.save(function(err) {
                         if (err) {
                             console.log(err);
-                            err.code = parseInt(err.code) || 500;
+                            err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
                             res.status(err.code).send(err);
                         } else {
                             res.sendStatus(200);
@@ -322,7 +322,7 @@ exports.publish = function(req, res) {
     Project.findById(projectId, function(err, project) {
         if (err) {
             console.log(err);
-            err.code = parseInt(err.code) || 500;
+            err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             if (project.isOwner(userId)) {
@@ -358,7 +358,7 @@ exports.private = function(req, res) {
     Project.findById(projectId, function(err, project) {
         if (err) {
             console.log(err);
-            err.code = parseInt(err.code) || 500;
+            err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             if (project.isOwner(userId)) {
@@ -369,7 +369,7 @@ exports.private = function(req, res) {
                 }, function(err) {
                     if (err) {
                         console.log(err);
-                        err.code = parseInt(err.code) || 500;
+                        err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
                         res.status(err.code).send(err);
                     } else {
                         res.sendStatus(200);
@@ -396,7 +396,7 @@ exports.share = function(req, res) {
     Project.findById(projectId, function(err, project) {
         if (err) {
             console.log(err);
-            err.code = parseInt(err.code) || 500;
+            err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
             res.status(err.code).send(err)
         } else {
             if (project.isOwner(userId)) {
@@ -428,7 +428,7 @@ exports.share = function(req, res) {
                                     mailer.sendOne('shareProject', locals, function(err) {
                                         if (err) {
                                             console.log(err);
-                                            err.code = parseInt(err.code) || 500;
+                                            err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
                                             res.status(err.code).send(err);
                                         } else {
                                             res.status(200);
@@ -445,14 +445,14 @@ exports.share = function(req, res) {
                     function(err) {
                         if (err) {
                             console.log(err);
-                            err.code = parseInt(err.code) || 500;
+                            err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
                             res.status(err.code).send(err);
                         } else {
                             response.project = project;
                             Project.findByIdAndUpdate(projectId, project, function(err) {
                                 if (err) {
                                     console.log(err);
-                                    err.code = parseInt(err.code) || 500;
+                                    err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
                                     res.status(err.code).send(err);
                                 } else {
                                     res.status(200).json(response);
@@ -510,7 +510,7 @@ exports.clone = function(req, res) {
     ], function(err, newProject) {
         if (err) {
             console.log(err);
-            err.code = parseInt(err.code) || 500;
+            err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
             res.status(err.code).send(err)
         } else {
             res.status(200).json(newProject._id);
@@ -547,7 +547,7 @@ exports.destroy = function(req, res) {
     ], function(err) {
         if (err) {
             console.log(err);
-            err.code = parseInt(err.code) || 500;
+            err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             res.status(204).end();
@@ -592,7 +592,7 @@ exports.createAll = function(req, res) {
         if (err) {
             numRequestsKO++;
             console.log(err);
-            err.code = parseInt(err.code) || 500;
+            err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             numRequestsOK++;
