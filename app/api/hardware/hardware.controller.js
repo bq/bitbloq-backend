@@ -11,7 +11,7 @@ exports.createAllHardware = function(req, res) {
     HardwareDefault.createAllHardware(function(err) {
         if (err) {
             console.log(err);
-            err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
+            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
@@ -26,7 +26,7 @@ exports.getAllHardware = function(req, res) {
     HardwareFunctions.getAllHardware(function(err, result) {
         if (err) {
             console.log(err);
-            err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
+            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             res.status(200).json(result);

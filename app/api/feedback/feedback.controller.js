@@ -18,7 +18,7 @@ exports.send = function(req, res) {
     mailer.sendOne('newFeedback', locals, function(err) {
         if (err) {
             console.log(err);
-            err.code = err.code.match(/[1-5][0-5][0-9]/g) ? parseInt(err.code) : 500;
+            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             res.status(200).send();
