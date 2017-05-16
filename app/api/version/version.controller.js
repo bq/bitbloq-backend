@@ -20,7 +20,7 @@ exports.getAll = function(req, res) {
         .exec(function(err, projects) {
             if (err) {
                 console.log(err);
-                err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                 res.status(err.code).send(err);
             } else {
                 res.status(200).json(projects);
@@ -32,7 +32,7 @@ exports.createAll = function(req, res) {
     Version.create(req.body, function(err) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
@@ -44,7 +44,7 @@ exports.deleteAll = function(req, res) {
     Version.remove({}, function(err) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
