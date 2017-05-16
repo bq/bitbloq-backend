@@ -506,6 +506,7 @@ function createBoards(next) {
             "availableComponents": [
                 'mkb_infrared',
                 'mkb_lightsensor',
+                'mkb_joystick',
                 'mkb_linefollower',
                 'mkb_ultrasound',
                 'sp'
@@ -609,6 +610,7 @@ function createBoards(next) {
             "availableComponents": [
                 'mkb_infrared',
                 'mkb_lightsensor',
+                'mkb_joystick',
                 'mkb_linefollower',
                 'mkb_ultrasound',
                 'sp'
@@ -817,6 +819,7 @@ function createBoards(next) {
             "availableComponents": [
                 'mkb_infrared',
                 'mkb_lightsensor',
+                'mkb_joystick',
                 'mkb_linefollower',
                 'mkb_ultrasound',
                 'sp'
@@ -1924,6 +1927,19 @@ function createComponents(next) {
             "height": 102,
             "pins": {}
         }, {
+            "uuid": "mkb_joystick",
+            "category": "mkb_joystick",
+            "type": "analog",
+            "manufacturer": "makeblock",
+            "width": 84.5,
+            "height": 128,
+            "dataReturnType": "float",
+            "pins": {
+                "black": [
+                    "s"
+                ]
+            }
+        }, {
             "uuid": "mkb_lightsensor",
             "category": "mkb_lightsensor",
             "type": "analog",
@@ -2103,7 +2119,8 @@ function createRobots(components, next) {
                 components['sp'][0]._id,
                 components['mkb_ultrasound'][0]._id,
                 components['mkb_linefollower'][0]._id,
-                components['mkb_lightsensor'][0]._id
+                components['mkb_lightsensor'][0]._id,
+                components['mkb_joystick'][0]._id
             ],
             "width": 75,
             "height": 86
@@ -2118,7 +2135,8 @@ function createRobots(components, next) {
                 components['sp'][0]._id,
                 components['mkb_ultrasound'][0]._id,
                 components['mkb_linefollower'][0]._id,
-                components['mkb_lightsensor'][0]._id
+                components['mkb_lightsensor'][0]._id,
+                components['mkb_joystick'][0]._id
             ],
             "width": 75,
             "height": 86
@@ -2133,7 +2151,8 @@ function createRobots(components, next) {
                 components['sp'][0]._id,
                 components['mkb_ultrasound'][0]._id,
                 components['mkb_linefollower'][0]._id,
-                components['mkb_lightsensor'][0]._id
+                components['mkb_lightsensor'][0]._id,
+                components['mkb_joystick'][0]._id
             ],
             "width": 75,
             "height": 86
