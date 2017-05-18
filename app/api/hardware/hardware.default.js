@@ -1,13 +1,11 @@
 'use strict';
 
-
 var Board = require('./board/board.model'),
     Component = require('./component/component.model'),
     Kit = require('./kit/kit.model'),
     Robot = require('./robot/robot.model'),
     _ = require('lodash'),
     async = require('async');
-
 
 function createBoards(next) {
     Board.find({}).remove(function() {
@@ -2182,13 +2180,18 @@ function createRobots(components, next) {
             ],
             "width": 75,
             "height": 86
+        }, {
+            "uuid": "freakscar",
+            "board": "ArduinoUNO",
+            "order": 9,
+            "width": 75,
+            "height": 86
         }, function() {
             console.log('finished populating robots');
             next();
         });
     });
 }
-
 
 exports.createAllHardware = function(next) {
     async.parallel([

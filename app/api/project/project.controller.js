@@ -248,8 +248,6 @@ exports.me = function(req, res) {
         sortParams.name = req.query.name;
     }
 
-    console.log('sortParams');
-    console.log(sortParams);
     Project.find(query)
         .limit(parseInt(pageSize))
         .skip(parseInt(pageSize * page))
@@ -261,10 +259,8 @@ exports.me = function(req, res) {
                 res.status(err.code).send(err);
             } else {
                 if (req.query.count === '*') {
-                    console.log('por aqui');
                     getCountPublic(res, query);
                 } else {
-                    console.log('por alla');
                     res.status(200).json(projects);
                 }
             }
@@ -278,15 +274,26 @@ exports.sharedWithMe = function(req, res) {
     var userId = req.user._id,
         query = {},
         page = req.query.page || 0,
-        pageSize = req.query.pageSize || perPage;
+        pageSize = req.query.pageSize || maxPerPage,
+        sortParams = {};
     query['_acl.user:' + userId + '.permission'] = 'READ';
+
+    if (req.query.query) {
+        utils.extend(query, JSON.parse(req.query.query));
+    }
+
+    if (req.query.updatedAt) {
+        sortParams.updatedAt = req.query.updatedAt;
+    }
+
+    if (req.query.name) {
+        sortParams.name = req.query.name;
+    }
 
     Project.find(query)
         .limit(parseInt(pageSize))
         .skip(parseInt(pageSize * page))
-        .sort({
-            name: 'asc'
-        })
+        .sort(sortParams)
         .populate('creator', 'username')
         .exec(function(err, projects) {
             if (err) {
@@ -294,7 +301,11 @@ exports.sharedWithMe = function(req, res) {
                 err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                 res.status(err.code).send(err);
             } else {
-                res.status(200).json(projects);
+                if (req.query.count === '*') {
+                    getCountPublic(res, query);
+                } else {
+                    res.status(200).json(projects);
+                }
             }
         });
 };
@@ -355,7 +366,6 @@ exports.publish = function(req, res) {
                     }
                 }, function(err) {
                     if (err) {
-
                         console.log(err);
                         res.sendStatus(err.code).send(err);
                     } else {
