@@ -1926,11 +1926,11 @@ function createComponents(next) {
             "pins": {}
         }, {
             "uuid": "mkb_joystick",
-            "category": "mkb_joystick",
-            "type": "analog",
+            "category": "sensors",
+            "type": "joystick",
             "manufacturer": "makeblock",
             "width": 84.5,
-            "height": 128,
+            "height": 118.09,
             "dataReturnType": "float",
             "pins": {
                 "black": [
@@ -2031,7 +2031,7 @@ function createComponents(next) {
     });
 }
 
-function createkits(boards, components, next) {
+function createKits(boards, components, next) {
     Kit.find({}).remove(function() {
         Kit.create({
             "uuid": "kitgeneric",
@@ -2207,10 +2207,20 @@ exports.createAllHardware = function(next) {
                 var boardByUuid = _.groupBy(boards, 'uuid'),
                     componentsByUuid = _.groupBy(components, 'uuid');
                 async.parallel([
-                    createkits.bind(this, boardByUuid, componentsByUuid),
+                    createKits.bind(this, boardByUuid, componentsByUuid),
                     createRobots.bind(this, componentsByUuid)
                 ], next);
             });
         });
     });
+};
+
+
+/************************
+ ******* NEW ************
+ ************************/
+
+
+exports.createComponents = function(components, next) {
+
 };
