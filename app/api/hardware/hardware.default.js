@@ -1757,7 +1757,7 @@ function createComponents(next) {
         }, {
             "uuid": "joystick",
             "manufacturer": "standard",
-            "category": "sensors",
+            "category": "joystick",
             "type": "Joystick",
             "width": 100,
             "height": 102,
@@ -1927,8 +1927,8 @@ function createComponents(next) {
             "pins": {}
         }, {
             "uuid": "mkb_joystick",
-            "category": "sensors",
-            "type": "joystick",
+            "category" : "joystick",
+            "type" : "Joystick",
             "manufacturer": "makeblock",
             "width": 84.5,
             "height": 118.09,
