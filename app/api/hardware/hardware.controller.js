@@ -3,13 +3,12 @@
 var HardwareFunctions = require('./hardware.functions.js'),
     HardwareDefault = require('./hardware.default.js');
 
-
 /**
  * Create all hardware
  */
 exports.createAllHardware = function(req, res) {
     var type = req.body.type;
-    switch (type){
+    switch (type) {
         case 'all':
             HardwareDefault.createAllHardware(function(err) {
                 if (err) {
