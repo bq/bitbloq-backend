@@ -567,9 +567,9 @@ function createBoards(next) {
                     "w": 38,
                     "h": 38
                 },
-                "wireless": {
-                    "h": 65,
-                    "w": 11
+                "wireless" : {
+                    "h" : 65,
+                    "w" : 11
                 }
             },
             "pins": {
@@ -601,12 +601,12 @@ function createBoards(next) {
                     "name": "serial",
                     "uid": "mcore-serial"
                 }],
-                "wireless": [
+                "wireless" : [
                     {
-                        "uid": "mcore-wireless",
-                        "name": "wireless",
-                        "y": 0.635,
-                        "x": 0.109
+                        "uid" : "mcore-wireless",
+                        "name" : "wireless",
+                        "y" : 0.635,
+                        "x" : 0.109
                     }
                 ]
             }
@@ -1944,7 +1944,7 @@ function createComponents(next) {
             "uuid": "mkb_bluetooth",
             "category": "serialElements",
             "manufacturer": "makeblock",
-            "baudRate": 9600,
+            "baudRate": 115200,
             "width": 115,
             "height": 82.63,
             "pin": {
@@ -1957,8 +1957,8 @@ function createComponents(next) {
             }
         }, {
             "uuid": "mkb_joystick",
-            "category": "joystick",
-            "type": "Joystick",
+            "category" : "joystick",
+            "type" : "Joystick",
             "manufacturer": "makeblock",
             "width": 84.5,
             "height": 118.09,
@@ -1996,8 +1996,8 @@ function createComponents(next) {
             }
         }, {
             "uuid": "mkb_soundsensor",
-            "category": "mkb_soundsensor",
-            "type": "analog",
+            "category" : "mkb_soundsensor",
+            "type" : "analog",
             "manufacturer": "makeblock",
             "width": 84.5,
             "height": 155.22,
@@ -2271,6 +2271,7 @@ exports.createAllHardware = function(next) {
  ******* NEW ************
  ************************/
 
-exports.createComponents = function(components, next) {
 
+exports.createComponents = function(components, next) {
+    
 };
