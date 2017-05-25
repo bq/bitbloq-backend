@@ -332,8 +332,8 @@ exports.createAnswer = function(req, res) {
                                 var subscribersBBC = _.join(subscribersEmails);
 
                                 var locals = {
-                                    email: config.supportEmail,
-                                    emailTObbc: config.emailTObbc + ',' + subscribersBBC,
+                                    email: config.emailTObbc,
+                                    emailTObbc: subscribersBBC,
                                     subject: 'Bitbloq- Nueva respuesta en el tema ' + thread.title,
                                     username: req.user.username,
                                     forumUrl: config.client_domain + '/#/help/forum/' + encodeURIComponent(categoryName) + '/' + answer.thread,

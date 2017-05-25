@@ -42,9 +42,6 @@ module.exports = function(app) {
     if ('production' === env) {
         app.use(morgan('dev'));
     }
-
-    if ('development' === env) {}
-
     if ('development' === env || 'test' === env) {
         app.use(morgan('dev'));
         app.use(errorHandler()); // Error handler - has to be last

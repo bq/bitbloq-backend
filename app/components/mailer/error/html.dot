@@ -1,0 +1,17 @@
+<img src="http://storage.googleapis.com/bitbloq/mail-images/logobit.png" alt="Bitbloq logo">
+<h1>Nuevo fallo en el backend</h1>
+<p>
+    Hola <br>
+    estás recibiendo este correo porque ha ocurrido un error de caída del backend de Bitbloq. <br>
+</p>
+<p>
+    <b>Datos del error: </b><br>
+    Fecha: {{=it.date}}<br>
+    Error: {{=it.err}}<br>
+    {{=it.err.stack}}
+</p>
+<br>
+<p>
+    Un saludo, <br>
+    <i>el equipo de</i> Bitbloq.
+</p>
