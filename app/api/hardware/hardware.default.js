@@ -567,9 +567,9 @@ function createBoards(next) {
                     "w": 38,
                     "h": 38
                 },
-                "wireless" : {
-                    "h" : 65,
-                    "w" : 11
+                "wireless": {
+                    "h": 65,
+                    "w": 11
                 }
             },
             "pins": {
@@ -601,14 +601,12 @@ function createBoards(next) {
                     "name": "serial",
                     "uid": "mcore-serial"
                 }],
-                "wireless" : [
-                    {
-                        "uid" : "mcore-wireless",
-                        "name" : "wireless",
-                        "y" : 0.635,
-                        "x" : 0.109
-                    }
-                ]
+                "wireless": [{
+                    "uid": "mcore-wireless",
+                    "name": "wireless",
+                    "y": 0.635,
+                    "x": 0.109
+                }]
             }
         }, {
             "uuid": "meauriga",
@@ -1957,8 +1955,8 @@ function createComponents(next) {
             }
         }, {
             "uuid": "mkb_joystick",
-            "category" : "joystick",
-            "type" : "Joystick",
+            "category": "joystick",
+            "type": "Joystick",
             "manufacturer": "makeblock",
             "width": 84.5,
             "height": 118.09,
@@ -1996,11 +1994,24 @@ function createComponents(next) {
             }
         }, {
             "uuid": "mkb_soundsensor",
-            "category" : "mkb_soundsensor",
-            "type" : "analog",
+            "category": "mkb_soundsensor",
+            "type": "analog",
             "manufacturer": "makeblock",
             "width": 84.5,
             "height": 155.22,
+            "dataReturnType": "float",
+            "pins": {
+                "black": [
+                    "s"
+                ]
+            }
+        }, {
+            "uuid": "mkb_pot",
+            "category": "sensors",
+            "type": "analog",
+            "manufacturer": "makeblock",
+            "width": 84.5,
+            "height": 118.09,
             "dataReturnType": "float",
             "pins": {
                 "black": [
@@ -2266,12 +2277,10 @@ exports.createAllHardware = function(next) {
     });
 };
 
-
 /************************
  ******* NEW ************
  ************************/
 
-
 exports.createComponents = function(components, next) {
-    
+
 };
