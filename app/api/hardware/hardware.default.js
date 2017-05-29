@@ -2019,6 +2019,19 @@ function createComponents(next) {
                 ]
             }
         }, {
+            "uuid": "mkb_4buttonKeyPad",
+            "category": "mkb_4buttonKeyPad",
+            "type": "ButtonPad",
+            "manufacturer": "makeblock",
+            "width": 84.5,
+            "height": 155.05,
+            "dataReturnType": "int",
+            "pins": {
+                "black": [
+                    "s"
+                ]
+            }
+        }, {
             "uuid": "mkb_ultrasound",
             "category": "mkb_ultrasound",
             "manufacturer": "makeblock",
