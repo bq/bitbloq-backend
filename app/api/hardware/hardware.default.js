@@ -2036,6 +2036,7 @@ function createComponents(next) {
         }, {
             "uuid": "mkb_remote",
             "category": "remoteControl",
+            "type": "remote",
             "manufacturer": "makeblock",
             "width": 74,
             "height": 124.38,
@@ -2334,7 +2335,6 @@ exports.createAllHardware = function(next) {
 /************************
  ******* NEW ************
  ************************/
-
 
 exports.createComponents = function(components, next) {
 
