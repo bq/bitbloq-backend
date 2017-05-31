@@ -13,6 +13,7 @@ var ComponentSchema = new mongoose.Schema({
     dragType: String,
     width: Number,
     height: Number,
+    fixed: Boolean,
     dataReturnType: String,
     baudRate: Number,
     oscillator: Boolean,

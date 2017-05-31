@@ -510,6 +510,7 @@ function createBoards(next) {
                 'mkb_ultrasound',
                 'mkb_soundsensor',
                 'mkb_display7seg',
+                'mkb_remote',
                 'sp'
             ],
             "integratedComponents": [{
@@ -2033,6 +2034,15 @@ function createComponents(next) {
                 ]
             }
         }, {
+            "uuid": "mkb_remote",
+            "category": "remoteControl",
+            "manufacturer": "makeblock",
+            "dragType": "remote",
+            "width": 74,
+            "height": 124.38,
+            "fixed": true,
+            "pins": {}
+        }, {
             "uuid": "mkb_4buttonKeyPad",
             "category": "mkb_4buttonKeyPad",
             "type": "ButtonPad",
@@ -2189,7 +2199,8 @@ function createRobots(components, next) {
                 components['mkb_joystick'][0]._id,
                 components['mkb_soundsensor'][0]._id,
                 components['mkb_4buttonKeyPad'][0]._id,
-                components['mkb_display7seg'][0]._id
+                components['mkb_display7seg'][0]._id,
+                components['mkb_remote'][0]._id
             ],
             "width": 75,
             "height": 86
@@ -2208,7 +2219,8 @@ function createRobots(components, next) {
                 components['mkb_joystick'][0]._id,
                 components['mkb_soundsensor'][0]._id,
                 components['mkb_4buttonKeyPad'][0]._id,
-                components['mkb_display7seg'][0]._id
+                components['mkb_display7seg'][0]._id,
+                components['mkb_remote'][0]._id
             ],
             "width": 75,
             "height": 86
@@ -2227,7 +2239,8 @@ function createRobots(components, next) {
                 components['mkb_joystick'][0]._id,
                 components['mkb_soundsensor'][0]._id,
                 components['mkb_4buttonKeyPad'][0]._id,
-                components['mkb_display7seg'][0]._id
+                components['mkb_display7seg'][0]._id,
+                components['mkb_remote'][0]._id
             ],
             "width": 75,
             "height": 86
@@ -2245,7 +2258,8 @@ function createRobots(components, next) {
                 components['mkb_lightsensor'][0]._id,
                 components['mkb_joystick'][0]._id,
                 components['mkb_soundsensor'][0]._id,
-                components['mkb_display7seg'][0]._id
+                components['mkb_display7seg'][0]._id,
+                components['mkb_remote'][0]._id
             ],
             "width": 75,
             "height": 86
@@ -2261,7 +2275,8 @@ function createRobots(components, next) {
                 components['mkb_ultrasound'][0]._id,
                 components['mkb_joystick'][0]._id,
                 components['mkb_soundsensor'][0]._id,
-                components['mkb_display7seg'][0]._id
+                components['mkb_display7seg'][0]._id,
+                components['mkb_remote'][0]._id
             ],
             "width": 75,
             "height": 86
@@ -2277,7 +2292,8 @@ function createRobots(components, next) {
                 components['mkb_ultrasound'][0]._id,
                 components['mkb_joystick'][0]._id,
                 components['mkb_soundsensor'][0]._id,
-                components['mkb_display7seg'][0]._id
+                components['mkb_display7seg'][0]._id,
+                components['mkb_remote'][0]._id
             ],
             "width": 75,
             "height": 86
@@ -2320,6 +2336,7 @@ exports.createAllHardware = function(next) {
  ******* NEW ************
  ************************/
 
-exports.createComponents = function(components, next) {
 
+exports.createComponents = function(components, next) {
+   
 };
