@@ -511,6 +511,7 @@ function createBoards(next) {
                 'mkb_soundsensor',
                 'mkb_display7seg',
                 'mkb_remote',
+                'mkb_ledmatrix',
                 'sp'
             ],
             "integratedComponents": [{
@@ -2034,6 +2035,22 @@ function createComponents(next) {
                 ]
             }
         }, {
+            "uuid": "mkb_ledmatrix",
+            "category": "ledMatrix",
+            "type": "analog",
+            "manufacturer": "makeblock",
+            "width": NumberInt(130),
+            "height": NumberInt(125),
+            "metadata": {
+                "rows": NumberInt(8),
+                "columns": NumberInt(16)
+            },
+            "pins": {
+                "blue": [
+                    "s"
+                ]
+            }
+        }, {
             "uuid": "mkb_remote",
             "category": "remoteControl",
             "type": "remote",
@@ -2201,6 +2218,7 @@ function createRobots(components, next) {
                 components['mkb_soundsensor'][0]._id,
                 components['mkb_4buttonKeyPad'][0]._id,
                 components['mkb_display7seg'][0]._id,
+                components['mkb_ledmatrix'][0]._id,
                 components['mkb_remote'][0]._id
             ],
             "width": 75,
