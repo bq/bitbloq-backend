@@ -2039,11 +2039,11 @@ function createComponents(next) {
             "category": "ledMatrix",
             "type": "analog",
             "manufacturer": "makeblock",
-            "width": NumberInt(130),
-            "height": NumberInt(125),
+            "width": 130,
+            "height": 125,
             "metadata": {
-                "rows": NumberInt(8),
-                "columns": NumberInt(16)
+                "rows": 8,
+                "columns": 16
             },
             "pins": {
                 "blue": [
