@@ -2041,7 +2041,7 @@ function createComponents(next) {
             "dataReturnType": "char",
             "width": 74,
             "height": 124.38,
-            "fixed": true,
+            "wirelessConnection": true,
             "pins": {}
         }, {
             "uuid": "mkb_4buttonKeyPad",

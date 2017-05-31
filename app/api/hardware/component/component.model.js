@@ -13,7 +13,7 @@ var ComponentSchema = new mongoose.Schema({
     dragType: String,
     width: Number,
     height: Number,
-    fixed: Boolean,
+    wirelessConnection: Boolean,
     dataReturnType: String,
     baudRate: Number,
     oscillator: Boolean,
