@@ -2038,6 +2038,7 @@ function createComponents(next) {
             "category": "remoteControl",
             "type": "remote",
             "manufacturer": "makeblock",
+            "dataReturnType": "char",
             "width": 74,
             "height": 124.38,
             "fixed": true,
