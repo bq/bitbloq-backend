@@ -509,6 +509,9 @@ function createBoards(next) {
                 'mkb_linefollower',
                 'mkb_ultrasound',
                 'mkb_soundsensor',
+                'mkb_display7seg',
+                'mkb_remote',
+                'mkb_ledmatrix',
                 'sp'
             ],
             "integratedComponents": [{
@@ -567,9 +570,9 @@ function createBoards(next) {
                     "w": 38,
                     "h": 38
                 },
-                "wireless" : {
-                    "h" : 65,
-                    "w" : 11
+                "wireless": {
+                    "h": 65,
+                    "w": 11
                 }
             },
             "pins": {
@@ -601,14 +604,12 @@ function createBoards(next) {
                     "name": "serial",
                     "uid": "mcore-serial"
                 }],
-                "wireless" : [
-                    {
-                        "uid" : "mcore-wireless",
-                        "name" : "wireless",
-                        "y" : 0.635,
-                        "x" : 0.109
-                    }
-                ]
+                "wireless": [{
+                    "uid": "mcore-wireless",
+                    "name": "wireless",
+                    "y": 0.635,
+                    "x": 0.109
+                }]
             }
         }, {
             "uuid": "meauriga",
@@ -626,6 +627,7 @@ function createBoards(next) {
                 'mkb_joystick',
                 'mkb_linefollower',
                 'mkb_ultrasound',
+                'mkb_display7seg',
                 'sp'
             ],
             "integratedComponents": [{
@@ -1956,9 +1958,21 @@ function createComponents(next) {
                 ]
             }
         }, {
+            "uuid": "mkb_display7seg",
+            "category": "display7seg",
+            "manufacturer": "makeblock",
+            "width": 84.5,
+            "height": 128,
+            "dataReturnType": "float",
+            "pins": {
+                "blue": [
+                    "s"
+                ]
+            }
+        }, {
             "uuid": "mkb_joystick",
-            "category" : "joystick",
-            "type" : "Joystick",
+            "category": "joystick",
+            "type": "Joystick",
             "manufacturer": "makeblock",
             "width": 84.5,
             "height": 118.09,
@@ -1996,12 +2010,64 @@ function createComponents(next) {
             }
         }, {
             "uuid": "mkb_soundsensor",
-            "category" : "mkb_soundsensor",
-            "type" : "analog",
+            "category": "mkb_soundsensor",
+            "type": "analog",
             "manufacturer": "makeblock",
             "width": 84.5,
             "height": 155.22,
             "dataReturnType": "float",
+            "pins": {
+                "black": [
+                    "s"
+                ]
+            }
+        }, {
+            "uuid": "mkb_pot",
+            "category": "sensors",
+            "type": "analog",
+            "manufacturer": "makeblock",
+            "width": 84.5,
+            "height": 118.09,
+            "dataReturnType": "float",
+            "pins": {
+                "black": [
+                    "s"
+                ]
+            }
+        }, {
+            "uuid": "mkb_ledmatrix",
+            "category": "ledMatrix",
+            "type": "analog",
+            "manufacturer": "makeblock",
+            "width": 130,
+            "height": 125,
+            "metadata": {
+                "rows": 8,
+                "columns": 16
+            },
+            "pins": {
+                "blue": [
+                    "s"
+                ]
+            }
+        }, {
+            "uuid": "mkb_remote",
+            "category": "remoteControl",
+            "type": "remote",
+            "manufacturer": "makeblock",
+            "dataReturnType": "char",
+            "width": 74,
+            "height": 124.38,
+            "wirelessConnection": true,
+            "pins": {}
+        }, {
+            "uuid": "mkb_4buttonKeyPad",
+            "category": "mkb_4buttonKeyPad",
+            "type": "ButtonPad",
+            "manufacturer": "makeblock",
+            "width": 84.5,
+            "height": 155.05,
+            "dataReturnType": "int",
             "pins": {
                 "black": [
                     "s"
@@ -2146,7 +2212,14 @@ function createRobots(components, next) {
             "includedComponents": [
                 components['sp'][0]._id,
                 components['mkb_ultrasound'][0]._id,
-                components['mkb_linefollower'][0]._id
+                components['mkb_linefollower'][0]._id,
+                components['mkb_lightsensor'][0]._id,
+                components['mkb_joystick'][0]._id,
+                components['mkb_soundsensor'][0]._id,
+                components['mkb_4buttonKeyPad'][0]._id,
+                components['mkb_display7seg'][0]._id,
+                components['mkb_ledmatrix'][0]._id,
+                components['mkb_remote'][0]._id
             ],
             "width": 75,
             "height": 86
@@ -2163,7 +2236,10 @@ function createRobots(components, next) {
                 components['mkb_linefollower'][0]._id,
                 components['mkb_lightsensor'][0]._id,
                 components['mkb_joystick'][0]._id,
-                components['mkb_soundsensor'][0]._id
+                components['mkb_soundsensor'][0]._id,
+                components['mkb_4buttonKeyPad'][0]._id,
+                components['mkb_display7seg'][0]._id,
+                components['mkb_remote'][0]._id
             ],
             "width": 75,
             "height": 86
@@ -2180,7 +2256,10 @@ function createRobots(components, next) {
                 components['mkb_linefollower'][0]._id,
                 components['mkb_lightsensor'][0]._id,
                 components['mkb_joystick'][0]._id,
-                components['mkb_soundsensor'][0]._id
+                components['mkb_soundsensor'][0]._id,
+                components['mkb_4buttonKeyPad'][0]._id,
+                components['mkb_display7seg'][0]._id,
+                components['mkb_remote'][0]._id
             ],
             "width": 75,
             "height": 86
@@ -2197,7 +2276,9 @@ function createRobots(components, next) {
                 components['mkb_linefollower'][0]._id,
                 components['mkb_lightsensor'][0]._id,
                 components['mkb_joystick'][0]._id,
-                components['mkb_soundsensor'][0]._id
+                components['mkb_soundsensor'][0]._id,
+                components['mkb_display7seg'][0]._id,
+                components['mkb_remote'][0]._id
             ],
             "width": 75,
             "height": 86
@@ -2212,7 +2293,9 @@ function createRobots(components, next) {
                 components['sp'][0]._id,
                 components['mkb_ultrasound'][0]._id,
                 components['mkb_joystick'][0]._id,
-                components['mkb_soundsensor'][0]._id
+                components['mkb_soundsensor'][0]._id,
+                components['mkb_display7seg'][0]._id,
+                components['mkb_remote'][0]._id
             ],
             "width": 75,
             "height": 86
@@ -2227,7 +2310,9 @@ function createRobots(components, next) {
                 components['sp'][0]._id,
                 components['mkb_ultrasound'][0]._id,
                 components['mkb_joystick'][0]._id,
-                components['mkb_soundsensor'][0]._id
+                components['mkb_soundsensor'][0]._id,
+                components['mkb_display7seg'][0]._id,
+                components['mkb_remote'][0]._id
             ],
             "width": 75,
             "height": 86
@@ -2266,12 +2351,10 @@ exports.createAllHardware = function(next) {
     });
 };
 
-
 /************************
  ******* NEW ************
  ************************/
 
-
 exports.createComponents = function(components, next) {
-    
+
 };
