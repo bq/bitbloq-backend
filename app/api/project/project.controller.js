@@ -173,6 +173,56 @@ exports.download = function(req, res) {
 };
 
 /**
+ * Get trash projects
+ */
+exports.getTrash = function(req, res) {
+    var userId = req.user._id,
+        page = req.query.page || 0,
+        perPage = (req.query.pageSize && (req.query.pageSize <= maxPerPage)) ? req.query.pageSize : maxPerPage,
+        defaultSortFilter = {
+            updatedAt: 1
+        },
+        sortFilter = req.query.sort ? JSON.parse(req.query.sort) : defaultSortFilter;
+
+    var query = {
+        'deleted': true
+    };
+    query['_acl.user:' + userId + '.permission'] = 'ADMIN';
+
+    Project.aggregate([
+            // Grouping pipeline
+            {
+                $match: query
+            },
+            // Sorting pipeline
+            {'$sort': sortFilter},
+            // Optionally limit results
+            {'$limit': parseInt(perPage)},
+            {'$skip': parseInt(perPage * page)},
+            // Select
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    creator: 1,
+                    timesViewed: 1,
+                    timesAdded: 1,
+                    codeProject: 1
+                }
+            }
+        ],
+        function(err, projects) {
+            if (err) {
+                console.log(err);
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                res.status(err.code).send(err);
+            } else {
+                res.status(200).json(projects);
+            }
+        });
+};
+
+/**
  * Get a single project
  */
 exports.show = function(req, res) {
