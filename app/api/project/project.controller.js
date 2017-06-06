@@ -180,7 +180,8 @@ exports.getTrash = function(req, res) {
         page = req.query.page || 0,
         perPage = (req.query.pageSize && (req.query.pageSize <= maxPerPage)) ? req.query.pageSize : maxPerPage,
         defaultSortFilter = {
-            updatedAt: 1
+            updatedAt: -1
+
         },
         sortFilter = req.query.sort ? JSON.parse(req.query.sort) : defaultSortFilter;
 
@@ -189,37 +190,65 @@ exports.getTrash = function(req, res) {
     };
     query['_acl.user:' + userId + '.permission'] = 'ADMIN';
 
-    Project.aggregate([
-            // Grouping pipeline
-            {
-                $match: query
-            },
-            // Sorting pipeline
-            {'$sort': sortFilter},
-            // Optionally limit results
-            {'$limit': parseInt(perPage)},
-            {'$skip': parseInt(perPage * page)},
-            // Select
-            {
-                $project: {
-                    _id: 1,
-                    name: 1,
-                    creator: 1,
-                    timesViewed: 1,
-                    timesAdded: 1,
-                    codeProject: 1
+    if (req.query.count === '*') {
+        Project.aggregate([
+                {
+                    $match: query
+                },
+                {
+                    $group: {
+                        _id: null,
+                        count: {$sum: 1}
+                    }
                 }
-            }
-        ],
-        function(err, projects) {
-            if (err) {
-                console.log(err);
-                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
-                res.status(err.code).send(err);
-            } else {
-                res.status(200).json(projects);
-            }
-        });
+            ],
+            function(err, counter) {
+                if (err) {
+                    console.log(err);
+                    err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                    res.status(err.code).send(err);
+                } else {
+                    res.status(200).json({'count': counter[0].count});
+                }
+            });
+    } else {
+        Project.aggregate([
+                {
+                    $match: query
+                },
+                // Sorting pipeline
+                {
+                    $sort: sortFilter
+                },
+                // Optionally limit results
+                {
+                    $skip: parseInt(perPage * page)
+                },
+                {
+                    $limit: parseInt(perPage)
+                },
+                // Select
+                {
+                    $project: {
+                        _id: 1,
+                        name: 1,
+                        creator: 1,
+                        timesViewed: 1,
+                        timesAdded: 1,
+                        codeProject: 1
+                    }
+                }
+            ],
+            function(err, projects) {
+                if (err) {
+                    console.log(err);
+                    err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                    res.status(err.code).send(err);
+                } else {
+                    res.status(200).json(projects);
+                }
+            });
+    }
 };
 
 /**
