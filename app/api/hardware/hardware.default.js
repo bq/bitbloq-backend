@@ -623,16 +623,28 @@ function createBoards(next) {
                 "underDevelopment": false,
                 "availableComponents": [],
                 "integratedComponents": [{
-                    "id": "freakscar_integrated_sp",
-                    "name": "freakscar_sp",
-                    "pin": {},
-                    "uid": "freakscar-sp"
-                }, {
-                    "id": "freakscar_integrated_remote",
-                    "name": "freakscar_remote",
-                    "pin": {},
-                    "uid": "freakscar-remote"
-                }],
+                        "id": "sp",
+                        "name": "default-var-name-freakscar_sp",
+                        "pin": {},
+                        "uid": "freakscar-sp"
+                    }, {
+                        "id": "freakscar_integrated_remote",
+                        "name": "default-var-name-freakscar_remote",
+                        "pin": {},
+                        "uid": "freakscar-remote"
+                    },
+                    {
+                        "id": "freakscar_integrated_lightsensor",
+                        "name": "default-var-name-freakscar_integrated_lightsensor_1",
+                        "pin": {},
+                        "uid": "freakscar_integrated-ldrs-1"
+                    }, {
+                        "id": "freakscar_integrated_lightsensor",
+                        "name": "default-var-name-freakscar_integrated_lightsensor_2",
+                        "pin": {},
+                        "uid": "freakscar_integrated-ldrs-2"
+                    }
+                ],
                 "pinSize": {},
                 "pins": {}
             }, {
@@ -1661,521 +1673,558 @@ function createBoards(next) {
 function createComponents(next) {
     Component.find({}).remove(function() {
         Component.create({
-            "uuid": "led",
-            "manufacturer": "standard",
-            "category": "leds",
-            "width": 55,
-            "height": 83,
-            "pins": {
-                "digital": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "RGBled",
-            "manufacturer": "standard",
-            "category": "rgbs",
-            "width": 67,
-            "height": 79,
-            "pins": {
-                "digital": [
-                    "b",
-                    "g",
-                    "r"
-                ]
-            }
-        }, {
-            "uuid": "us",
-            "manufacturer": "standard",
-            "category": "sensors",
-            "type": "US",
-            "width": 120,
-            "height": 79,
-            "dataReturnType": "float",
-            "pins": {
-                "digital": [
-                    "trigger",
-                    "echo"
-                ]
-            }
-        }, {
-            "uuid": "button",
-            "manufacturer": "standard",
-            "category": "sensors",
-            "type": "digital",
-            "width": 90,
-            "height": 73,
-            "dataReturnType": "float",
-            "pins": {
-                "digital": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "limitswitch",
-            "manufacturer": "standard",
-            "category": "sensors",
-            "type": "digital",
-            "width": 100,
-            "height": 92,
-            "dataReturnType": "float",
-            "pins": {
-                "digital": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "encoder",
-            "manufacturer": "standard",
-            "category": "sensors",
-            "type": "encoder",
-            "width": 74,
-            "height": 84,
-            "dataReturnType": "float",
-            "pin": {
-                "sb": "2",
-                "sa": "3"
+                "uuid": "led",
+                "manufacturer": "standard",
+                "category": "leds",
+                "width": 55,
+                "height": 83,
+                "pins": {
+                    "digital": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "RGBled",
+                "manufacturer": "standard",
+                "category": "rgbs",
+                "width": 67,
+                "height": 79,
+                "pins": {
+                    "digital": [
+                        "b",
+                        "g",
+                        "r"
+                    ]
+                }
+            }, {
+                "uuid": "us",
+                "manufacturer": "standard",
+                "category": "sensors",
+                "type": "US",
+                "width": 120,
+                "height": 79,
+                "dataReturnType": "float",
+                "pins": {
+                    "digital": [
+                        "trigger",
+                        "echo"
+                    ]
+                }
+            }, {
+                "uuid": "button",
+                "manufacturer": "standard",
+                "category": "sensors",
+                "type": "digital",
+                "width": 90,
+                "height": 73,
+                "dataReturnType": "float",
+                "pins": {
+                    "digital": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "limitswitch",
+                "manufacturer": "standard",
+                "category": "sensors",
+                "type": "digital",
+                "width": 100,
+                "height": 92,
+                "dataReturnType": "float",
+                "pins": {
+                    "digital": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "encoder",
+                "manufacturer": "standard",
+                "category": "sensors",
+                "type": "encoder",
+                "width": 74,
+                "height": 84,
+                "dataReturnType": "float",
+                "pin": {
+                    "sb": "2",
+                    "sa": "3"
+                },
+                "pins": {
+                    "digital": [
+                        "k",
+                        "sa",
+                        "sb"
+                    ]
+                }
+            }, {
+                "uuid": "sound",
+                "manufacturer": "standard",
+                "category": "sensors",
+                "type": "digital",
+                "width": 100,
+                "height": 102,
+                "dataReturnType": "float",
+                "pins": {
+                    "digital": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "buttons",
+                "manufacturer": "standard",
+                "category": "sensors",
+                "type": "ButtonPad",
+                "width": 165,
+                "height": 120,
+                "dataReturnType": "char",
+                "pins": {
+                    "analog": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "irs",
+                "manufacturer": "standard",
+                "category": "sensors",
+                "type": "digital",
+                "width": 90,
+                "height": 77,
+                "dataReturnType": "float",
+                "pins": {
+                    "digital": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "irs2",
+                "manufacturer": "standard",
+                "category": "sensors",
+                "type": "LineFollower",
+                "width": 97,
+                "height": 88,
+                "dataReturnType": "float *",
+                "pins": {
+                    "digital": [
+                        "s1",
+                        "s2"
+                    ]
+                }
+            }, {
+                "uuid": "joystick",
+                "manufacturer": "standard",
+                "category": "joystick",
+                "type": "Joystick",
+                "width": 100,
+                "height": 102,
+                "dataReturnType": "float *",
+                "pins": {
+                    "analog": [
+                        "x",
+                        "y"
+                    ],
+                    "digital": [
+                        "k"
+                    ]
+                }
+            }, {
+                "uuid": "ldrs",
+                "manufacturer": "standard",
+                "category": "sensors",
+                "type": "analog",
+                "width": 90,
+                "height": 65,
+                "dataReturnType": "float",
+                "pins": {
+                    "analog": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "pot",
+                "manufacturer": "standard",
+                "category": "sensors",
+                "type": "analog",
+                "width": 74,
+                "height": 101,
+                "dataReturnType": "float",
+                "pins": {
+                    "analog": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "rtc",
+                "manufacturer": "standard",
+                "category": "clocks",
+                "type": "analog",
+                "width": 128,
+                "height": 93,
+                "pin": {
+                    "sda": "a4",
+                    "scl": "a5"
+                },
+                "pins": {
+                    "i2c-4": [
+                        "sda"
+                    ],
+                    "i2c-5": [
+                        "scl"
+                    ]
+                }
+            }, {
+                "uuid": "hts221",
+                "manufacturer": "standard",
+                "category": "hts221",
+                "type": "digital",
+                "width": 107,
+                "height": 113,
+                "pin": {
+                    "sda": "a4",
+                    "scl": "a5"
+                },
+                "pins": {
+                    "i2c-4": [
+                        "sda"
+                    ],
+                    "i2c-5": [
+                        "scl"
+                    ]
+                }
+            }, {
+                "uuid": "buzz",
+                "manufacturer": "standard",
+                "category": "buzzers",
+                "type": "digital",
+                "width": 85,
+                "height": 80,
+                "pins": {
+                    "digital": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "servo",
+                "manufacturer": "standard",
+                "category": "servos",
+                "width": 125,
+                "height": 106,
+                "pins": {
+                    "digital": [
+                        "s"
+                    ]
+                },
+                "oscillator": false
+            }, {
+                "uuid": "servocont",
+                "manufacturer": "standard",
+                "category": "continuousServos",
+                "width": 125,
+                "height": 106,
+                "pins": {
+                    "digital": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "lcd",
+                "manufacturer": "standard",
+                "category": "lcds",
+                "width": 170,
+                "height": 93,
+                "pin": {
+                    "sda": "a4",
+                    "scl": "a5"
+                },
+                "pins": {
+                    "i2c-4": [
+                        "sda"
+                    ],
+                    "i2c-5": [
+                        "scl"
+                    ]
+                }
+            }, {
+                "uuid": "bt",
+                "manufacturer": "standard",
+                "category": "serialElements",
+                "baudRate": 9600,
+                "width": 115,
+                "height": 88,
+                "pins": {
+                    "digital": [
+                        "rx",
+                        "tx"
+                    ]
+                }
+            }, {
+                "uuid": "sp",
+                "manufacturer": "standard",
+                "category": "serialElements",
+                "baudRate": 9600,
+                "width": 115,
+                "height": 71,
+                "pin": {
+                    "s": "serial"
+                },
+                "pins": {
+                    "serial": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "device",
+                "manufacturer": "standard",
+                "category": "serialElements",
+                "baudRate": 19200,
+                "dragType": "btComponent",
+                "width": 74,
+                "height": 102,
+                "pins": {}
+            }, {
+                "uuid": "mkb_bluetooth",
+                "category": "serialElements",
+                "manufacturer": "makeblock",
+                "baudRate": 115200,
+                "width": 115,
+                "height": 82.63,
+                "pin": {
+                    "s": "serial"
+                },
+                "pins": {
+                    "serial": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "mkb_display7seg",
+                "category": "display7seg",
+                "manufacturer": "makeblock",
+                "width": 84.5,
+                "height": 128,
+                "dataReturnType": "float",
+                "pins": {
+                    "blue": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "mkb_joystick",
+                "category": "joystick",
+                "type": "Joystick",
+                "manufacturer": "makeblock",
+                "width": 84.5,
+                "height": 118.09,
+                "dataReturnType": "float",
+                "pins": {
+                    "black": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "mkb_lightsensor",
+                "category": "mkb_lightsensor",
+                "type": "analog",
+                "manufacturer": "makeblock",
+                "width": 84.5,
+                "height": 128,
+                "dataReturnType": "float",
+                "pins": {
+                    "black": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "mkb_linefollower",
+                "category": "mkb_linefollower",
+                "manufacturer": "makeblock",
+                "type": "mkb_linefollower",
+                "width": 84.5,
+                "height": 128,
+                "dataReturnType": "float",
+                "pins": {
+                    "blue": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "mkb_soundsensor",
+                "category": "mkb_soundsensor",
+                "type": "analog",
+                "manufacturer": "makeblock",
+                "width": 84.5,
+                "height": 155.22,
+                "dataReturnType": "float",
+                "pins": {
+                    "black": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "mkb_pot",
+                "category": "sensors",
+                "type": "analog",
+                "manufacturer": "makeblock",
+                "width": 84.5,
+                "height": 118.09,
+                "dataReturnType": "float",
+                "pins": {
+                    "black": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "mkb_ledmatrix",
+                "category": "ledMatrix",
+                "type": "analog",
+                "manufacturer": "makeblock",
+                "width": 130,
+                "height": 125,
+                "metadata": {
+                    "rows": 8,
+                    "columns": 16
+                },
+                "pins": {
+                    "blue": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "mkb_remote",
+                "category": "remoteControl",
+                "type": "remote",
+                "manufacturer": "makeblock",
+                "dataReturnType": "char",
+                "width": 74,
+                "height": 124.38,
+                "wirelessConnection": true,
+                "pins": {}
+            }, {
+                "uuid": "mkb_4buttonKeyPad",
+                "category": "mkb_4buttonKeyPad",
+                "type": "ButtonPad",
+                "manufacturer": "makeblock",
+                "width": 84.5,
+                "height": 155.05,
+                "dataReturnType": "int",
+                "pins": {
+                    "black": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "mkb_motionSensor",
+                "category": "mkb_motionSensor",
+                "type": "digital",
+                "manufacturer": "makeblock",
+                "width": 84.5,
+                "height": 155.05,
+                "dataReturnType": "float",
+                "pins": {
+                    "blue": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "mkb_ultrasound",
+                "category": "mkb_ultrasound",
+                "manufacturer": "makeblock",
+                "width": 134.5,
+                "height": 106.2,
+                "dataReturnType": "float",
+                "pins": {
+                    "yellow": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "mkb_integrated_analogPinButton",
+                "manufacturer": "makeblock",
+                "category": "sensors",
+                "type": "mkb_integrated_analogPinButton",
+                "width": 0,
+                "height": 0,
+                "dataReturnType": "float",
+                "pins": {
+                    "digital": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "mkb_integrated_lightsensor",
+                "manufacturer": "makeblock",
+                "category": "mkb_lightsensor",
+                "type": "mkb_integrated_lightsensor",
+                "width": 0,
+                "height": 0,
+                "dataReturnType": "float",
+                "pins": {
+                    "digital": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "mkb_integrated_buzz",
+                "manufacturer": "makeblock",
+                "category": "mkb_integrated_buzz",
+                "width": 0,
+                "height": 0,
+                "pins": {
+                    "digital": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "mkb_integrated_RGB",
+                "manufacturer": "makeblock",
+                "category": "mkb_integrated_RGB",
+                "type": "mkb_integrated",
+                "width": 0,
+                "height": 0,
+                "pins": {
+                    "digital": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "freakscar_integrated_sp",
+                "manufacturer": "elekfreaks",
+                "category": "freakscar_integrated_sp",
+                "type": "freakscar_integrated",
+                "width": 0,
+                "height": 0,
+                "pins": {
+                    "digital": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "freakscar_integrated_remote",
+                "manufacturer": "elekfreaks",
+                "category": "freakscar_integrated_remote",
+                "type": "freakscar_integrated",
+                "width": 0,
+                "height": 0,
+                "pins": {
+                    "digital": [
+                        "s"
+                    ]
+                }
+            }, {
+                "uuid": "freakscar_integrated_lightsensor",
+                "manufacturer": "elekfreaks",
+                "category": "freakscar_integrated_lightsensor",
+                "type": "freakscar_integrated",
+                "width": 0,
+                "height": 0,
+                "pins": {
+                    "digital": [
+                        "s"
+                    ]
+                }
             },
-            "pins": {
-                "digital": [
-                    "k",
-                    "sa",
-                    "sb"
-                ]
-            }
-        }, {
-            "uuid": "sound",
-            "manufacturer": "standard",
-            "category": "sensors",
-            "type": "digital",
-            "width": 100,
-            "height": 102,
-            "dataReturnType": "float",
-            "pins": {
-                "digital": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "buttons",
-            "manufacturer": "standard",
-            "category": "sensors",
-            "type": "ButtonPad",
-            "width": 165,
-            "height": 120,
-            "dataReturnType": "char",
-            "pins": {
-                "analog": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "irs",
-            "manufacturer": "standard",
-            "category": "sensors",
-            "type": "digital",
-            "width": 90,
-            "height": 77,
-            "dataReturnType": "float",
-            "pins": {
-                "digital": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "irs2",
-            "manufacturer": "standard",
-            "category": "sensors",
-            "type": "LineFollower",
-            "width": 97,
-            "height": 88,
-            "dataReturnType": "float *",
-            "pins": {
-                "digital": [
-                    "s1",
-                    "s2"
-                ]
-            }
-        }, {
-            "uuid": "joystick",
-            "manufacturer": "standard",
-            "category": "joystick",
-            "type": "Joystick",
-            "width": 100,
-            "height": 102,
-            "dataReturnType": "float *",
-            "pins": {
-                "analog": [
-                    "x",
-                    "y"
-                ],
-                "digital": [
-                    "k"
-                ]
-            }
-        }, {
-            "uuid": "ldrs",
-            "manufacturer": "standard",
-            "category": "sensors",
-            "type": "analog",
-            "width": 90,
-            "height": 65,
-            "dataReturnType": "float",
-            "pins": {
-                "analog": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "pot",
-            "manufacturer": "standard",
-            "category": "sensors",
-            "type": "analog",
-            "width": 74,
-            "height": 101,
-            "dataReturnType": "float",
-            "pins": {
-                "analog": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "rtc",
-            "manufacturer": "standard",
-            "category": "clocks",
-            "type": "analog",
-            "width": 128,
-            "height": 93,
-            "pin": {
-                "sda": "a4",
-                "scl": "a5"
-            },
-            "pins": {
-                "i2c-4": [
-                    "sda"
-                ],
-                "i2c-5": [
-                    "scl"
-                ]
-            }
-        }, {
-            "uuid": "hts221",
-            "manufacturer": "standard",
-            "category": "hts221",
-            "type": "digital",
-            "width": 107,
-            "height": 113,
-            "pin": {
-                "sda": "a4",
-                "scl": "a5"
-            },
-            "pins": {
-                "i2c-4": [
-                    "sda"
-                ],
-                "i2c-5": [
-                    "scl"
-                ]
-            }
-        }, {
-            "uuid": "buzz",
-            "manufacturer": "standard",
-            "category": "buzzers",
-            "type": "digital",
-            "width": 85,
-            "height": 80,
-            "pins": {
-                "digital": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "servo",
-            "manufacturer": "standard",
-            "category": "servos",
-            "width": 125,
-            "height": 106,
-            "pins": {
-                "digital": [
-                    "s"
-                ]
-            },
-            "oscillator": false
-        }, {
-            "uuid": "servocont",
-            "manufacturer": "standard",
-            "category": "continuousServos",
-            "width": 125,
-            "height": 106,
-            "pins": {
-                "digital": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "lcd",
-            "manufacturer": "standard",
-            "category": "lcds",
-            "width": 170,
-            "height": 93,
-            "pin": {
-                "sda": "a4",
-                "scl": "a5"
-            },
-            "pins": {
-                "i2c-4": [
-                    "sda"
-                ],
-                "i2c-5": [
-                    "scl"
-                ]
-            }
-        }, {
-            "uuid": "bt",
-            "manufacturer": "standard",
-            "category": "serialElements",
-            "baudRate": 9600,
-            "width": 115,
-            "height": 88,
-            "pins": {
-                "digital": [
-                    "rx",
-                    "tx"
-                ]
-            }
-        }, {
-            "uuid": "sp",
-            "manufacturer": "standard",
-            "category": "serialElements",
-            "baudRate": 9600,
-            "width": 115,
-            "height": 71,
-            "pin": {
-                "s": "serial"
-            },
-            "pins": {
-                "serial": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "device",
-            "manufacturer": "standard",
-            "category": "serialElements",
-            "baudRate": 19200,
-            "dragType": "btComponent",
-            "width": 74,
-            "height": 102,
-            "pins": {}
-        }, {
-            "uuid": "mkb_bluetooth",
-            "category": "serialElements",
-            "manufacturer": "makeblock",
-            "baudRate": 115200,
-            "width": 115,
-            "height": 82.63,
-            "pin": {
-                "s": "serial"
-            },
-            "pins": {
-                "serial": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "mkb_display7seg",
-            "category": "display7seg",
-            "manufacturer": "makeblock",
-            "width": 84.5,
-            "height": 128,
-            "dataReturnType": "float",
-            "pins": {
-                "blue": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "mkb_joystick",
-            "category": "joystick",
-            "type": "Joystick",
-            "manufacturer": "makeblock",
-            "width": 84.5,
-            "height": 118.09,
-            "dataReturnType": "float",
-            "pins": {
-                "black": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "mkb_lightsensor",
-            "category": "mkb_lightsensor",
-            "type": "analog",
-            "manufacturer": "makeblock",
-            "width": 84.5,
-            "height": 128,
-            "dataReturnType": "float",
-            "pins": {
-                "black": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "mkb_linefollower",
-            "category": "mkb_linefollower",
-            "manufacturer": "makeblock",
-            "type": "mkb_linefollower",
-            "width": 84.5,
-            "height": 128,
-            "dataReturnType": "float",
-            "pins": {
-                "blue": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "mkb_soundsensor",
-            "category": "mkb_soundsensor",
-            "type": "analog",
-            "manufacturer": "makeblock",
-            "width": 84.5,
-            "height": 155.22,
-            "dataReturnType": "float",
-            "pins": {
-                "black": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "mkb_pot",
-            "category": "sensors",
-            "type": "analog",
-            "manufacturer": "makeblock",
-            "width": 84.5,
-            "height": 118.09,
-            "dataReturnType": "float",
-            "pins": {
-                "black": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "mkb_ledmatrix",
-            "category": "ledMatrix",
-            "type": "analog",
-            "manufacturer": "makeblock",
-            "width": 130,
-            "height": 125,
-            "metadata": {
-                "rows": 8,
-                "columns": 16
-            },
-            "pins": {
-                "blue": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "mkb_remote",
-            "category": "remoteControl",
-            "type": "remote",
-            "manufacturer": "makeblock",
-            "dataReturnType": "char",
-            "width": 74,
-            "height": 124.38,
-            "wirelessConnection": true,
-            "pins": {}
-        }, {
-            "uuid": "mkb_4buttonKeyPad",
-            "category": "mkb_4buttonKeyPad",
-            "type": "ButtonPad",
-            "manufacturer": "makeblock",
-            "width": 84.5,
-            "height": 155.05,
-            "dataReturnType": "int",
-            "pins": {
-                "black": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "mkb_motionSensor",
-            "category": "mkb_motionSensor",
-            "type": "digital",
-            "manufacturer": "makeblock",
-            "width": 84.5,
-            "height": 155.05,
-            "dataReturnType": "float",
-            "pins": {
-                "blue": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "mkb_ultrasound",
-            "category": "mkb_ultrasound",
-            "manufacturer": "makeblock",
-            "width": 134.5,
-            "height": 106.2,
-            "dataReturnType": "float",
-            "pins": {
-                "yellow": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "mkb_integrated_analogPinButton",
-            "manufacturer": "makeblock",
-            "category": "sensors",
-            "type": "mkb_integrated_analogPinButton",
-            "width": 0,
-            "height": 0,
-            "dataReturnType": "float",
-            "pins": {
-                "digital": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "mkb_integrated_lightsensor",
-            "manufacturer": "makeblock",
-            "category": "mkb_lightsensor",
-            "type": "mkb_integrated_lightsensor",
-            "width": 0,
-            "height": 0,
-            "dataReturnType": "float",
-            "pins": {
-                "digital": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "mkb_integrated_buzz",
-            "manufacturer": "makeblock",
-            "category": "mkb_integrated_buzz",
-            "width": 0,
-            "height": 0,
-            "pins": {
-                "digital": [
-                    "s"
-                ]
-            }
-        }, {
-            "uuid": "mkb_integrated_RGB",
-            "manufacturer": "makeblock",
-            "category": "mkb_integrated_RGB",
-            "type": "mkb_integrated",
-            "width": 0,
-            "height": 0,
-            "pins": {
-                "digital": [
-                    "s"
-                ]
-            }
-        }, function() {
-            console.log('finished populating components');
-            next();
-        });
+            function() {
+                console.log('finished populating components');
+                next();
+            });
     });
 }
 
