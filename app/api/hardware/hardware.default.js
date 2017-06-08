@@ -2362,7 +2362,7 @@ function createRobots(components, next) {
             "height": 86
         }, {
             "uuid": "freakscar",
-            "board": "ArduinoUNO",
+            "board": "freakscar",
             "order": 9,
             "width": 75,
             "height": 86
