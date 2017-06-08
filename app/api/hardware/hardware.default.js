@@ -2188,7 +2188,7 @@ function createComponents(next) {
                 "uuid": "freakscar_integrated_sp",
                 "manufacturer": "elekfreaks",
                 "category": "freakscar_integrated_sp",
-                "type": "freakscar_integrated",
+                "type": "freakscar_integrated_sp",
                 "width": 0,
                 "height": 0,
                 "pins": {
@@ -2200,19 +2200,21 @@ function createComponents(next) {
                 "uuid": "freakscar_integrated_remote",
                 "manufacturer": "elekfreaks",
                 "category": "freakscar_integrated_remote",
-                "type": "freakscar_integrated",
+                "type": "freakscar_integrated_remote",
                 "width": 0,
                 "height": 0,
                 "pins": {
                     "digital": [
                         "s"
                     ]
-                }
+                },
+                "dataReturnType": "char"
             }, {
                 "uuid": "freakscar_integrated_lightsensor",
                 "manufacturer": "elekfreaks",
                 "category": "freakscar_integrated_lightsensor",
-                "type": "freakscar_integrated",
+                "type": "freakscar_integrated_lightsensor",
+                "dataReturnType": "int",
                 "width": 0,
                 "height": 0,
                 "pins": {
