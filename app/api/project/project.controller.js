@@ -191,7 +191,10 @@ exports.restore = function(req, res) {
                 if (project[0]._acl['user:' + req.user._id] && project[0]._acl['user:' + req.user._id].permission === 'ADMIN') {
                     Project.update({_id: req.params.id}, {$set: {deleted: false}}, next);
                 } else {
-                    next(401);
+                    next({
+                        code: 401,
+                        message: 'Unauthorized'
+                    });
                 }
             }], function(err) {
             if (err) {
@@ -698,6 +701,46 @@ exports.destroy = function(req, res) {
             res.status(204).end();
         }
     });
+};
+
+/**
+ * Deletes a Project permanently
+ */
+exports.destroyPermanent = function(req, res) {
+    if (req.user) {
+        var userId = req.user._id,
+            projectId = req.params.id;
+        async.waterfall([
+            function(next) {
+                Project.aggregate([
+                    {
+                        $match: {
+                            _id: ObjectId(projectId)
+                        }
+                    }
+                ], next);
+            },
+            function(project, next) {
+                if (project[0]._acl['user:' + userId] && project[0]._acl['user:' + userId].permission === 'ADMIN') {
+                    Project.remove({_id: projectId}, next);
+                } else {
+                    next({
+                        code: 401,
+                        message: 'Unauthorized'
+                    });
+                }
+            }], function(err) {
+            if (err) {
+                console.log(err);
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                res.status(err.code).send(err);
+            } else {
+                res.sendStatus(200);
+            }
+        });
+    } else {
+        res.sendStatus(401);
+    }
 };
 
 /**

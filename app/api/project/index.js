@@ -23,6 +23,7 @@ router.put('/:id/download', auth.getUser(), controller.download);
 router.put('/:id/restore', auth.getUser(), controller.restore);
 router.put('/:id', auth.isAuthenticated(), controller.update);
 
+router.delete('/:id/permanent', auth.isAuthenticated(), controller.destroyPermanent);
 router.delete('/:id', auth.isAuthenticated(), controller.destroy);
 
 module.exports = router;
