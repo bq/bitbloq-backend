@@ -7,7 +7,7 @@ var Project = require('./project.model.js'),
     async = require('async'),
     config = require('../../res/config.js'),
     mailer = require('../../components/mailer'),
-    ObjectID = require('mongoose').Types.ObjectId,
+    ObjectId = require('mongoose').Types.ObjectId,
     _ = require('lodash');
 
 var maxPerPage = 20;
@@ -173,13 +173,131 @@ exports.download = function(req, res) {
 };
 
 /**
+ * Restore a project
+ */
+exports.restore = function(req, res) {
+    if (req.user) {
+        async.waterfall([
+            function(next) {
+                Project.aggregate([
+                    {
+                        $match: {
+                            _id: ObjectId(req.params.id)
+                        }
+                    }
+                ], next);
+            },
+            function(project, next) {
+                if (project[0] && project[0]._acl['user:' + req.user._id] && project[0]._acl['user:' + req.user._id].permission === 'ADMIN') {
+                    Project.update({_id: req.params.id}, {$set: {deleted: false}}, next);
+                } else {
+                    next({
+                        code: 401,
+                        message: 'Unauthorized'
+                    });
+                }
+            }], function(err) {
+            if (err) {
+                console.log(err);
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                res.status(err.code).send(err);
+            } else {
+                res.sendStatus(200);
+            }
+        });
+    } else {
+        res.sendStatus(401);
+    }
+
+};
+
+/**
+ * Get trash projects
+ */
+exports.getTrash = function(req, res) {
+    var userId = req.user._id,
+        page = req.query.page || 0,
+        perPage = (req.query.pageSize && (req.query.pageSize <= maxPerPage)) ? req.query.pageSize : maxPerPage,
+        defaultSortFilter = {
+            updatedAt: -1
+
+        },
+        sortFilter = req.query.sort ? JSON.parse(req.query.sort) : defaultSortFilter;
+
+    var query = {
+        'deleted': true
+    };
+    query['_acl.user:' + userId + '.permission'] = 'ADMIN';
+
+    if (req.query.count === '*') {
+        Project.aggregate([
+                {
+                    $match: query
+                },
+                {
+                    $group: {
+                        _id: null,
+                        count: {$sum: 1}
+                    }
+                }
+            ],
+            function(err, counter) {
+                if (err) {
+                    console.log(err);
+                    err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                    res.status(err.code).send(err);
+                } else {
+                    res.status(200).json({'count': counter[0].count});
+                }
+            });
+    } else {
+        Project.aggregate([
+                {
+                    $match: query
+                },
+                // Sorting pipeline
+                {
+                    $sort: sortFilter
+                },
+                // Optionally limit results
+                {
+                    $skip: parseInt(perPage * page)
+                },
+                {
+                    $limit: parseInt(perPage)
+                },
+                // Select
+                {
+                    $project: {
+                        _id: 1,
+                        name: 1,
+                        creator: 1,
+                        timesViewed: 1,
+                        timesAdded: 1,
+                        codeProject: 1
+                    }
+                }
+            ],
+            function(err, projects) {
+                if (err) {
+                    console.log(err);
+                    err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                    res.status(err.code).send(err);
+                } else {
+                    res.status(200).json(projects);
+                }
+            });
+    }
+};
+
+/**
  * Get a single project
  */
 exports.show = function(req, res) {
     var query;
-    if (ObjectID.isValid(req.params.id)) {
+    if (ObjectId.isValid(req.params.id)) {
         query = {
-            _id: new ObjectID(req.params.id)
+            _id: new ObjectId(req.params.id)
         };
     } else {
         query = {
@@ -583,6 +701,47 @@ exports.destroy = function(req, res) {
             res.status(204).end();
         }
     });
+};
+
+/**
+ * Deletes a Project permanently
+ */
+exports.destroyPermanent = function(req, res) {
+    if (req.user) {
+        var userId = req.user._id,
+            projectId = req.params.id;
+        async.waterfall([
+            function(next) {
+                Project.aggregate([
+                    {
+                        $match: {
+                            _id: ObjectId(projectId)
+                        }
+                    }
+                ], next);
+            },
+            function(project, next) {
+                if (project[0]._acl['user:' + userId] && project[0]._acl['user:' + userId].permission === 'ADMIN') {
+                    //todo delete image
+                    Project.remove({_id: projectId}, next);
+                } else {
+                    next({
+                        code: 401,
+                        message: 'Unauthorized'
+                    });
+                }
+            }], function(err) {
+            if (err) {
+                console.log(err);
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                res.status(err.code).send(err);
+            } else {
+                res.sendStatus(200);
+            }
+        });
+    } else {
+        res.sendStatus(401);
+    }
 };
 
 /**
