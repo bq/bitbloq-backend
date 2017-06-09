@@ -1987,10 +1987,10 @@ function createComponents(next) {
                 "width": 115,
                 "height": 82.63,
                 "pin": {
-                    "s": "serial"
+                    "s": "wireless"
                 },
                 "pins": {
-                    "serial": [
+                    "wireless": [
                         "s"
                     ]
                 }
