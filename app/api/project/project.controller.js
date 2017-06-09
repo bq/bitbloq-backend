@@ -7,7 +7,7 @@ var Project = require('./project.model.js'),
     async = require('async'),
     config = require('../../res/config.js'),
     mailer = require('../../components/mailer'),
-    ObjectID = require('mongoose').Types.ObjectId,
+    ObjectId = require('mongoose').Types.ObjectId,
     _ = require('lodash');
 
 var maxPerPage = 20;
@@ -173,6 +173,42 @@ exports.download = function(req, res) {
 };
 
 /**
+ * Restore a project
+ */
+exports.restore = function(req, res) {
+    if (req.user) {
+        async.waterfall([
+            function(next) {
+                Project.aggregate([
+                    {
+                        $match: {
+                            _id: ObjectId(req.params.id)
+                        }
+                    }
+                ], next);
+            },
+            function(project, next) {
+                if (project[0]._acl['user:' + req.user._id] && project[0]._acl['user:' + req.user._id].permission === 'ADMIN') {
+                    Project.update({_id: req.params.id}, {$set: {deleted: false}}, next);
+                } else {
+                    next(401);
+                }
+            }], function(err) {
+            if (err) {
+                console.log(err);
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                res.status(err.code).send(err);
+            } else {
+                res.sendStatus(200);
+            }
+        });
+    } else {
+        res.sendStatus(401);
+    }
+
+};
+
+/**
  * Get trash projects
  */
 exports.getTrash = function(req, res) {
@@ -256,9 +292,9 @@ exports.getTrash = function(req, res) {
  */
 exports.show = function(req, res) {
     var query;
-    if (ObjectID.isValid(req.params.id)) {
+    if (ObjectId.isValid(req.params.id)) {
         query = {
-            _id: new ObjectID(req.params.id)
+            _id: new ObjectId(req.params.id)
         };
     } else {
         query = {
