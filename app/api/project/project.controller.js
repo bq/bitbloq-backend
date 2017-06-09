@@ -188,7 +188,7 @@ exports.restore = function(req, res) {
                 ], next);
             },
             function(project, next) {
-                if (project[0]._acl['user:' + req.user._id] && project[0]._acl['user:' + req.user._id].permission === 'ADMIN') {
+                if (project[0] && project[0]._acl['user:' + req.user._id] && project[0]._acl['user:' + req.user._id].permission === 'ADMIN') {
                     Project.update({_id: req.params.id}, {$set: {deleted: false}}, next);
                 } else {
                     next({
@@ -722,6 +722,7 @@ exports.destroyPermanent = function(req, res) {
             },
             function(project, next) {
                 if (project[0]._acl['user:' + userId] && project[0]._acl['user:' + userId].permission === 'ADMIN') {
+                    //todo delete image
                     Project.remove({_id: projectId}, next);
                 } else {
                     next({
