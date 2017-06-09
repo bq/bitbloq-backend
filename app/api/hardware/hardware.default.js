@@ -623,28 +623,26 @@ function createBoards(next) {
                 "underDevelopment": false,
                 "availableComponents": [],
                 "integratedComponents": [{
-                        "id": "sp",
-                        "name": "default-var-name-freakscar_sp",
-                        "pin": {},
-                        "uid": "freakscar-sp"
-                    }, {
-                        "id": "freakscar_integrated_remote",
-                        "name": "default-var-name-freakscar_remote",
-                        "pin": {},
-                        "uid": "freakscar-remote"
-                    },
-                    {
-                        "id": "freakscar_integrated_lightsensor",
-                        "name": "default-var-name-freakscar_integrated_lightsensor_1",
-                        "pin": {},
-                        "uid": "freakscar_integrated-ldrs-1"
-                    }, {
-                        "id": "freakscar_integrated_lightsensor",
-                        "name": "default-var-name-freakscar_integrated_lightsensor_2",
-                        "pin": {},
-                        "uid": "freakscar_integrated-ldrs-2"
-                    }
-                ],
+                    "id": "sp",
+                    "name": "default-var-name-freakscar_sp",
+                    "pin": {},
+                    "uid": "freakscar-sp"
+                }, {
+                    "id": "freakscar_integrated_remote",
+                    "name": "default-var-name-freakscar_remote",
+                    "pin": {},
+                    "uid": "freakscar-remote"
+                }, {
+                    "id": "freakscar_integrated_lightsensor",
+                    "name": "default-var-name-freakscar_integrated_lightsensor_1",
+                    "pin": {},
+                    "uid": "freakscar_integrated-ldrs-1"
+                }, {
+                    "id": "freakscar_integrated_lightsensor",
+                    "name": "default-var-name-freakscar_integrated_lightsensor_2",
+                    "pin": {},
+                    "uid": "freakscar_integrated-ldrs-2"
+                }],
                 "pinSize": {},
                 "pins": {}
             }, {
@@ -657,14 +655,17 @@ function createBoards(next) {
                 "showInToolbox": false,
                 "order": 8,
                 "availableComponents": [
-                    'mkb_infrared',
-                    'mkb_lightsensor',
-                    'mkb_bluetooth',
-                    'mkb_joystick',
-                    'mkb_linefollower',
-                    'mkb_ultrasound',
-                    'mkb_display7seg',
-                    'sp'
+                    "mkb_infrared",
+                    "mkb_lightsensor",
+                    "mkb_joystick",
+                    "mkb_bluetooth",
+                    "mkb_linefollower",
+                    "mkb_ultrasound",
+                    "mkb_soundsensor",
+                    "mkb_display7seg",
+                    "mkb_remote",
+                    "mkb_ledmatrix",
+                    "sp"
                 ],
                 "integratedComponents": [{
                     "id": "mkb_integrated_lightsensor",
@@ -795,6 +796,10 @@ function createBoards(next) {
                     "serial": {
                         "w": 46,
                         "h": 40
+                    },
+                    "wireless": {
+                        "h": 65,
+                        "w": 11
                     }
                 },
                 "pins": {
@@ -856,6 +861,12 @@ function createBoards(next) {
                         "y": 0.585,
                         "name": "serial",
                         "uid": "meauriga-serial"
+                    }],
+                    "wireless": [{
+                        "uid": "meauriga-wireless",
+                        "name": "wireless",
+                        "y": 0.635,
+                        "x": 0.109
                     }]
                 }
             }, {
@@ -868,13 +879,17 @@ function createBoards(next) {
                 "order": 9,
                 "showInToolbox": false,
                 "availableComponents": [
-                    'mkb_infrared',
-                    'mkb_lightsensor',
-                    'mkb_bluetooth',
-                    'mkb_joystick',
-                    'mkb_linefollower',
-                    'mkb_ultrasound',
-                    'sp'
+                    "mkb_infrared",
+                    "mkb_lightsensor",
+                    "mkb_joystick",
+                    "mkb_bluetooth",
+                    "mkb_linefollower",
+                    "mkb_ultrasound",
+                    "mkb_soundsensor",
+                    "mkb_display7seg",
+                    "mkb_remote",
+                    "mkb_ledmatrix",
+                    "sp"
                 ],
                 "integratedComponents": [],
                 "pinSize": {
@@ -901,6 +916,10 @@ function createBoards(next) {
                     "serial": {
                         "w": 22,
                         "h": 30
+                    },
+                    "wireless": {
+                        "h": 65,
+                        "w": 11
                     }
                 },
                 "pins": {
@@ -954,6 +973,12 @@ function createBoards(next) {
                         "y": 0.71,
                         "name": "serial",
                         "uid": "morion-serial"
+                    }],
+                    "wireless": [{
+                        "uid": "morion-wireless",
+                        "name": "wireless",
+                        "y": 0.635,
+                        "x": 0.109
                     }]
                 }
             }, {
