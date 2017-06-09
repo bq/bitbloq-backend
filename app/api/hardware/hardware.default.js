@@ -2320,6 +2320,7 @@ function createRobots(components, next) {
             "family": "mRanger",
             "thirdParty": true,
             "useBoardImage": true,
+            "manufacturer": "makeblock",
             "includedComponents": [
                 components['sp'][0]._id,
                 components['mkb_ultrasound'][0]._id,
@@ -2341,6 +2342,7 @@ function createRobots(components, next) {
             "family": "mRanger",
             "thirdParty": true,
             "useBoardImage": true,
+            "manufacturer": "makeblock",
             "includedComponents": [
                 components['sp'][0]._id,
                 components['mkb_ultrasound'][0]._id,
@@ -2362,6 +2364,7 @@ function createRobots(components, next) {
             "family": "mRanger",
             "thirdParty": true,
             "useBoardImage": true,
+            "manufacturer": "makeblock",
             "includedComponents": [
                 components['sp'][0]._id,
                 components['mkb_ultrasound'][0]._id,
@@ -2382,6 +2385,7 @@ function createRobots(components, next) {
             "family": "starterKit",
             "thirdParty": true,
             "useBoardImage": true,
+            "manufacturer": "makeblock",
             "includedComponents": [
                 components['sp'][0]._id,
                 components['mkb_ultrasound'][0]._id,
@@ -2400,6 +2404,7 @@ function createRobots(components, next) {
             "thirdParty": true,
             "board": "meorion",
             "useBoardImage": true,
+            "manufacturer": "makeblock",
             "includedComponents": [
                 components['sp'][0]._id,
                 components['mkb_ultrasound'][0]._id,
