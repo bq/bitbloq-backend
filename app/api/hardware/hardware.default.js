@@ -798,8 +798,8 @@ function createBoards(next) {
                         "h": 40
                     },
                     "wireless": {
-                        "h": 65,
-                        "w": 11
+                        "h": 11,
+                        "w": 65
                     }
                 },
                 "pins": {
@@ -865,8 +865,8 @@ function createBoards(next) {
                     "wireless": [{
                         "uid": "meauriga-wireless",
                         "name": "wireless",
-                        "y": 0.635,
-                        "x": 0.109
+                        "y": 0.075,
+                        "x": 0.15
                     }]
                 }
             }, {
