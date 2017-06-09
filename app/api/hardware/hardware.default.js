@@ -623,11 +623,14 @@ function createBoards(next) {
             "availableComponents": [
                 'mkb_infrared',
                 'mkb_lightsensor',
-                'mkb_bluetooth',
                 'mkb_joystick',
+                'mkb_bluetooth',
                 'mkb_linefollower',
                 'mkb_ultrasound',
+                'mkb_soundsensor',
                 'mkb_display7seg',
+                'mkb_remote',
+                'mkb_ledmatrix',
                 'sp'
             ],
             "integratedComponents": [{
@@ -759,6 +762,10 @@ function createBoards(next) {
                 "serial": {
                     "w": 46,
                     "h": 40
+                },
+                "wireless": {
+                    "h": 65,
+                    "w": 11
                 }
             },
             "pins": {
@@ -820,6 +827,12 @@ function createBoards(next) {
                     "y": 0.585,
                     "name": "serial",
                     "uid": "meauriga-serial"
+                }],
+                "wireless": [{
+                    "uid": "meauriga-wireless",
+                    "name": "wireless",
+                    "y": 0.635,
+                    "x": 0.109
                 }]
             }
         }, {
@@ -834,10 +847,14 @@ function createBoards(next) {
             "availableComponents": [
                 'mkb_infrared',
                 'mkb_lightsensor',
-                'mkb_bluetooth',
                 'mkb_joystick',
+                'mkb_bluetooth',
                 'mkb_linefollower',
                 'mkb_ultrasound',
+                'mkb_soundsensor',
+                'mkb_display7seg',
+                'mkb_remote',
+                'mkb_ledmatrix',
                 'sp'
             ],
             "integratedComponents": [],
@@ -865,6 +882,10 @@ function createBoards(next) {
                 "serial": {
                     "w": 22,
                     "h": 30
+                },
+                "wireless": {
+                    "h": 65,
+                    "w": 11
                 }
             },
             "pins": {
@@ -918,6 +939,12 @@ function createBoards(next) {
                     "y": 0.71,
                     "name": "serial",
                     "uid": "morion-serial"
+                }],
+                "wireless": [{
+                    "uid": "morion-wireless",
+                    "name": "wireless",
+                    "y": 0.635,
+                    "x": 0.109
                 }]
             }
         }, {
