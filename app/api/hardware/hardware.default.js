@@ -2213,18 +2213,6 @@ function createComponents(next) {
                     ]
                 }
             }, {
-                "uuid": "freakscar_integrated_sp",
-                "manufacturer": "elekfreaks",
-                "category": "freakscar_integrated_sp",
-                "type": "freakscar_integrated_sp",
-                "width": 0,
-                "height": 0,
-                "pins": {
-                    "digital": [
-                        "s"
-                    ]
-                }
-            }, {
                 "uuid": "freakscar_integrated_remote",
                 "manufacturer": "elekfreaks",
                 "category": "freakscar_integrated_remote",
