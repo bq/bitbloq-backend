@@ -502,18 +502,19 @@ function createBoards(next) {
                 "order": 7,
                 "underDevelopment": false,
                 "availableComponents": [
-                    'mkb_infrared',
-                    'mkb_lightsensor',
-                    'mkb_joystick',
-                    'mkb_bluetooth',
-                    'mkb_linefollower',
-                    'mkb_ultrasound',
-                    'mkb_soundsensor',
-                    'mkb_display7seg',
-                    'mkb_remote',
-                    'mkb_ledmatrix',
-                    'mkb_motionSensor',
-                    'sp'
+                    "mkb_infrared",
+                    "mkb_lightsensor",
+                    "mkb_joystick",
+                    "mkb_bluetooth",
+                    "mkb_linefollower",
+                    "mkb_ultrasound",
+                    "mkb_soundsensor",
+                    "mkb_display7seg",
+                    "mkb_remote",
+                    "mkb_ledmatrix",
+                    "mkb_motionSensor",
+                    "mkb_pot",
+                    "sp"
                 ],
                 "integratedComponents": [{
                     "id": "mkb_integrated_analogPinButton",
@@ -625,8 +626,11 @@ function createBoards(next) {
                 "integratedComponents": [{
                     "id": "sp",
                     "name": "default-var-name-freakscar_sp",
-                    "pin": {},
-                    "uid": "freakscar-sp"
+                    "pin": {
+                        "rx": 0,
+                        "tx": 1
+                    },
+                    "uid": "sp"
                 }, {
                     "id": "freakscar_integrated_remote",
                     "name": "default-var-name-freakscar_remote",
@@ -655,17 +659,16 @@ function createBoards(next) {
                 "showInToolbox": false,
                 "order": 8,
                 "availableComponents": [
-                    "mkb_infrared",
+                    "sp",
                     "mkb_lightsensor",
-                    "mkb_joystick",
-                    "mkb_bluetooth",
-                    "mkb_linefollower",
                     "mkb_ultrasound",
+                    "mkb_linefollower",
+                    "mkb_joystick",
                     "mkb_soundsensor",
                     "mkb_display7seg",
-                    "mkb_remote",
                     "mkb_ledmatrix",
-                    "sp"
+                    "mkb_pot",
+                    "mkb_motionSensor"
                 ],
                 "integratedComponents": [{
                     "id": "mkb_integrated_lightsensor",
@@ -879,17 +882,16 @@ function createBoards(next) {
                 "order": 9,
                 "showInToolbox": false,
                 "availableComponents": [
-                    "mkb_infrared",
+                    "sp",
                     "mkb_lightsensor",
-                    "mkb_joystick",
-                    "mkb_bluetooth",
-                    "mkb_linefollower",
                     "mkb_ultrasound",
+                    "mkb_linefollower",
+                    "mkb_joystick",
                     "mkb_soundsensor",
                     "mkb_display7seg",
-                    "mkb_remote",
                     "mkb_ledmatrix",
-                    "sp"
+                    "mkb_pot",
+                    "mkb_motionSensor"
                 ],
                 "integratedComponents": [],
                 "pinSize": {
@@ -2202,18 +2204,6 @@ function createComponents(next) {
                 "manufacturer": "makeblock",
                 "category": "mkb_integrated_RGB",
                 "type": "mkb_integrated",
-                "width": 0,
-                "height": 0,
-                "pins": {
-                    "digital": [
-                        "s"
-                    ]
-                }
-            }, {
-                "uuid": "freakscar_integrated_sp",
-                "manufacturer": "elekfreaks",
-                "category": "freakscar_integrated_sp",
-                "type": "freakscar_integrated_sp",
                 "width": 0,
                 "height": 0,
                 "pins": {

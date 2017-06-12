@@ -1,6 +1,7 @@
 'use strict';
 
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    _ = require('lodash');
 
 var ProjectSchema = new mongoose.Schema({
     corbelId: String,
@@ -203,6 +204,13 @@ ProjectSchema.methods = {
      */
     delete: function(next) {
         this.deleted = true;
+        var newAcl = {};
+        _.forEach(this._acl, function(item, key){
+            if (item.permission==='ADMIN'){
+                newAcl[key] = item;
+            }
+        });
+        this._acl = newAcl;
         this.save(next);
     },
 
