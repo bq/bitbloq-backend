@@ -228,6 +228,7 @@ exports.getTrash = function(req, res) {
         'deleted': true
     };
     query['_acl.user:' + userId + '.permission'] = 'ADMIN';
+    _.extend(query, JSON.parse(req.query.query));
 
     if (req.query.count === '*') {
         Project.aggregate([
