@@ -247,7 +247,7 @@ exports.getTrash = function(req, res) {
                     err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                     res.status(err.code).send(err);
                 } else {
-                    res.status(200).json({'count': counter[0].count});
+                    res.status(200).json({'count': counter.length !== 0 ? counter[0].count : 0});
                 }
             });
     } else {
