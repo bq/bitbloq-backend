@@ -2466,10 +2466,5 @@ exports.createAllHardware = function(next) {
     });
 };
 
-/************************
- ******* NEW ************
- ************************/
 
-exports.createComponents = function(components, next) {
 
-};

@@ -1,6 +1,9 @@
 'use strict';
 
-var Robot = require('./robot.model.js');
+var Robot = require('./robot.model.js'),
+    ComponentFunctions = require('../component/component.functions.js'),
+    _ = require('lodash'),
+    async = require('async');
 
 exports.getAll = function(next) {
     Robot.find({})
@@ -31,4 +34,24 @@ exports.getRobotsInArray = function(arrayId, next) {
         next(null, []);
     }
 
+};
+
+exports.includedInRobots = function(component, robotUuids, next) {
+    ComponentFunctions.getByUuid(component.uuid, function(err, component) {
+        Robot.find({})
+            .where('uuid').in(robotUuids)
+            .exec(function(err, robots) {
+                if (err) {
+                    next(err);
+                } else if (robots.length > 0) {
+                    async.map(robots, function(robot, callback) {
+                        robot.includedComponents.push(component._id);
+                        robot.includedComponents = _.uniqWith(robot.includedComponents, _.isEqual);
+                        robot.save(callback);
+                    }, next);
+                } else {
+                    next();
+                }
+            });
+    });
 };

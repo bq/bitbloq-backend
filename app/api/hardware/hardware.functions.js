@@ -4,8 +4,7 @@ var ComponentFunctions = require('./component/component.functions.js'),
     RobotFunctions = require('./robot/robot.functions.js'),
     BoardFunctions = require('./board/board.functions.js'),
     KitFunctions = require('./kit/kit.functions.js'),
-    async = require('async'),
-    _ = require('lodash');
+    async = require('async');
 
 exports.getDefault = function(next) {
     async.parallel([
@@ -58,4 +57,45 @@ exports.getHardware = function(hardware, next) {
         };
         next(err, hardware);
     });
+};
+
+
+exports.createComponents = function(components, next) {
+    async.map(components, function(component, callback) {
+        async.parallel([
+            function(callback) {
+                ComponentFunctions.createComponent(component.data, callback);
+            },
+            function(callback) {
+                if (component.included && component.included.boards) {
+                    async.waterfall([
+                        function(callback2) {
+                            if (component.included.boards.compatible) {
+                                BoardFunctions.compatibleWithBoard(component.data, component.included.boards.compatible, callback2);
+                            } else {
+                                callback2();
+                            }
+                        },
+                        function(callback2) {
+                            if (component.included.boards.integrated) {
+                                BoardFunctions.integratedInBoard(component.included.boards.integrated, callback);
+                            } else {
+                                callback2();
+                            }
+                        }
+                    ], next);
+                }
+            },
+            function(callback) {
+                if (component.included) {
+                    RobotFunctions.includedInRobots(component.data, component.included.robots, callback);
+                }
+            },
+            function(callback) {
+                if (component.included) {
+                    KitFunctions.includedInKits(component.data, component.included.kits, callback);
+                }
+            }
+        ], callback);
+    }, next);
 };

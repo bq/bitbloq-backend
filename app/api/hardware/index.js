@@ -8,6 +8,6 @@ var router = express.Router();
 
 router.get('/', controller.getAllHardware);
 
-router.post('/', auth.hasRole('admin'), controller.createAllHardware);
+router.post('/', auth.hasRole('admin'), controller.insertHardware);
 
 module.exports = router;
