@@ -627,7 +627,8 @@ function createBoards(next) {
                     "id": "sp",
                     "name": "default-var-name-freakscar_sp",
                     "pin": {
-                        "s": 0
+                        "rx": 0,
+                        "tx": 1
                     },
                     "uid": "sp"
                 }, {
