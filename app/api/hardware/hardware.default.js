@@ -626,8 +626,10 @@ function createBoards(next) {
                 "integratedComponents": [{
                     "id": "sp",
                     "name": "default-var-name-freakscar_sp",
-                    "pin": {},
-                    "uid": "freakscar-sp"
+                    "pin": {
+                        "s": 0
+                    },
+                    "uid": "sp"
                 }, {
                     "id": "freakscar_integrated_remote",
                     "name": "default-var-name-freakscar_remote",
