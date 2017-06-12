@@ -882,17 +882,16 @@ function createBoards(next) {
                 "order": 9,
                 "showInToolbox": false,
                 "availableComponents": [
-                    "mkb_infrared",
+                    "sp",
                     "mkb_lightsensor",
-                    "mkb_joystick",
-                    "mkb_bluetooth",
-                    "mkb_linefollower",
                     "mkb_ultrasound",
+                    "mkb_linefollower",
+                    "mkb_joystick",
                     "mkb_soundsensor",
                     "mkb_display7seg",
-                    "mkb_remote",
                     "mkb_ledmatrix",
-                    "sp"
+                    "mkb_pot",
+                    "mkb_motionSensor"
                 ],
                 "integratedComponents": [],
                 "pinSize": {
