@@ -1151,7 +1151,7 @@
         "showInToolbox": true,
         "order": 5,
         "vendorIds": ["0x2341"],
-        "productIds": ['0x0036', '0x8036', '0x800c'],
+        "productIds": ["0x0036", "0x8036", "0x800c"],
         "pinSize": {
             "digital": {
                 "w": 9,
@@ -1303,7 +1303,7 @@
         "showInToolbox": true,
         "order": 6,
         "vendorIds": ["0x2341"],
-        "productIds": ['0x6001', '0x7523'],
+        "productIds": ["0x6001", "0x7523"],
         "pinSize": {
             "digital": {
                 "w": 9,

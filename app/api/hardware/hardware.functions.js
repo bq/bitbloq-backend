@@ -85,12 +85,12 @@ exports.createComponents = function(components, next) {
                         },
                         function(callback2) {
                             if (component.included.boards.integrated) {
-                                BoardFunctions.integratedInBoard(component.included.boards.integrated, callback);
+                                BoardFunctions.integratedInBoard(component.included.boards.integrated, callback2);
                             } else {
                                 callback2();
                             }
                         }
-                    ], next);
+                    ], callback);
                 }
             },
             function(callback) {
@@ -104,7 +104,9 @@ exports.createComponents = function(components, next) {
                 }
             }
         ], callback);
-    }, next);
+    }, function(err) {
+        next(err);
+    });
 };
 
 exports.createRobots = function(robots, next) {
@@ -114,7 +116,7 @@ exports.createRobots = function(robots, next) {
                 if (robot.includedComponents) {
                     ComponentFunctions.getComponentIdsByUuids(robot.includedComponents, callback)
                 } else {
-                    next(null, []);
+                    next();
                 }
             },
             function(componentIds, callback) {
@@ -126,7 +128,9 @@ exports.createRobots = function(robots, next) {
                 RobotFunctions.createRobot(robot, callback);
             }
         ], callback);
-    }, next);
+    }, function(err) {
+        next(err);
+    });
 };
 
 
@@ -139,14 +143,14 @@ exports.createKits = function(kits, next) {
                         if (kit.components) {
                             ComponentFunctions.getComponentIdsByUuids(kit.components, callback)
                         } else {
-                            next(null, []);
+                            callback(null, []);
                         }
                     },
                     function(callback) {
                         if (kit.boards) {
                             BoardFunctions.getBoardIdsByUuids(kit.boards, callback)
                         } else {
-                            next(null, []);
+                            callback(null, []);
                         }
                     }
                 ], callback);
@@ -166,5 +170,7 @@ exports.createKits = function(kits, next) {
                 KitFunctions.createKit(kit, callback);
             }
         ], callback);
-    }, next);
+    }, function(err) {
+        next(err);
+    });
 };
