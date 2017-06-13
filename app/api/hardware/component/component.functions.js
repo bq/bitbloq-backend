@@ -23,6 +23,23 @@ exports.getComponentsInArray = function(arrayId, next) {
     }
 };
 
+exports.getComponentIdsByUuids = function(uuids, next) {
+    if (uuids.length > 0) {
+        Component.find({})
+            .where('uuid').in(uuids)
+            .select('_id')
+            .exec(function(err, components) {
+                if (components.length > 0) {
+                    next(err, _.map(components, '_id'));
+                } else {
+                    next(err, []);
+                }
+            });
+    } else {
+        next(null, []);
+    }
+};
+
 exports.createComponent = function(newComponent, next) {
     Component.findOne({uuid: newComponent.uuid}, function(err, component) {
         if (err) {

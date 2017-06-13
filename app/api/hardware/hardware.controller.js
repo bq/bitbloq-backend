@@ -51,6 +51,16 @@ exports.insertHardware = function(req, res) {
                 res.sendStatus(200);
             }
         });
+    } else if (req.body.robots) {
+        HardwareFunctions.createRobots(req.body.robots, function(err) {
+            if (err) {
+                console.log(err);
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                res.status(err.code).send(err);
+            } else {
+                res.sendStatus(200);
+            }
+        });
     } else if (req.body.type === 'all') {
         HardwareDefault.createAllHardware(function(err) {
             if (err) {

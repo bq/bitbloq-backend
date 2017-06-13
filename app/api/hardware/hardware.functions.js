@@ -99,3 +99,25 @@ exports.createComponents = function(components, next) {
         ], callback);
     }, next);
 };
+
+exports.createRobots = function(robots, next) {
+    async.map(robots, function(robot, callback) {
+        async.waterfall([
+            function(callback) {
+                if (robot.includedComponents) {
+                    ComponentFunctions.getComponentIdsByUuids(robot.includedComponents, callback)
+                } else {
+                    next(null, []);
+                }
+            },
+            function(componentIds, callback) {
+                if (componentIds.length > 0) {
+                    robot.includedComponents = componentIds;
+                } else {
+                    delete robot.includedComponents;
+                }
+                RobotFunctions.createRobot(robot, callback);
+            }
+        ], callback);
+    }, next);
+};

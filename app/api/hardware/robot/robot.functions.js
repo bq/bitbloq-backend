@@ -55,3 +55,16 @@ exports.includedInRobots = function(component, robotUuids, next) {
             });
     });
 };
+
+exports.createRobot = function(newRobot, next) {
+    Robot.findOne({uuid: newRobot.uuid}, function(err, robot) {
+        if (err) {
+            next(err);
+        } else if (robot) {
+            _.extend(robot, newRobot);
+            robot.save(next);
+        } else {
+            Robot.create(newRobot, next);
+        }
+    });
+};
