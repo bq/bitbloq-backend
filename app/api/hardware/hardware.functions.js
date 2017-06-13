@@ -69,41 +69,50 @@ exports.createBoards = function(boards, next) {
 
 exports.createComponents = function(components, next) {
     async.map(components, function(component, callback) {
-        async.parallel([
-            function(callback) {
-                ComponentFunctions.createComponent(component.data, callback);
-            },
-            function(callback) {
-                if (component.included && component.included.boards) {
-                    async.waterfall([
-                        function(callback2) {
-                            if (component.included.boards.compatible) {
-                                BoardFunctions.compatibleWithBoard(component.data, component.included.boards.compatible, callback2);
-                            } else {
-                                callback2();
-                            }
-                        },
-                        function(callback2) {
-                            if (component.included.boards.integrated) {
-                                BoardFunctions.integratedInBoard(component.included.boards.integrated, callback2);
-                            } else {
-                                callback2();
-                            }
+        ComponentFunctions.createComponent(component.data, function(err) {
+            if (err) {
+                callback(err);
+            } else {
+                async.parallel([
+                    function(callback) {
+                        if (component.included && component.included.boards) {
+                            async.waterfall([
+                                function(callback2) {
+                                    if (component.included.boards.compatible) {
+                                        BoardFunctions.compatibleWithBoard(component.data, component.included.boards.compatible, callback2);
+                                    } else {
+                                        callback2();
+                                    }
+                                },
+                                function(callback2) {
+                                    if (component.included.boards.integrated) {
+                                        BoardFunctions.integratedInBoard(component.included.boards.integrated, callback2);
+                                    } else {
+                                        callback2();
+                                    }
+                                }
+                            ], callback);
+                        } else {
+                            next();
                         }
-                    ], callback);
-                }
-            },
-            function(callback) {
-                if (component.included) {
-                    RobotFunctions.includedInRobots(component.data, component.included.robots, callback);
-                }
-            },
-            function(callback) {
-                if (component.included) {
-                    KitFunctions.includedInKits(component.data, component.included.kits, callback);
-                }
+                    },
+                    function(callback) {
+                        if (component.included) {
+                            RobotFunctions.includedInRobots(component.data, component.included.robots, callback);
+                        } else {
+                            next();
+                        }
+                    },
+                    function(callback) {
+                        if (component.included) {
+                            KitFunctions.includedInKits(component.data, component.included.kits, callback);
+                        } else {
+                            next();
+                        }
+                    }
+                ], callback);
             }
-        ], callback);
+        });
     }, function(err) {
         next(err);
     });
@@ -116,7 +125,7 @@ exports.createRobots = function(robots, next) {
                 if (robot.includedComponents) {
                     ComponentFunctions.getComponentIdsByUuids(robot.includedComponents, callback)
                 } else {
-                    next();
+                    callback(null, []);
                 }
             },
             function(componentIds, callback) {

@@ -48,7 +48,7 @@ exports.createComponent = function(newComponent, next) {
             _.extend(component, newComponent);
             component.save(next);
         } else {
-            Component.create(component, next);
+            Component.create(newComponent, next);
         }
     });
 };

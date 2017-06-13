@@ -36,23 +36,28 @@ exports.getRobotsInArray = function(arrayId, next) {
 
 };
 
-exports.includedInRobots = function(component, robotUuids, next) {
-    ComponentFunctions.getByUuid(component.uuid, function(err, component) {
-        Robot.find({})
-            .where('uuid').in(robotUuids)
-            .exec(function(err, robots) {
-                if (err) {
-                    next(err);
-                } else if (robots.length > 0) {
-                    async.map(robots, function(robot, callback) {
-                        robot.includedComponents.push(component._id);
-                        robot.includedComponents = _.uniqWith(robot.includedComponents, _.isEqual);
-                        robot.save(callback);
-                    }, next);
-                } else {
-                    next();
-                }
-            });
+exports.includedInRobots = function(componentData, robotUuids, next) {
+    ComponentFunctions.getByUuid(componentData.uuid, function(err, component) {
+        if (component) {
+            Robot.find({})
+                .where('uuid').in(robotUuids)
+                .select('-__v')
+                .exec(function(err, robots) {
+                    if (err) {
+                        next(err);
+                    } else if (robots.length > 0) {
+                        async.map(robots, function(robot, callback) {
+                            robot.includedComponents.push(component._id);
+                            robot.includedComponents = _.uniqWith(robot.includedComponents, _.isEqual);
+                            robot.save(callback);
+                        }, next);
+                    } else {
+                        next();
+                    }
+                });
+        } else {
+            next();
+        }
     });
 };
 

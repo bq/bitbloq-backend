@@ -57,6 +57,7 @@ exports.integratedInBoard = function(integratedBoards, next) {
     var integratedBoardsUuids = _.keys(integratedBoards);
     Board.find({})
         .where('uuid').in(integratedBoardsUuids)
+        .select('-__v')
         .exec(function(err, boards) {
             if (err) {
                 next(err);
@@ -76,6 +77,7 @@ exports.integratedInBoard = function(integratedBoards, next) {
 exports.compatibleWithBoard = function(component, compatibleBoardUuids, next) {
     Board.find({})
         .where('uuid').in(compatibleBoardUuids)
+        .select('-__v')
         .exec(function(err, boards) {
             if (err) {
                 next(err);
@@ -87,7 +89,9 @@ exports.compatibleWithBoard = function(component, compatibleBoardUuids, next) {
                         board.availableComponents.push(component.uuid);
                         board.availableComponents = _.uniq(board.availableComponents);
                         board.save(callback);
-                    }, next);
+                    }, function(err) {
+                        next(err);
+                    });
                 } else {
                     next();
                 }
