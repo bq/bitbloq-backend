@@ -20,19 +20,6 @@
             "thirdParty": true,
             "manufacturer": "makeblock",
             "useBoardImage": true,
-            "includedComponents": [
-                "sp",
-                "mkb_ultrasound",
-                "mkb_linefollower",
-                "mkb_lightsensor",
-                "mkb_joystick",
-                "mkb_soundsensor",
-                "mkb_4buttonKeyPad",
-                "mkb_display7seg",
-                "mkb_ledmatrix",
-                "mkb_remote",
-                "mkb_motionSensor"
-            ],
             "width": 75,
             "height": 86
         },{
@@ -43,18 +30,6 @@
             "thirdParty": true,
             "useBoardImage": true,
             "manufacturer": "makeblock",
-            "includedComponents": [
-                "sp",
-                "mkb_ultrasound",
-                "mkb_linefollower",
-                "mkb_lightsensor",
-                "mkb_joystick",
-                "mkb_soundsensor",
-                "mkb_4buttonKeyPad",
-                "mkb_display7seg",
-                "mkb_remote",
-                "mkb_motionSensor"
-            ],
             "width": 75,
             "height": 86
         },{
@@ -65,18 +40,6 @@
             "thirdParty": true,
             "useBoardImage": true,
             "manufacturer": "makeblock",
-            "includedComponents": [
-                "sp",
-                "mkb_ultrasound",
-                "mkb_linefollower",
-                "mkb_lightsensor",
-                "mkb_joystick",
-                "mkb_soundsensor",
-                "mkb_4buttonKeyPad",
-                "mkb_display7seg",
-                "mkb_remote",
-                "mkb_motionSensor"
-            ],
             "width": 75,
             "height": 86
         },{
@@ -87,17 +50,6 @@
             "thirdParty": true,
             "useBoardImage": true,
             "manufacturer": "makeblock",
-            "includedComponents": [
-                "sp",
-                "mkb_ultrasound",
-                "mkb_linefollower",
-                "mkb_lightsensor",
-                "mkb_joystick",
-                "mkb_soundsensor",
-                "mkb_display7seg",
-                "mkb_remote",
-                "mkb_motionSensor"
-            ],
             "width": 75,
             "height": 86
         },{
@@ -108,15 +60,6 @@
             "thirdParty": true,
             "useBoardImage": true,
             "manufacturer": "makeblock",
-            "includedComponents": [
-                "sp",
-                "mkb_ultrasound",
-                "mkb_joystick",
-                "mkb_soundsensor",
-                "mkb_display7seg",
-                "mkb_remote",
-                "mkb_motionSensor"
-            ],
             "width": 75,
             "height": 86
         },{
@@ -127,15 +70,6 @@
             "board": "meorion",
             "useBoardImage": true,
             "manufacturer": "makeblock",
-            "includedComponents": [
-                "sp",
-                "mkb_ultrasound",
-                "mkb_joystick",
-                "mkb_soundsensor",
-                "mkb_display7seg",
-                "mkb_remote",
-                "mkb_motionSensor"
-            ],
             "width": 75,
             "height": 86
         },{
