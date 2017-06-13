@@ -1,7 +1,7 @@
 'use strict';
 
 var HardwareFunctions = require('./hardware.functions.js'),
-    HardwareDefault = require('./hardware.default.js');
+    async = require('async');
 
 /**
  * Add hardware
@@ -138,59 +138,44 @@ var HardwareFunctions = require('./hardware.functions.js'),
  **
  */
 exports.insertHardware = function(req, res) {
-    if (req.body.boards) {
-        HardwareFunctions.createBoards(req.body.boards, function(err) {
-            if (err) {
-                console.log(err);
-                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
-                res.status(err.code).send(err);
+    async.waterfall([
+        function(next) {
+            if (req.body.boards) {
+                HardwareFunctions.createBoards(req.body.boards, next);
             } else {
-                res.sendStatus(200);
+                next();
             }
-        });
-    } else if (req.body.robots) {
-        HardwareFunctions.createRobots(req.body.robots, function(err) {
-            if (err) {
-                console.log(err);
-                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
-                res.status(err.code).send(err);
+        },
+        function(boards, next) {
+            if (req.body.robots) {
+                HardwareFunctions.createRobots(req.body.robots, next);
             } else {
-                res.sendStatus(200);
+                next();
             }
-        });
-    } else if (req.body.kits) {
-        HardwareFunctions.createKits(req.body.kits, function(err) {
-            if (err) {
-                console.log(err);
-                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
-                res.status(err.code).send(err);
+        },
+        function(next) {
+            if (req.body.kits) {
+                HardwareFunctions.createKits(req.body.kits, next);
             } else {
-                res.sendStatus(200);
+                next();
             }
-        });
-    } else if (req.body.components) {
-        HardwareFunctions.createComponents(req.body.components, function(err) {
-            if (err) {
-                console.log(err);
-                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
-                res.status(err.code).send(err);
+        },
+        function(next) {
+            if (req.body.components) {
+                HardwareFunctions.createComponents(req.body.components, next);
             } else {
-                res.sendStatus(200);
+                next();
             }
-        });
-    } else if (req.body.type === 'all') {
-        HardwareDefault.createAllHardware(function(err) {
-            if (err) {
-                console.log(err);
-                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
-                res.status(err.code).send(err);
-            } else {
-                res.sendStatus(200);
-            }
-        });
-    } else {
-        res.sendStatus(400);
-    }
+        }
+    ], function(err) {
+        if (err) {
+            console.log(err);
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            res.status(err.code).send(err);
+        } else {
+            res.sendStatus(200);
+        }
+    });
 };
 
 /**
