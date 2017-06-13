@@ -96,3 +96,17 @@ exports.compatibleWithBoard = function(component, compatibleBoardUuids, next) {
             }
         });
 };
+
+
+exports.createBoard = function(newBoard, next) {
+    Board.findOne({uuid: newBoard.uuid}, function(err, board) {
+        if (err) {
+            next(err);
+        } else if (board) {
+            _.extend(board, newBoard);
+            board.save(next);
+        } else {
+            Board.create(newBoard, next);
+        }
+    });
+};

@@ -7,37 +7,56 @@ var HardwareFunctions = require('./hardware.functions.js'),
  * Add hardware
  * type: all -> Create all hardware
  * components: [Array] -> Create component Array
- **   example (COMPONENTS):
+
+ ** example (BOARDS):
  ** {
-    "components": [{
-            "data": {
-                    "uuid": "led",
-                    "manufacturer": "standard",
-                    "category": "leds",
-                    "width": 55,
-                    "height": 83,
-                    "pins": {
-                        "digital": [
-                            "s"
-                        ]
-                    }
+     "boards": [{
+        "uuid": "myBoard",
+        "mcu": "bt328",
+        "vendorIds": ["0x403"],
+        "productIds": ["0x6001"],
+        "showInToolbox": false,
+        "order": 1,
+        "underDevelopment": true,
+        "availableComponents": ["led", "bt"],
+        "integratedComponents": [{
+                "id": "led",
+                "name": "default-var-name-mkb_integrated_led",
+                "uid": "integrated-led"
+            }, {
+                "id": "led",
+                "name": "default-var-name-mkb_integrated_led-left",
+                "pin": {
+                    "s": 0
+                },
+                "uid": "integrated-led-left"
+            }],
+        "pinSize": {
+            "serial": {
+                "w": 38,
+                "h": 38
             },
-            "included": {
-                    "boards": {
-                    	"integrated":{
-                    		"FreaduinoUNO": {
-                                "id": "led",
-                                "name": "default-var-name-mkb_integrated_led",
-                                "uid": "integrated-led"
-                            }
-                    	},
-						"compatible":["ArduinoUNO", "bqZUM"]
-                    },
-                     "robots": ["zowi", "evolution"],
-                     "kits": ["bqzumbox"]
+            "wireless": {
+                "h": 65,
+                "w": 11
             }
-        }]
-    }
+        },
+        "pins": {
+            "serial": [{
+                "x": 0.35,
+                "y": 0.9,
+                "name": "serial",
+                "uid": "mcore-serial"
+            }],
+            "wireless": [{
+                "uid": "mcore-wireless",
+                "name": "wireless",
+                "y": 0.635,
+                "x": 0.109
+            }]
+        }
+     }]
+ }
 
  ** example (ROBOTS):
  ** {
@@ -83,12 +102,44 @@ var HardwareFunctions = require('./hardware.functions.js'),
             "components": ["irs", "button", "ldrs", "buzz", "us", "pot",
                 "led", "servo", "servocont"]
         }]
-}
+ }
+
+ **   example (COMPONENTS):
+ ** {
+    "components": [{
+            "data": {
+                    "uuid": "led",
+                    "manufacturer": "standard",
+                    "category": "leds",
+                    "width": 55,
+                    "height": 83,
+                    "pins": {
+                        "digital": [
+                            "s"
+                        ]
+                    }
+            },
+            "included": {
+                    "boards": {
+                    	"integrated":{
+                    		"FreaduinoUNO": {
+                                "id": "led",
+                                "name": "default-var-name-mkb_integrated_led",
+                                "uid": "integrated-led"
+                            }
+                    	},
+						"compatible":["ArduinoUNO", "bqZUM"]
+                    },
+                     "robots": ["zowi", "evolution"],
+                     "kits": ["bqzumbox"]
+            }
+        }]
+    }
  **
  */
 exports.insertHardware = function(req, res) {
-    if (req.body.components) {
-        HardwareFunctions.createComponents(req.body.components, function(err) {
+    if (req.body.boards) {
+        HardwareFunctions.createBoards(req.body.boards, function(err) {
             if (err) {
                 console.log(err);
                 err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
@@ -117,6 +168,16 @@ exports.insertHardware = function(req, res) {
                 res.sendStatus(200);
             }
         });
+    } else if (req.body.components) {
+        HardwareFunctions.createComponents(req.body.components, function(err) {
+            if (err) {
+                console.log(err);
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                res.status(err.code).send(err);
+            } else {
+                res.sendStatus(200);
+            }
+        });
     } else if (req.body.type === 'all') {
         HardwareDefault.createAllHardware(function(err) {
             if (err) {
@@ -127,6 +188,8 @@ exports.insertHardware = function(req, res) {
                 res.sendStatus(200);
             }
         });
+    } else {
+        res.sendStatus(400);
     }
 };
 

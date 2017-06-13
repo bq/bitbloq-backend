@@ -60,6 +60,11 @@ exports.getHardware = function(hardware, next) {
 };
 
 
+exports.createBoards = function(boards, next) {
+    async.map(boards, BoardFunctions.createBoard, next);
+};
+
+
 exports.createComponents = function(components, next) {
     async.map(components, function(component, callback) {
         async.parallel([
