@@ -7,7 +7,7 @@ var HardwareFunctions = require('./hardware.functions.js'),
  * Add hardware
  * type: all -> Create all hardware
  * components: [Array] -> Create component Array
- **   example:
+ **   example (COMPONENTS):
  ** {
     "components": [{
             "data": {
@@ -37,7 +37,32 @@ var HardwareFunctions = require('./hardware.functions.js'),
                      "kits": ["bqzumbox"]
             }
         }]
-}
+    }
+
+ ** example (ROBOTS):
+ ** {
+     "robots": [{
+         "uuid": "zowi",
+         "board": "bqZUM",
+         "order": 3,
+         "family": "BQ",
+         "thirdParty": true,
+         "manufacturer": "BQ",
+         "useBoardImage": true,
+         "includedComponents": [     //list of components uuids
+             "sp",
+             "led"
+         ],
+         "width": 75,
+         "height": 86
+     }, {
+         "uuid": "evolution",
+         "board": "bqZUM",
+         "order": 2,
+         "width": 75,
+         "height": 86
+     }]
+ }
  **
  */
 exports.insertHardware = function(req, res) {
@@ -61,6 +86,8 @@ exports.insertHardware = function(req, res) {
                 res.sendStatus(200);
             }
         });
+    } else if (req.body.type === 'all') {
+
     } else if (req.body.type === 'all') {
         HardwareDefault.createAllHardware(function(err) {
             if (err) {
