@@ -1,0 +1,45 @@
+{
+    "kits": [
+        {
+            "uuid": "kitgeneric",
+            "purchaseUrl": "http://www.elecfreaks.com/estore/arduino-advanced-kit.html",
+            "boards": [ "bqZUM","FreaduinoUNO","ArduinoUNO" ],
+            "components": [
+                "led","encoder","joystick",
+                "button","RGBled","irs",
+                "sound","rtc","limitswitch",
+                "ldrs","irs2","lcd",
+                "us","buttons","pot",
+                "servo","servocont","device",
+                "buzz","sp","hts221",
+                "bt"
+            ]
+        },{
+            "uuid": "bqzumbox",
+            "purchaseUrl": "https://www.bq.com/es/zum-kit",
+            "manufacturer": "bq",
+            "boards": [ "bqZUM" ],
+            "components": [
+                "irs","button","ldrs",
+                "buzz","us","pot",
+                "led","servo","servocont"
+            ]
+        },{
+            "uuid": "elecfreakstarterkit",
+            "purchaseUrl": "http://www.elecfreaks.com/estore/arduino-starter-kit-absolute-beginner.html",
+            "manufacturer": "elecfreaks",
+            "boards": [ "FreaduinoUNO" ],
+            "components": [
+                "led","button","ldrs",
+                "buzz","encoder","servo",
+                "hts221"
+            ]
+        },{
+            "uuid": "elecfreakadvancedKit",
+            "purchaseUrl": "http://www.elecfreaks.com/estore/arduino-advanced-kit.html",
+            "manufacturer": "elecfreaks",
+            "boards": [ "FreaduinoUNO" ],
+            "components": [ "lcd","buttons","buzz" ]
+        }
+    ]
+}
