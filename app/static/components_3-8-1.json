@@ -1,5 +1,6 @@
 {
-    "components": [{
+    "components": [
+        {
             "data": {
                 "uuid": "led",
                 "manufacturer": "standard",
@@ -21,13 +22,12 @@
                             "uid": "integrated-led"
                         }
                     },
-                    "compatible": ["ArduinoUNO", "bqZUM"]
+                    "compatible": [ "ArduinoUNO","bqZUM" ]
                 },
-                "robots": ["zowi", "evolution"],
-                "kits": ["bqzumbox"]
+                "robots": [ "zowi","evolution" ],
+                "kits": [ "bqzumbox" ]
             }
         },
-
         {
             "data": {
                 "uuid": "led",
@@ -193,7 +193,6 @@
                     ]
                 }
             }
-
         },
         {
             "data": {
@@ -374,16 +373,18 @@
             "included": {
                 "boards": {
                     "integrated": {
-                        "bqZUM": [{
-                            "id": "bt",
-                            "name": "default-var-name-standard_integrated_bt",
-                            "pin": {
-                                "rx": "0",
-                                "tx": "1"
-                            },
-                            "baudRate": "19200",
-                            "uid": "bq-bqzum-bt"
-                        }]
+                        "bqZUM": [
+                            {
+                                "id": "bt",
+                                "name": "default-var-name-standard_integrated_bt",
+                                "pin": {
+                                    "rx": "0",
+                                    "tx": "1"
+                                },
+                                "baudRate": "19200",
+                                "uid": "bq-bqzum-bt"
+                            }
+                        ]
                     },
                 }
             }
@@ -408,17 +409,19 @@
             "included": {
                 "boards": {
                     "integrated": {
-                        "freakscar": [{
-                            "id": "sp",
-                            "name": "default-var-name-freakscar_sp",
-                            "pin": {
-                                "rx": 0,
-                                "tx": 1
-                            },
-                            "uid": "sp"
-                        }]
+                        "freakscar": [
+                            {
+                                "id": "sp",
+                                "name": "default-var-name-freakscar_sp",
+                                "pin": {
+                                    "rx": 0,
+                                    "tx": 1
+                                },
+                                "uid": "sp"
+                            }
+                        ]
                     },
-                    "compatible": ["mcore", "meauriga", "meorion"]
+                    "compatible": [ "mcore","meauriga","meorion" ]
                 }
             }
         },
@@ -431,7 +434,7 @@
                 "dragType": "btComponent",
                 "width": 74,
                 "height": 102,
-                "pins": {}
+                "pins": { }
             }
         },
         {
@@ -453,7 +456,7 @@
             },
             "included": {
                 "boards": {
-                    "compatible": ["mcore"]
+                    "compatible": [ "mcore" ]
                 }
             }
         },
@@ -473,9 +476,9 @@
             },
             "included": {
                 "boards": {
-                    "compatible": ["mcore", "meauriga", "meorion"]
+                    "compatible": [ "mcore","meauriga","meorion" ]
                 },
-                "robots": ["mbot", "rangerlandraider", "rangerraptor", "rangernervousbird", "startertank", "starterthreewheels"]
+                "robots": [ "mbot","rangerlandraider","rangerraptor","rangernervousbird","startertank","starterthreewheels" ]
             }
         },
         {
@@ -495,9 +498,9 @@
             },
             "included": {
                 "boards": {
-                    "compatible": ["mcore", "meauriga", "meorion"]
+                    "compatible": [ "mcore","meauriga","meorion" ]
                 },
-                "robots": ["mbot", "rangerlandraider", "rangerraptor", "rangernervousbird", "startertank", "starterthreewheels"]
+                "robots": [ "mbot","rangerlandraider","rangerraptor","rangernervousbird","startertank","starterthreewheels" ]
             }
         },
         {
@@ -517,9 +520,9 @@
             },
             "included": {
                 "boards": {
-                    "compatible": ["mcore", "meauriga", "meorion"]
+                    "compatible": [ "mcore","meauriga","meorion" ]
                 },
-                "robots": ["mbot", "rangerlandraider", "rangerraptor", "rangernervousbird"]
+                "robots": [ "mbot","rangerlandraider","rangerraptor","rangernervousbird" ]
             }
         },
         {
@@ -539,9 +542,9 @@
             },
             "included": {
                 "boards": {
-                    "compatible": ["mcore", "meauriga", "meorion"]
+                    "compatible": [ "mcore","meauriga","meorion" ]
                 },
-                "robots": ["mbot", "rangerlandraider", "rangerraptor", "rangernervousbird"]
+                "robots": [ "mbot","rangerlandraider","rangerraptor","rangernervousbird" ]
             }
         },
         {
@@ -561,9 +564,9 @@
             },
             "included": {
                 "boards": {
-                    "compatible": ["mcore", "meauriga", "meorion"]
+                    "compatible": [ "mcore","meauriga","meorion" ]
                 },
-                "robots": ["mbot", "rangerlandraider", "rangerraptor", "rangernervousbird", "startertank", "starterthreewheels"]
+                "robots": [ "mbot","rangerlandraider","rangerraptor","rangernervousbird","startertank","starterthreewheels" ]
             }
         },
         {
@@ -583,10 +586,9 @@
             },
             "included": {
                 "boards": {
-                    "compatible": ["mcore", "meauriga", "meorion"]
+                    "compatible": [ "mcore","meauriga","meorion" ]
                 }
             }
-
         },
         {
             "data": {
@@ -608,9 +610,9 @@
             },
             "included": {
                 "boards": {
-                    "compatible": ["mcore", "meauriga", "meorion"]
+                    "compatible": [ "mcore","meauriga","meorion" ]
                 },
-                "robots": ["mbot"]
+                "robots": [ "mbot" ]
             }
         },
         {
@@ -623,14 +625,13 @@
                 "width": 74,
                 "height": 124.38,
                 "wirelessConnection": true,
-                "pins": {}
+                "pins": { }
             },
-
             "included": {
                 "boards": {
-                    "compatible": ["mcore", "meauriga", "meorion"]
+                    "compatible": [ "mcore","meauriga","meorion" ]
                 },
-                "robots": ["mbot"]
+                "robots": [ "mbot" ]
             }
         },
         {
@@ -650,7 +651,7 @@
             },
             "included": {
                 "boards": {
-                    "compatible": ["mcore", "meauriga", "meorion"]
+                    "compatible": [ "mcore","meauriga","meorion" ]
                 }
             }
         },
@@ -671,11 +672,10 @@
             },
             "included": {
                 "boards": {
-                    "compatible": ["mcore", "meauriga", "meorion"]
+                    "compatible": [ "mcore","meauriga","meorion" ]
                 },
-                "robots": ["mbot", "rangerlandraider", "rangerraptor", "rangernervousbird", "startertank", "starterthreewheels"]
+                "robots": [ "mbot","rangerlandraider","rangerraptor","rangernervousbird","startertank","starterthreewheels" ]
             }
-
         },
         {
             "data": {
@@ -693,9 +693,9 @@
             },
             "included": {
                 "boards": {
-                    "compatible": ["mcore", "meauriga", "meorion"]
+                    "compatible": [ "mcore","meauriga","meorion" ]
                 },
-                "robots": ["mbot", "rangerlandraider", "rangerraptor", "rangernervousbird", "startertank", "starterthreewheels"]
+                "robots": [ "mbot","rangerlandraider","rangerraptor","rangernervousbird","startertank","starterthreewheels" ]
             }
         },
         {
@@ -716,14 +716,16 @@
             "included": {
                 "boards": {
                     "integrated": {
-                        "mcore": [{
-                            "id": "mkb_integrated_analogPinButton",
-                            "name": "default-var-name-mkb_integrated_analogPinButton",
-                            "pin": {
-                                "s": "A7"
-                            },
-                            "uid": "mkb-mcore-button"
-                        }]
+                        "mcore": [
+                            {
+                                "id": "mkb_integrated_analogPinButton",
+                                "name": "default-var-name-mkb_integrated_analogPinButton",
+                                "pin": {
+                                    "s": "A7"
+                                },
+                                "uid": "mkb-mcore-button"
+                            }
+                        ]
                     }
                 }
             }
@@ -743,37 +745,39 @@
                     ]
                 }
             },
-
             "included": {
                 "boards": {
                     "integrated": {
-                        "mcore": [{
-                            "id": "mkb_integrated_lightsensor",
-                            "name": "default-var-name-mkb_integrated_lightsensor",
-                            "pin": {
-                                "s": 0
-                            },
-                            "uid": "mkb-mcore-ldrs"
-                        }],
-                        "meauriga": [{
-                            "id": "mkb_integrated_lightsensor",
-                            "name": "default-var-name-mkb_integrated_lightsensor_1",
-                            "pin": {
-                                "s": 1
-                            },
-                            "uid": "mkb-meauriga-ldrs-1"
-                        }, {
-                            "id": "mkb_integrated_lightsensor",
-                            "name": "default-var-name-mkb_integrated_lightsensor_2",
-                            "pin": {
-                                "s": 2
-                            },
-                            "uid": "mkb-meauriga-ldrs-2"
-                        }]
+                        "mcore": [
+                            {
+                                "id": "mkb_integrated_lightsensor",
+                                "name": "default-var-name-mkb_integrated_lightsensor",
+                                "pin": {
+                                    "s": 0
+                                },
+                                "uid": "mkb-mcore-ldrs"
+                            }
+                        ],
+                        "meauriga": [
+                            {
+                                "id": "mkb_integrated_lightsensor",
+                                "name": "default-var-name-mkb_integrated_lightsensor_1",
+                                "pin": {
+                                    "s": 1
+                                },
+                                "uid": "mkb-meauriga-ldrs-1"
+                            },{
+                                "id": "mkb_integrated_lightsensor",
+                                "name": "default-var-name-mkb_integrated_lightsensor_2",
+                                "pin": {
+                                    "s": 2
+                                },
+                                "uid": "mkb-meauriga-ldrs-2"
+                            }
+                        ]
                     }
                 }
             }
-
         },
         {
             "data": {
@@ -788,26 +792,29 @@
                     ]
                 }
             },
-
             "included": {
                 "boards": {
                     "integrated": {
-                        "mcore": [{
-                            "id": "mkb_integrated_buzz",
-                            "name": "default-var-name-mkb_integrated_buzz",
-                            "pin": {
-                                "s": 8
-                            },
-                            "uid": "mkb-mcore-buzz"
-                        }],
-                        "meauriga": [{
-                            "id": "mkb_integrated_buzz",
-                            "name": "default-var-name-mkb_integrated_buzz",
-                            "pin": {
-                                "s": 45
-                            },
-                            "uid": "mkb-meauriga-buzz"
-                        }]
+                        "mcore": [
+                            {
+                                "id": "mkb_integrated_buzz",
+                                "name": "default-var-name-mkb_integrated_buzz",
+                                "pin": {
+                                    "s": 8
+                                },
+                                "uid": "mkb-mcore-buzz"
+                            }
+                        ],
+                        "meauriga": [
+                            {
+                                "id": "mkb_integrated_buzz",
+                                "name": "default-var-name-mkb_integrated_buzz",
+                                "pin": {
+                                    "s": 45
+                                },
+                                "uid": "mkb-meauriga-buzz"
+                            }
+                        ]
                     }
                 }
             }
@@ -829,124 +836,127 @@
             "included": {
                 "boards": {
                     "integrated": {
-                        "mcore": [{
-                            "id": "mkb_integrated_RGB",
-                            "name": "default-var-name-mkb_integrated_rgb_both",
-                            "pin": {
-                                "s": 0
-                            },
-                            "uid": "mkb-mcore-RGBled-0"
-                        }, {
-                            "id": "mkb_integrated_RGB",
-                            "name": "default-var-name-mkb_integrated_rgb_right",
-                            "pin": {
-                                "s": 1
-                            },
-                            "uid": "mkb-mcore-RGBled-1"
-                        }, {
-                            "id": "mkb_integrated_RGB",
-                            "name": "default-var-name-mkb_integrated_rgb_left",
-                            "pin": {
-                                "s": 2
-                            },
-                            "uid": "mkb-mcore-RGBled-2"
-                        }],
-                        "meauriga": [{
-                            "id": "mkb_integrated_RGB",
-                            "name": "default-var-name-mkb_integrated_rgb_all",
-                            "pin": {
-                                "s": 0
-                            },
-                            "uid": "mkb-meauriga-RGBled-0"
-                        }, {
-                            "id": "mkb_integrated_RGB",
-                            "name": "default-var-name-mkb_integrated_rgb_1",
-                            "pin": {
-                                "s": 1
-                            },
-                            "uid": "mkb-meauriga-RGBled-1"
-                        }, {
-                            "id": "mkb_integrated_RGB",
-                            "name": "default-var-name-mkb_integrated_rgb_2",
-                            "pin": {
-                                "s": 2
-                            },
-                            "uid": "mkb-meauriga-RGBled-2"
-                        }, {
-                            "id": "mkb_integrated_RGB",
-                            "name": "default-var-name-mkb_integrated_rgb_3",
-                            "pin": {
-                                "s": 3
-                            },
-                            "uid": "mkb-meauriga-RGBled-3"
-                        }, {
-                            "id": "mkb_integrated_RGB",
-                            "name": "default-var-name-mkb_integrated_rgb_4",
-                            "pin": {
-                                "s": 4
-                            },
-                            "uid": "mkb-meauriga-RGBled-4"
-                        }, {
-                            "id": "mkb_integrated_RGB",
-                            "name": "default-var-name-mkb_integrated_rgb_5",
-                            "pin": {
-                                "s": 5
-                            },
-                            "uid": "mkb-meauriga-RGBled-5"
-                        }, {
-                            "id": "mkb_integrated_RGB",
-                            "name": "default-var-name-mkb_integrated_rgb_6",
-                            "pin": {
-                                "s": 6
-                            },
-                            "uid": "mkb-meauriga-RGBled-6"
-                        }, {
-                            "id": "mkb_integrated_RGB",
-                            "name": "default-var-name-mkb_integrated_rgb_7",
-                            "pin": {
-                                "s": 7
-                            },
-                            "uid": "mkb-meauriga-RGBled-7"
-                        }, {
-                            "id": "mkb_integrated_RGB",
-                            "name": "default-var-name-mkb_integrated_rgb_8",
-                            "pin": {
-                                "s": 8
-                            },
-                            "uid": "mkb-meauriga-RGBled-8"
-                        }, {
-                            "id": "mkb_integrated_RGB",
-                            "name": "default-var-name-mkb_integrated_rgb_9",
-                            "pin": {
-                                "s": 9
-                            },
-                            "uid": "mkb-meauriga-RGBled-9"
-                        }, {
-                            "id": "mkb_integrated_RGB",
-                            "name": "default-var-name-mkb_integrated_rgb_10",
-                            "pin": {
-                                "s": 10
-                            },
-                            "uid": "mkb-meauriga-RGBled-10"
-                        }, {
-                            "id": "mkb_integrated_RGB",
-                            "name": "default-var-name-mkb_integrated_rgb_11",
-                            "pin": {
-                                "s": 11
-                            },
-                            "uid": "mkb-meauriga-RGBled-11"
-                        }, {
-                            "id": "mkb_integrated_RGB",
-                            "name": "default-var-name-mkb_integrated_rgb_12",
-                            "pin": {
-                                "s": 12
-                            },
-                            "uid": "mkb-meauriga-RGBled-12"
-                        }]
+                        "mcore": [
+                            {
+                                "id": "mkb_integrated_RGB",
+                                "name": "default-var-name-mkb_integrated_rgb_both",
+                                "pin": {
+                                    "s": 0
+                                },
+                                "uid": "mkb-mcore-RGBled-0"
+                            },{
+                                "id": "mkb_integrated_RGB",
+                                "name": "default-var-name-mkb_integrated_rgb_right",
+                                "pin": {
+                                    "s": 1
+                                },
+                                "uid": "mkb-mcore-RGBled-1"
+                            },{
+                                "id": "mkb_integrated_RGB",
+                                "name": "default-var-name-mkb_integrated_rgb_left",
+                                "pin": {
+                                    "s": 2
+                                },
+                                "uid": "mkb-mcore-RGBled-2"
+                            }
+                        ],
+                        "meauriga": [
+                            {
+                                "id": "mkb_integrated_RGB",
+                                "name": "default-var-name-mkb_integrated_rgb_all",
+                                "pin": {
+                                    "s": 0
+                                },
+                                "uid": "mkb-meauriga-RGBled-0"
+                            },{
+                                "id": "mkb_integrated_RGB",
+                                "name": "default-var-name-mkb_integrated_rgb_1",
+                                "pin": {
+                                    "s": 1
+                                },
+                                "uid": "mkb-meauriga-RGBled-1"
+                            },{
+                                "id": "mkb_integrated_RGB",
+                                "name": "default-var-name-mkb_integrated_rgb_2",
+                                "pin": {
+                                    "s": 2
+                                },
+                                "uid": "mkb-meauriga-RGBled-2"
+                            },{
+                                "id": "mkb_integrated_RGB",
+                                "name": "default-var-name-mkb_integrated_rgb_3",
+                                "pin": {
+                                    "s": 3
+                                },
+                                "uid": "mkb-meauriga-RGBled-3"
+                            },{
+                                "id": "mkb_integrated_RGB",
+                                "name": "default-var-name-mkb_integrated_rgb_4",
+                                "pin": {
+                                    "s": 4
+                                },
+                                "uid": "mkb-meauriga-RGBled-4"
+                            },{
+                                "id": "mkb_integrated_RGB",
+                                "name": "default-var-name-mkb_integrated_rgb_5",
+                                "pin": {
+                                    "s": 5
+                                },
+                                "uid": "mkb-meauriga-RGBled-5"
+                            },{
+                                "id": "mkb_integrated_RGB",
+                                "name": "default-var-name-mkb_integrated_rgb_6",
+                                "pin": {
+                                    "s": 6
+                                },
+                                "uid": "mkb-meauriga-RGBled-6"
+                            },{
+                                "id": "mkb_integrated_RGB",
+                                "name": "default-var-name-mkb_integrated_rgb_7",
+                                "pin": {
+                                    "s": 7
+                                },
+                                "uid": "mkb-meauriga-RGBled-7"
+                            },{
+                                "id": "mkb_integrated_RGB",
+                                "name": "default-var-name-mkb_integrated_rgb_8",
+                                "pin": {
+                                    "s": 8
+                                },
+                                "uid": "mkb-meauriga-RGBled-8"
+                            },{
+                                "id": "mkb_integrated_RGB",
+                                "name": "default-var-name-mkb_integrated_rgb_9",
+                                "pin": {
+                                    "s": 9
+                                },
+                                "uid": "mkb-meauriga-RGBled-9"
+                            },{
+                                "id": "mkb_integrated_RGB",
+                                "name": "default-var-name-mkb_integrated_rgb_10",
+                                "pin": {
+                                    "s": 10
+                                },
+                                "uid": "mkb-meauriga-RGBled-10"
+                            },{
+                                "id": "mkb_integrated_RGB",
+                                "name": "default-var-name-mkb_integrated_rgb_11",
+                                "pin": {
+                                    "s": 11
+                                },
+                                "uid": "mkb-meauriga-RGBled-11"
+                            },{
+                                "id": "mkb_integrated_RGB",
+                                "name": "default-var-name-mkb_integrated_rgb_12",
+                                "pin": {
+                                    "s": 12
+                                },
+                                "uid": "mkb-meauriga-RGBled-12"
+                            }
+                        ]
                     }
                 }
             }
-
         },
         {
             "data": {
@@ -966,12 +976,14 @@
             "included": {
                 "boards": {
                     "integrated": {
-                        "freakscar": [{
-                            "id": "freakscar_integrated_remote",
-                            "name": "default-var-name-freakscar_remote",
-                            "pin": {},
-                            "uid": "freakscar-remote"
-                        }]
+                        "freakscar": [
+                            {
+                                "id": "freakscar_integrated_remote",
+                                "name": "default-var-name-freakscar_remote",
+                                "pin": { },
+                                "uid": "freakscar-remote"
+                            }
+                        ]
                     }
                 }
             }
@@ -994,21 +1006,22 @@
             "included": {
                 "boards": {
                     "integrated": {
-                        "freakscar": [{
-                            "id": "freakscar_integrated_lightsensor",
-                            "name": "default-var-name-freakscar_integrated_lightsensor_1",
-                            "pin": {},
-                            "uid": "freakscar_integrated-ldrs-1"
-                        }, {
-                            "id": "freakscar_integrated_lightsensor",
-                            "name": "default-var-name-freakscar_integrated_lightsensor_2",
-                            "pin": {},
-                            "uid": "freakscar_integrated-ldrs-2"
-                        }]
+                        "freakscar": [
+                            {
+                                "id": "freakscar_integrated_lightsensor",
+                                "name": "default-var-name-freakscar_integrated_lightsensor_1",
+                                "pin": { },
+                                "uid": "freakscar_integrated-ldrs-1"
+                            },{
+                                "id": "freakscar_integrated_lightsensor",
+                                "name": "default-var-name-freakscar_integrated_lightsensor_2",
+                                "pin": { },
+                                "uid": "freakscar_integrated-ldrs-2"
+                            }
+                        ]
                     }
                 }
             }
         }
-
     ]
 }
