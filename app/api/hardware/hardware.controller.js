@@ -121,13 +121,13 @@ var HardwareFunctions = require('./hardware.functions.js'),
             },
             "included": {
                     "boards": {
-                    	"integrated":{
+                    	"integrated":[{
                     		"FreaduinoUNO": {
                                 "id": "led",
                                 "name": "default-var-name-mkb_integrated_led",
                                 "uid": "integrated-led"
                             }
-                    	},
+                    	}],
 						"compatible":["ArduinoUNO", "bqZUM"]
                     },
                      "robots": ["zowi", "evolution"],
@@ -146,7 +146,7 @@ exports.insertHardware = function(req, res) {
                 next();
             }
         },
-        function(boards, next) {
+        function(next) {
             if (req.body.robots) {
                 HardwareFunctions.createRobots(req.body.robots, next);
             } else {

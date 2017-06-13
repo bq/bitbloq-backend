@@ -62,7 +62,7 @@ exports.integratedInBoard = function(integratedBoards, next) {
                 next(err);
             } else if (boards.length > 0) {
                 boards.forEach(function(board) {
-                    board.integratedComponents.push(integratedBoards[board.uuid]);
+                    board.integratedComponents = _.concat(board.integratedComponents, integratedBoards[board.uuid]);
                     board.integratedComponents = _.uniqBy(board.integratedComponents, 'uid');
                     board.save(next);
                 });
