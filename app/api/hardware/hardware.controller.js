@@ -64,6 +64,27 @@ var HardwareFunctions = require('./hardware.functions.js'),
      }]
  }
  **
+ *
+ *  ** example (KITS):
+ ** {
+	"kits": [{
+            "uuid": "kitgeneric",
+            "purchaseUrl": "http://www.elecfreaks.com/estore/arduino-advanced-kit.html",
+            "boards": ["bqZUM", "FreaduinoUNO", "ArduinoUNO"],
+            "components": ["led", "encoder", "joystick",
+                "button", "RGBled", "irs", "sound", "rtc", "limitswitch",
+                "ldrs", "irs2", "lcd", "us", "buttons", "pot", "servo",
+                "servocont", "device", "buzz", "sp", "hts221", "bt"]
+        }, {
+            "uuid": "bqzumbox",
+            "purchaseUrl": "https://www.bq.com/es/zum-kit",
+            "manufacturer": "bq",
+            "boards": ["bqZUM"],
+            "components": ["irs", "button", "ldrs", "buzz", "us", "pot",
+                "led", "servo", "servocont"]
+        }]
+}
+ **
  */
 exports.insertHardware = function(req, res) {
     if (req.body.components) {
@@ -86,8 +107,16 @@ exports.insertHardware = function(req, res) {
                 res.sendStatus(200);
             }
         });
-    } else if (req.body.type === 'all') {
-
+    } else if (req.body.kits) {
+        HardwareFunctions.createKits(req.body.kits, function(err) {
+            if (err) {
+                console.log(err);
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                res.status(err.code).send(err);
+            } else {
+                res.sendStatus(200);
+            }
+        });
     } else if (req.body.type === 'all') {
         HardwareDefault.createAllHardware(function(err) {
             if (err) {

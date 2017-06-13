@@ -35,6 +35,24 @@ exports.getBoardsInArray = function(arrayId, next) {
 };
 
 
+exports.getBoardIdsByUuids = function(uuids, next) {
+    if (uuids.length > 0) {
+        Board.find({})
+            .where('uuid').in(uuids)
+            .select('_id')
+            .exec(function(err, boards) {
+                if (boards.length > 0) {
+                    next(err, _.map(boards, '_id'));
+                } else {
+                    next(err, []);
+                }
+            });
+    } else {
+        next(null, []);
+    }
+};
+
+
 exports.integratedInBoard = function(integratedBoards, next) {
     var integratedBoardsUuids = _.keys(integratedBoards);
     Board.find({})

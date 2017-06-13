@@ -34,3 +34,16 @@ exports.includedInKits = function(component, kitUuids, next) {
             });
     });
 };
+
+exports.createKit = function(newKit, next) {
+    Kit.findOne({uuid: newKit.uuid}, function(err, kit) {
+        if (err) {
+            next(err);
+        } else if (kit) {
+            _.extend(kit, newKit);
+            kit.save(next);
+        } else {
+            Kit.create(newKit, next);
+        }
+    });
+};

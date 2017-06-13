@@ -121,3 +121,43 @@ exports.createRobots = function(robots, next) {
         ], callback);
     }, next);
 };
+
+
+exports.createKits = function(kits, next) {
+    async.map(kits, function(kit, callback) {
+        async.waterfall([
+            function(callback) {
+                async.parallel([
+                    function(callback) {
+                        if (kit.components) {
+                            ComponentFunctions.getComponentIdsByUuids(kit.components, callback)
+                        } else {
+                            next(null, []);
+                        }
+                    },
+                    function(callback) {
+                        if (kit.boards) {
+                            BoardFunctions.getBoardIdsByUuids(kit.boards, callback)
+                        } else {
+                            next(null, []);
+                        }
+                    }
+                ], callback);
+
+            },
+            function(ids, callback) {
+                if (ids[0].length > 0) {
+                    kit.components = ids[0];
+                } else {
+                    delete kit.components;
+                }
+                if (ids[1].length > 0) {
+                    kit.boards = ids[1];
+                } else {
+                    delete kit.boards;
+                }
+                KitFunctions.createKit(kit, callback);
+            }
+        ], callback);
+    }, next);
+};
