@@ -438,7 +438,7 @@
                 "category": "display7seg",
                 "manufacturer": "makeblock",
                 "width": 84.5,
-                "height": 128,
+                "height": 155.22,
                 "dataReturnType": "float",
                 "pins": {
                     "blue": [
