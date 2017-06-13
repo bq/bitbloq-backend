@@ -12,34 +12,6 @@
                         "s"
                     ]
                 }
-            },
-            "included": {
-                "boards": {
-                    "integrated": {
-                        "FreaduinoUNO": {
-                            "id": "led",
-                            "name": "default-var-name-mkb_integrated_led",
-                            "uid": "integrated-led"
-                        }
-                    },
-                    "compatible": [ "ArduinoUNO","bqZUM" ]
-                },
-                "robots": [ "zowi","evolution" ],
-                "kits": [ "bqzumbox" ]
-            }
-        },
-        {
-            "data": {
-                "uuid": "led",
-                "manufacturer": "standard",
-                "category": "leds",
-                "width": 55,
-                "height": 83,
-                "pins": {
-                    "digital": [
-                        "s"
-                    ]
-                }
             }
         },
         {
