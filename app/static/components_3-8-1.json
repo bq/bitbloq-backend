@@ -566,7 +566,7 @@
         },
         "included": {
             "boards": {
-                "compatible": ["mcore", "meauriga", "meorion"]
+                "compatible": ["mcore"]
             },
             "robots": ["mbot"]
         }
