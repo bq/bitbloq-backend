@@ -420,7 +420,7 @@
         },
         "included": {
             "boards": {
-                "compatible": ["mcore"]
+                "compatible": ["mcore", "meauriga", "meorion"]
             },
             "robots": ["mbot"]
         }
@@ -548,7 +548,7 @@
         },
         "included": {
             "boards": {
-                "compatible": ["mcore"]
+                "compatible": ["mcore", "meauriga", "meorion"]
             },
             "robots": ["mbot"]
         }
