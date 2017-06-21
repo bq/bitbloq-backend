@@ -1,0 +1,83 @@
+{
+    "robots": [
+        {
+            "uuid": "zowi",
+            "board": "ArduinoUNO",
+            "order": 1,
+            "width": 75,
+            "height": 86
+        },{
+            "uuid": "evolution",
+            "board": "bqZUM",
+            "order": 2,
+            "width": 75,
+            "height": 86
+        },{
+            "uuid": "mbot",
+            "board": "mcore",
+            "order": 3,
+            "family": "mBot",
+            "thirdParty": true,
+            "manufacturer": "makeblock",
+            "useBoardImage": true,
+            "width": 75,
+            "height": 86
+        },{
+            "uuid": "rangerlandraider",
+            "board": "meauriga",
+            "order": 4,
+            "family": "mRanger",
+            "thirdParty": true,
+            "useBoardImage": true,
+            "manufacturer": "makeblock",
+            "width": 75,
+            "height": 86
+        },{
+            "uuid": "rangerraptor",
+            "board": "meauriga",
+            "order": 5,
+            "family": "mRanger",
+            "thirdParty": true,
+            "useBoardImage": true,
+            "manufacturer": "makeblock",
+            "width": 75,
+            "height": 86
+        },{
+            "uuid": "rangernervousbird",
+            "board": "meauriga",
+            "order": 6,
+            "family": "mRanger",
+            "thirdParty": true,
+            "useBoardImage": true,
+            "manufacturer": "makeblock",
+            "width": 75,
+            "height": 86
+        },{
+            "uuid": "startertank",
+            "board": "meorion",
+            "order": 7,
+            "family": "starterKit",
+            "thirdParty": true,
+            "useBoardImage": true,
+            "manufacturer": "makeblock",
+            "width": 75,
+            "height": 86
+        },{
+            "uuid": "starterthreewheels",
+            "family": "starterKit",
+            "order": 8,
+            "thirdParty": true,
+            "board": "meorion",
+            "useBoardImage": true,
+            "manufacturer": "makeblock",
+            "width": 75,
+            "height": 86
+        },{
+            "uuid": "freakscar",
+            "board": "freakscar",
+            "order": 9,
+            "width": 75,
+            "height": 86
+        }
+    ]
+}

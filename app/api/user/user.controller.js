@@ -59,7 +59,7 @@ exports.create = function(req, res) {
                         sendEmailTutorAuthorization(user, function(err) {
                             if (err) {
                                 console.log(err);
-                                err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                                 res.status(err.code).send(err);
                             } else {
                                 var tokenObject = generateToken(user);
@@ -124,7 +124,7 @@ exports.authorizeUser = function(req, res) {
     ], function(err) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
@@ -152,7 +152,7 @@ exports.getUser = function(req, res) {
     ], function(err, user) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             res.status(200).send(user);
@@ -359,7 +359,7 @@ exports.socialLogin = function(req, res) {
     findUserBySocialNetwork(provider, token, function(err, user) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             if (user) {
@@ -392,7 +392,7 @@ exports.socialLogin = function(req, res) {
                         searchSocialByEmail(user, function(err, localUser) {
                             if (err) {
                                 console.log(err);
-                                err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                                 res.status(err.code).send(err);
                             } else {
                                 if (!localUser) {
@@ -433,7 +433,7 @@ exports.socialLogin = function(req, res) {
                                                     sendEmailTutorAuthorization(user, function(err) {
                                                         if (err) {
                                                             console.log(err);
-                                                            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                                                            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                                                             res.status(err.code).send(err);
                                                         } else {
                                                             var tokenObject = generateToken(user);
@@ -464,7 +464,7 @@ exports.socialLogin = function(req, res) {
                                     updateWithSocialNetwork(provider, localUser._id, user, function(err) {
                                         if (err) {
                                             console.log(err);
-                                            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                                            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                                             res.status(err.code).send(err);
                                         } else {
                                             var tokenObject = generateToken(localUser);
@@ -493,7 +493,7 @@ exports.checkEmailExists = function(req, res) {
     }, function(err, user) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else if (user) {
             res.status(200).set({
@@ -518,7 +518,7 @@ exports.checkUsernameExists = function(req, res) {
     }, function(err, user) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else if (user) {
             res.status(200).set({
@@ -542,7 +542,7 @@ exports.show = function(req, res) {
     UserFunctions.getUserProfile(userId, function(err, userProfile) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             if (userProfile) {
@@ -564,7 +564,7 @@ exports.destroy = function(req, res) {
     User.findById(req.params.id, function(err) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             res.sendStatus(204);
@@ -668,7 +668,7 @@ exports.changePasswordAuthenticated = function(req, res) {
     ], function(err, result) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else if (!result) {
             res.sendStatus(304);
@@ -713,7 +713,7 @@ exports.me = function(req, res) {
     ], function(err, result) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             res.status(200).json(result);
@@ -739,7 +739,7 @@ exports.updateMe = function(req, res) {
     ], function(err, user) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             if (!user) {
@@ -822,7 +822,7 @@ exports.emailToken = function(req, res) {
             mailer.sendOne('resetPassword', locals, function(err) {
                 if (err) {
                     console.log(err);
-                    err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                    err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                     res.status(err.code).send(err);
                 } else {
                     res.sendStatus(200);
@@ -830,7 +830,7 @@ exports.emailToken = function(req, res) {
             });
         } else {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         }
     });
@@ -844,7 +844,7 @@ exports.banUserInForum = function(req, res) {
     User.findById(userId, function(err, user) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             if (user) {
@@ -854,7 +854,7 @@ exports.banUserInForum = function(req, res) {
                 }, function(err, user) {
                     if (err) {
                         console.log(err);
-                        err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                        err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                         res.status(err.code).send(err);
                     } else {
                         res.status(200).json(user.owner);
@@ -876,7 +876,7 @@ exports.unbanUserInForum = function(req, res) {
     User.findById(userId, function(err, user) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             if (user) {
@@ -886,7 +886,7 @@ exports.unbanUserInForum = function(req, res) {
                 }, function(err, user) {
                     if (err) {
                         console.log(err);
-                        err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                        err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                         res.status(err.code).send(err);
                     } else {
                         res.status(200).json(user.owner);
@@ -920,7 +920,7 @@ exports.showBannedUsers = function(req, res) {
         .exec(function(err, users) {
             if (err) {
                 console.log(err);
-                err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                 res.status(err.code).send(err);
             } else {
                 res.status(200).json(users);
@@ -962,7 +962,7 @@ exports.createAll = function(req, res) {
             if (err) {
                 numRequestsKO++;
                 console.log(err);
-                err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                 res.status(err.code).send(err);
             } else {
                 numRequestsOK++;
@@ -979,7 +979,7 @@ exports.deleteAll = function(req, res) {
         .exec(function(err, users) {
             if (err) {
                 console.log(err);
-                err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                 res.status(err.code).send(err);
             } else {
                 async.map(users, function(user, callBack) {
@@ -997,7 +997,7 @@ exports.addHardware = function(req, res) {
     User.findById(userId, function(err, user) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             if (user) {
@@ -1006,13 +1006,13 @@ exports.addHardware = function(req, res) {
                 user.update(userToUpdate, function(err) {
                     if (err) {
                         console.log(err);
-                        err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                        err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                         res.status(err.code).send(err);
                     } else {
                         HardwareFunctions.getHardware(userToUpdate.hardware, function(err, userHardware) {
                             if (err) {
                                 console.log(err);
-                                err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                                 res.status(err.code).send(err);
                             } else {
                                 res.status(200).json(userHardware);

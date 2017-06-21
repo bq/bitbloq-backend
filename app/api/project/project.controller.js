@@ -7,7 +7,7 @@ var Project = require('./project.model.js'),
     async = require('async'),
     config = require('../../res/config.js'),
     mailer = require('../../components/mailer'),
-    ObjectID = require('mongoose').Types.ObjectId,
+    ObjectId = require('mongoose').Types.ObjectId,
     _ = require('lodash');
 
 var maxPerPage = 20;
@@ -30,7 +30,7 @@ function getCountPublic(res, query) {
     Project.count(query, function(err, counter) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             res.status(200).json({
@@ -81,7 +81,7 @@ function getSearch(res, params) {
         .exec(function(err, projects) {
             if (err) {
                 console.log(err);
-                err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                 res.status(err.code).send(err);
             } else {
                 res.status(200).json(projects);
@@ -95,7 +95,7 @@ function updateProjectAndReturn(res, project) {
         .exec(function(err, completedProject) {
             if (err) {
                 console.log(err);
-                err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                 res.status(err.code).send(err);
             } else {
                 res.status(200).json(completedProject);
@@ -138,7 +138,7 @@ exports.create = function(req, res) {
     newProject.save(function(err, project) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             res.status(200).json(project.id);
@@ -157,7 +157,7 @@ exports.download = function(req, res) {
                 project.update(project, function(err) {
                     if (err) {
                         console.log(err);
-                        err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                        err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                         res.status(err.code).send(err);
                     } else {
                         res.status(200).json(project);
@@ -173,13 +173,132 @@ exports.download = function(req, res) {
 };
 
 /**
+ * Restore a project
+ */
+exports.restore = function(req, res) {
+    if (req.user) {
+        async.waterfall([
+            function(next) {
+                Project.aggregate([
+                    {
+                        $match: {
+                            _id: ObjectId(req.params.id)
+                        }
+                    }
+                ], next);
+            },
+            function(project, next) {
+                if (project[0] && project[0]._acl['user:' + req.user._id] && project[0]._acl['user:' + req.user._id].permission === 'ADMIN') {
+                    Project.update({_id: req.params.id}, {$set: {deleted: false}}, next);
+                } else {
+                    next({
+                        code: 401,
+                        message: 'Unauthorized'
+                    });
+                }
+            }], function(err) {
+            if (err) {
+                console.log(err);
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                res.status(err.code).send(err);
+            } else {
+                res.sendStatus(200);
+            }
+        });
+    } else {
+        res.sendStatus(401);
+    }
+
+};
+
+/**
+ * Get trash projects
+ */
+exports.getTrash = function(req, res) {
+    var userId = req.user._id,
+        page = req.query.page || 0,
+        perPage = (req.query.pageSize && (req.query.pageSize <= maxPerPage)) ? req.query.pageSize : maxPerPage,
+        defaultSortFilter = {
+            updatedAt: -1
+
+        },
+        sortFilter = req.query.sort ? JSON.parse(req.query.sort) : defaultSortFilter;
+
+    var query = {
+        'deleted': true
+    };
+    query['_acl.user:' + userId + '.permission'] = 'ADMIN';
+    _.extend(query, JSON.parse(req.query.query));
+
+    if (req.query.count === '*') {
+        Project.aggregate([
+                {
+                    $match: query
+                },
+                {
+                    $group: {
+                        _id: null,
+                        count: {$sum: 1}
+                    }
+                }
+            ],
+            function(err, counter) {
+                if (err) {
+                    console.log(err);
+                    err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                    res.status(err.code).send(err);
+                } else {
+                    res.status(200).json({'count': counter.length !== 0 ? counter[0].count : 0});
+                }
+            });
+    } else {
+        Project.aggregate([
+                {
+                    $match: query
+                },
+                // Sorting pipeline
+                {
+                    $sort: sortFilter
+                },
+                // Optionally limit results
+                {
+                    $skip: parseInt(perPage * page)
+                },
+                {
+                    $limit: parseInt(perPage)
+                },
+                // Select
+                {
+                    $project: {
+                        _id: 1,
+                        name: 1,
+                        creator: 1,
+                        timesViewed: 1,
+                        timesAdded: 1,
+                        codeProject: 1
+                    }
+                }
+            ],
+            function(err, projects) {
+                if (err) {
+                    console.log(err);
+                    err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                    res.status(err.code).send(err);
+                } else {
+                    res.status(200).json(projects);
+                }
+            });
+    }
+};
+
+/**
  * Get a single project
  */
 exports.show = function(req, res) {
     var query;
-    if (ObjectID.isValid(req.params.id)) {
+    if (ObjectId.isValid(req.params.id)) {
         query = {
-            _id: new ObjectID(req.params.id)
+            _id: new ObjectId(req.params.id)
         };
     } else {
         query = {
@@ -191,7 +310,7 @@ exports.show = function(req, res) {
         .exec(function(err, project) {
             if (err) {
                 console.log(err);
-                err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                 res.status(err.code).send(err);
             } else if (!project) {
                 res.sendStatus(404);
@@ -209,7 +328,7 @@ exports.getPublished = function(req, res) {
         completeQuery(req.query, function(err, query) {
             if (err) {
                 console.log(err);
-                err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                 res.status(err.code).send(err);
             } else {
                 if (req.query.count === '*') {
@@ -232,21 +351,37 @@ exports.me = function(req, res) {
     var userId = req.user._id,
         query = {},
         page = req.query.page || 0,
-        pageSize = req.query.pageSize || perPage;
+        pageSize = req.query.pageSize || maxPerPage,
+        sortParams = {};
     query['_acl.user:' + userId + '.permission'] = 'ADMIN';
+
+    if (req.query.query) {
+        utils.extend(query, JSON.parse(req.query.query));
+    }
+
+    if (req.query.updatedAt) {
+        sortParams.updatedAt = req.query.updatedAt;
+    }
+
+    if (req.query.name) {
+        sortParams.name = req.query.name;
+    }
+
     Project.find(query)
         .limit(parseInt(pageSize))
         .skip(parseInt(pageSize * page))
-        .sort({
-            name: 'asc'
-        })
+        .sort(sortParams)
         .exec(function(err, projects) {
             if (err) {
                 console.log(err);
-                err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                 res.status(err.code).send(err);
             } else {
-                res.status(200).json(projects);
+                if (req.query.count === '*') {
+                    getCountPublic(res, query);
+                } else {
+                    res.status(200).json(projects);
+                }
             }
         });
 };
@@ -258,23 +393,38 @@ exports.sharedWithMe = function(req, res) {
     var userId = req.user._id,
         query = {},
         page = req.query.page || 0,
-        pageSize = req.query.pageSize || perPage;
+        pageSize = req.query.pageSize || maxPerPage,
+        sortParams = {};
     query['_acl.user:' + userId + '.permission'] = 'READ';
+
+    if (req.query.query) {
+        utils.extend(query, JSON.parse(req.query.query));
+    }
+
+    if (req.query.updatedAt) {
+        sortParams.updatedAt = req.query.updatedAt;
+    }
+
+    if (req.query.name) {
+        sortParams.name = req.query.name;
+    }
 
     Project.find(query)
         .limit(parseInt(pageSize))
         .skip(parseInt(pageSize * page))
-        .sort({
-            name: 'asc'
-        })
+        .sort(sortParams)
         .populate('creator', 'username')
         .exec(function(err, projects) {
             if (err) {
                 console.log(err);
-                err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                 res.status(err.code).send(err);
             } else {
-                res.status(200).json(projects);
+                if (req.query.count === '*') {
+                    getCountPublic(res, query);
+                } else {
+                    res.status(200).json(projects);
+                }
             }
         });
 };
@@ -287,7 +437,7 @@ exports.update = function(req, res) {
     Project.findById(projectId, function(err, project) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             if (project && project.isOwner(req.user._id)) {
@@ -297,7 +447,7 @@ exports.update = function(req, res) {
                     project.save(function(err) {
                         if (err) {
                             console.log(err);
-                            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                             res.status(err.code).send(err);
                         } else {
                             res.sendStatus(200);
@@ -322,7 +472,7 @@ exports.publish = function(req, res) {
     Project.findById(projectId, function(err, project) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             if (project.isOwner(userId)) {
@@ -335,7 +485,6 @@ exports.publish = function(req, res) {
                     }
                 }, function(err) {
                     if (err) {
-
                         console.log(err);
                         res.sendStatus(err.code).send(err);
                     } else {
@@ -358,7 +507,7 @@ exports.private = function(req, res) {
     Project.findById(projectId, function(err, project) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             if (project.isOwner(userId)) {
@@ -369,7 +518,7 @@ exports.private = function(req, res) {
                 }, function(err) {
                     if (err) {
                         console.log(err);
-                        err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                        err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                         res.status(err.code).send(err);
                     } else {
                         res.sendStatus(200);
@@ -396,7 +545,7 @@ exports.share = function(req, res) {
     Project.findById(projectId, function(err, project) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err)
         } else {
             if (project.isOwner(userId)) {
@@ -428,7 +577,7 @@ exports.share = function(req, res) {
                                     mailer.sendOne('shareProject', locals, function(err) {
                                         if (err) {
                                             console.log(err);
-                                            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                                            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                                             res.status(err.code).send(err);
                                         } else {
                                             res.status(200);
@@ -445,14 +594,14 @@ exports.share = function(req, res) {
                     function(err) {
                         if (err) {
                             console.log(err);
-                            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                             res.status(err.code).send(err);
                         } else {
                             response.project = project;
                             Project.findByIdAndUpdate(projectId, project, function(err) {
                                 if (err) {
                                     console.log(err);
-                                    err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                                    err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                                     res.status(err.code).send(err);
                                 } else {
                                     res.status(200).json(response);
@@ -510,7 +659,7 @@ exports.clone = function(req, res) {
     ], function(err, newProject) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err)
         } else {
             res.status(200).json(newProject._id);
@@ -547,12 +696,53 @@ exports.destroy = function(req, res) {
     ], function(err) {
         if (err) {
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             res.status(204).end();
         }
     });
+};
+
+/**
+ * Deletes a Project permanently
+ */
+exports.destroyPermanent = function(req, res) {
+    if (req.user) {
+        var userId = req.user._id,
+            projectId = req.params.id;
+        async.waterfall([
+            function(next) {
+                Project.aggregate([
+                    {
+                        $match: {
+                            _id: ObjectId(projectId)
+                        }
+                    }
+                ], next);
+            },
+            function(project, next) {
+                if (project[0]._acl['user:' + userId] && project[0]._acl['user:' + userId].permission === 'ADMIN') {
+                    //todo delete image
+                    Project.remove({_id: projectId}, next);
+                } else {
+                    next({
+                        code: 401,
+                        message: 'Unauthorized'
+                    });
+                }
+            }], function(err) {
+            if (err) {
+                console.log(err);
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                res.status(err.code).send(err);
+            } else {
+                res.sendStatus(200);
+            }
+        });
+    } else {
+        res.sendStatus(401);
+    }
 };
 
 /**
@@ -592,7 +782,7 @@ exports.createAll = function(req, res) {
         if (err) {
             numRequestsKO++;
             console.log(err);
-            err.code = (err.code && err.code.match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
             res.status(err.code).send(err);
         } else {
             numRequestsOK++;
