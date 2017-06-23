@@ -137,6 +137,10 @@ var UserSchema = new mongoose.Schema({
         hasCenterModeEnabled: {
             type: Boolean,
             default: false
+        },
+        hasImportProjectsEnabled: {
+            type: Boolean,
+            default: false
         }
     },
     deleted: Boolean
@@ -206,7 +210,8 @@ UserSchema
                 'components': this.hardware.components
             },
             'properties': {
-                'hasCenterModeEnabled': this.properties.hasCenterModeEnabled
+                'hasCenterModeEnabled': this.properties.hasCenterModeEnabled,
+                'hasImportProjectsEnabled': this.properties.hasImportProjectsEnabled
             }
         };
     });
