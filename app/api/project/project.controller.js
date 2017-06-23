@@ -18,7 +18,7 @@ function clearProject(project) {
     delete project.timesAdded;
     delete project._acl;
     delete project.__v;
-    if (project.hardware.components) {
+    if (project.hardware && project.hardware.components) {
         for (var i = 0; i < project.hardware.components.length; i++) {
             delete project.hardware.components[i].$$hashKey;
         }
@@ -132,20 +132,60 @@ function returnProject(req, res, project) {
  * Create a new project
  */
 exports.create = function(req, res) {
-    var projectObject = clearProject(req.body);
-    projectObject.creator = req.user._id;
-    var newProject = new Project(projectObject);
-    newProject.save(function(err, project) {
-        if (err) {
-            console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
-            res.status(err.code).send(err);
-        } else {
-            res.status(200).json(project.id);
-        }
-    });
+    var response = {
+        saved: [],
+        notSaved: []
+    };
+    if (req.body.length > 0) {
+        async.map(req.body, function(project, callback) {
+            createOne(project, req.user._id, function(err, project) {
+                if (err) {
+                    console.log('err');
+                    console.log(err);
+                    callback(null, _.extend(project, {
+                        'notSaved': true
+                    }));
+                } else {
+                    callback(null, project);
+                }
+            });
+        }, function(err, projects) {
+            if (err) {
+                console.log(err);
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                res.status(err.code).send(err);
+            } else {
+                _.forEach(projects, function(project) {
+                    if (project.notSaved) {
+                        response.notSaved.push(project);
+                    } else {
+                        response.saved.push(project);
+                    }
+                });
+                res.status(200).send(response);
+            }
+
+        });
+    } else {
+        createOne(req.body, req.user._id, function(err, project) {
+            if (err) {
+                console.log(err);
+                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                res.status(err.code).send(err);
+            } else {
+                res.status(200).json(project.id);
+            }
+        });
+    }
+
 };
 
+function createOne(project, userId, next) {
+    var projectObject = clearProject(project);
+    projectObject.creator = userId;
+    var newProject = new Project(projectObject);
+    newProject.save(next);
+}
 /**
  * Download a project (download times are incremented
  */
@@ -179,24 +219,29 @@ exports.restore = function(req, res) {
     if (req.user) {
         async.waterfall([
             function(next) {
-                Project.aggregate([
-                    {
-                        $match: {
-                            _id: ObjectId(req.params.id)
-                        }
+                Project.aggregate([{
+                    $match: {
+                        _id: ObjectId(req.params.id)
                     }
-                ], next);
+                }], next);
             },
             function(project, next) {
                 if (project[0] && project[0]._acl['user:' + req.user._id] && project[0]._acl['user:' + req.user._id].permission === 'ADMIN') {
-                    Project.update({_id: req.params.id}, {$set: {deleted: false}}, next);
+                    Project.update({
+                        _id: req.params.id
+                    }, {
+                        $set: {
+                            deleted: false
+                        }
+                    }, next);
                 } else {
                     next({
                         code: 401,
                         message: 'Unauthorized'
                     });
                 }
-            }], function(err) {
+            }
+        ], function(err) {
             if (err) {
                 console.log(err);
                 err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
@@ -231,14 +276,15 @@ exports.getTrash = function(req, res) {
     _.extend(query, JSON.parse(req.query.query));
 
     if (req.query.count === '*') {
-        Project.aggregate([
-                {
+        Project.aggregate([{
                     $match: query
                 },
                 {
                     $group: {
                         _id: null,
-                        count: {$sum: 1}
+                        count: {
+                            $sum: 1
+                        }
                     }
                 }
             ],
@@ -248,12 +294,13 @@ exports.getTrash = function(req, res) {
                     err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
                     res.status(err.code).send(err);
                 } else {
-                    res.status(200).json({'count': counter.length !== 0 ? counter[0].count : 0});
+                    res.status(200).json({
+                        'count': counter.length !== 0 ? counter[0].count : 0
+                    });
                 }
             });
     } else {
-        Project.aggregate([
-                {
+        Project.aggregate([{
                     $match: query
                 },
                 // Sorting pipeline
@@ -712,25 +759,26 @@ exports.destroyPermanent = function(req, res) {
             projectId = req.params.id;
         async.waterfall([
             function(next) {
-                Project.aggregate([
-                    {
-                        $match: {
-                            _id: ObjectId(projectId)
-                        }
+                Project.aggregate([{
+                    $match: {
+                        _id: ObjectId(projectId)
                     }
-                ], next);
+                }], next);
             },
             function(project, next) {
                 if (project[0]._acl['user:' + userId] && project[0]._acl['user:' + userId].permission === 'ADMIN') {
                     //todo delete image
-                    Project.remove({_id: projectId}, next);
+                    Project.remove({
+                        _id: projectId
+                    }, next);
                 } else {
                     next({
                         code: 401,
                         message: 'Unauthorized'
                     });
                 }
-            }], function(err) {
+            }
+        ], function(err) {
             if (err) {
                 console.log(err);
                 err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;

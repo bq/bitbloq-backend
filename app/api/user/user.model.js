@@ -133,7 +133,12 @@ var UserSchema = new mongoose.Schema({
             ref: 'hardware-component'
         }]
     },
-    properties: {},
+    properties: {
+        hasImportProjectsEnabled: {
+            type: Boolean,
+            default: false
+        }
+    },
     deleted: Boolean
 }, {
     timestamps: true
@@ -201,6 +206,7 @@ UserSchema
                 'components': this.hardware.components
             },
             'properties': {
+                'hasImportProjectsEnabled': this.properties.hasImportProjectsEnabled
             }
         };
     });
