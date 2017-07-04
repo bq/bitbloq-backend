@@ -273,8 +273,7 @@ exports.getTrash = function(req, res) {
                         _id: 1,
                         name: 1,
                         creator: 1,
-                        timesViewed: 1,
-                        timesAdded: 1,
+                        updatedAt: 1,
                         codeProject: 1
                     }
                 }
