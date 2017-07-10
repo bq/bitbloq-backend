@@ -31,3 +31,18 @@ exports.isEmpty = function(obj) {
     }
     return JSON.stringify(obj) === JSON.stringify({});
 };
+
+/**
+ * Return a valid http error code from the error
+ * @param  {Object}  err
+ * @return {Number} errorCode
+ */
+exports.getValidErrorCode = function(err) {
+    var errorCode;
+    if (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) {
+        errorCode = parseInt(err.code);
+    } else {
+        errorCode = 500;
+    }
+    return errorCode;
+};
