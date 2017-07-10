@@ -200,7 +200,7 @@ exports.download = function(req, res) {
                         project.update(project, function(err) {
                             if (err) {
                                 console.log(err);
-                                err.code = utils.getValidErrorCode(err);
+                                err.code = utils.getValidHttpErrorCode(err);
                                 res.status(err.code).send(err);
                             } else {
                                 res.status(200).json(project);
@@ -774,22 +774,28 @@ exports.destroyPermanent = function(req, res) {
                 }], next);
             },
             function(project, next) {
-                if (project[0]._acl['user:' + userId] && project[0]._acl['user:' + userId].permission === 'ADMIN') {
-                    //todo delete image
-                    Project.remove({
-                        _id: projectId
-                    }, next);
+                if (project && (project.length > 0)) {
+                    if (project[0]._acl['user:' + userId] && project[0]._acl['user:' + userId].permission === 'ADMIN') {
+                        //todo delete image
+                        Project.remove({
+                            _id: projectId
+                        }, next);
+                    } else {
+                        next({
+                            code: 401,
+                            message: 'Unauthorized'
+                        });
+                    }
                 } else {
                     next({
-                        code: 401,
-                        message: 'Unauthorized'
+                        code: 404
                     });
                 }
             }
         ], function(err) {
             if (err) {
                 console.log(err);
-                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                err.code = utils.getValidHttpErrorCode(err);
                 res.status(err.code).send(err);
             } else {
                 res.sendStatus(200);

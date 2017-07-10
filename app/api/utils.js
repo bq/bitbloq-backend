@@ -37,7 +37,7 @@ exports.isEmpty = function(obj) {
  * @param  {Object}  err
  * @return {Number} errorCode
  */
-exports.getValidErrorCode = function(err) {
+exports.getValidHttpErrorCode = function(err) {
     var errorCode;
     if (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) {
         errorCode = parseInt(err.code);
