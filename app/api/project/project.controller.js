@@ -192,8 +192,6 @@ function createOne(project, userId, next) {
  */
 exports.download = function(req, res) {
     Project.findById(req.params.id, function(err, project) {
-        console.log('download');
-        console.log(err, project);
         if (!err) {
             if (project) {
                 if (req.user || project._acl.ALL) {
