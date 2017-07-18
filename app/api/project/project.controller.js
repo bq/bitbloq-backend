@@ -192,23 +192,33 @@ function createOne(project, userId, next) {
  */
 exports.download = function(req, res) {
     Project.findById(req.params.id, function(err, project) {
-        if (req.user || project._acl.ALL) {
-            if (req.user && !project._acl['user:' + req.user._id]) {
-                project.addDownload();
-                project.update(project, function(err) {
-                    if (err) {
-                        console.log(err);
-                        err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
-                        res.status(err.code).send(err);
+        if (!err) {
+            if (project) {
+                if (req.user || project._acl.ALL) {
+                    if (req.user && !project._acl['user:' + req.user._id]) {
+                        project.addDownload();
+                        project.update(project, function(err) {
+                            if (err) {
+                                console.log(err);
+                                err.code = utils.getValidHttpErrorCode(err);
+                                res.status(err.code).send(err);
+                            } else {
+                                res.status(200).json(project);
+                            }
+                        });
                     } else {
                         res.status(200).json(project);
                     }
-                });
+                } else {
+                    res.sendStatus(401);
+                }
             } else {
-                res.status(200).json(project);
+                res.sendStatus(404);
             }
         } else {
-            res.sendStatus(401);
+            console.log(err);
+            err.code = utils.getValidErrorCode(err);
+            res.status(err.code).send(err);
         }
     });
 };
@@ -278,17 +288,15 @@ exports.getTrash = function(req, res) {
 
     if (req.query.count === '*') {
         Project.aggregate([{
-                    $match: query
-                },
-                {
-                    $group: {
-                        _id: null,
-                        count: {
-                            $sum: 1
-                        }
+                $match: query
+            }, {
+                $group: {
+                    _id: null,
+                    count: {
+                        $sum: 1
                     }
                 }
-            ],
+            }],
             function(err, counter) {
                 if (err) {
                     console.log(err);
@@ -311,8 +319,7 @@ exports.getTrash = function(req, res) {
                 // Optionally limit results
                 {
                     $skip: parseInt(perPage * page)
-                },
-                {
+                }, {
                     $limit: parseInt(perPage)
                 },
                 // Select
@@ -767,22 +774,28 @@ exports.destroyPermanent = function(req, res) {
                 }], next);
             },
             function(project, next) {
-                if (project[0]._acl['user:' + userId] && project[0]._acl['user:' + userId].permission === 'ADMIN') {
-                    //todo delete image
-                    Project.remove({
-                        _id: projectId
-                    }, next);
+                if (project && (project.length > 0)) {
+                    if (project[0]._acl['user:' + userId] && project[0]._acl['user:' + userId].permission === 'ADMIN') {
+                        //todo delete image
+                        Project.remove({
+                            _id: projectId
+                        }, next);
+                    } else {
+                        next({
+                            code: 401,
+                            message: 'Unauthorized'
+                        });
+                    }
                 } else {
                     next({
-                        code: 401,
-                        message: 'Unauthorized'
+                        code: 404
                     });
                 }
             }
         ], function(err) {
             if (err) {
                 console.log(err);
-                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                err.code = utils.getValidHttpErrorCode(err);
                 res.status(err.code).send(err);
             } else {
                 res.sendStatus(200);
