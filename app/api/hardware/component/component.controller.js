@@ -1,6 +1,7 @@
 'use strict';
 
-var Component = require('./component.model.js');
+var Component = require('./component.model.js'),
+    utils = require('../../utils');
 
 /**
  * Get public Component list
@@ -14,7 +15,7 @@ exports.get = function(req, res) {
         }).exec(function(err, components) {
             if (err) {
                 console.log(err);
-                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                err.code = utils.getValidHttpErrorCode(err);
                 res.status(err.code).send(err);
             } else {
                 res.status(200).json(components);

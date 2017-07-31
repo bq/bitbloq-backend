@@ -1,6 +1,7 @@
 'use strict';
 
-var Board = require('./board.model.js');
+var Board = require('./board.model.js'),
+    utils = require('../../utils');
 
 /**
  * Get public Board list
@@ -15,7 +16,7 @@ exports.get = function(req, res) {
         .exec(function(err, boards) {
             if (err) {
                 console.log(err);
-                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                err.code = utils.getValidHttpErrorCode(err);
                 res.status(err.code).send(err);
             } else {
                 res.status(200).json(boards);

@@ -3,6 +3,7 @@
 var gcloud = require('gcloud'),
     ImageFunctions = require('./image.functions.js'),
     config = require('../../res/config/config'),
+    utils = require('../utils'),
     storage = gcloud.storage(config.gcloud),
     bucket = storage.bucket(config.cloudStorageBucket);
 
@@ -32,7 +33,7 @@ exports.sendUploadToGCS = function(req, res, next) {
     stream.on('error', function(err) {
         req.file.cloudStorageError = err;
         console.log(err);
-        err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+        err.code = utils.getValidHttpErrorCode(err);
         res.status(err.code).send(err);
     });
 

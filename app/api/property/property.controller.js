@@ -1,6 +1,7 @@
 'use strict';
 
 var Property = require('./property.model.js'),
+    utils = require('../utils'),
     async = require('async');
 
 var perPage = 20;
@@ -21,7 +22,7 @@ exports.getAll = function(req, res) {
         .exec(function(err, projects) {
             if (err) {
                 console.log(err);
-                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                err.code = utils.getValidHttpErrorCode(err);
                 res.status(err.code).send(err);
             } else {
                 res.status(200).json(projects);
@@ -33,7 +34,7 @@ exports.createAll = function(req, res) {
     Property.create(req.body, function(err) {
         if (err) {
             console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
@@ -46,7 +47,7 @@ exports.deleteAll = function(req, res) {
         .exec(function(err, properties) {
             if (err) {
                 console.log(err);
-                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                err.code = utils.getValidHttpErrorCode(err);
                 res.status(err.code).send(err);
             } else {
                 async.map(properties, function(property, callBack) {
