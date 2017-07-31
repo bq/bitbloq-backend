@@ -1,6 +1,7 @@
 'use strict';
 
 var mailer = require('../../components/mailer'),
+    utils = require('../utils'),
     config = require('../../res/config.js');
 
 /**
@@ -18,7 +19,7 @@ exports.send = function(req, res) {
     mailer.sendOne('newFeedback', locals, function(err) {
         if (err) {
             console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else {
             res.status(200).send();

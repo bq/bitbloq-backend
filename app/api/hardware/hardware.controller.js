@@ -1,6 +1,7 @@
 'use strict';
 
 var HardwareFunctions = require('./hardware.functions.js'),
+    utils = require('../utils'),
     async = require('async');
 
 /**
@@ -170,7 +171,7 @@ exports.insertHardware = function(req, res) {
     ], function(err) {
         if (err) {
             console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
@@ -185,7 +186,7 @@ exports.getAllHardware = function(req, res) {
     HardwareFunctions.getAllHardware(function(err, result) {
         if (err) {
             console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else {
             res.status(200).json(result);
