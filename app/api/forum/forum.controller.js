@@ -5,6 +5,7 @@ var Answer = require('./models/forumanswer.model.js'),
     UserFunctions = require('../user/user.functions.js'),
     async = require('async'),
     mailer = require('../../components/mailer'),
+    utils = require('../utils'),
     config = require('../../res/config.js'),
     _ = require('lodash'),
     itemsPerPage = 10;
@@ -201,7 +202,7 @@ exports.createCategory = function(req, res) {
     newCategory.save(function(err) {
         if (err) {
             console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
@@ -219,7 +220,7 @@ exports.createThread = function(req, res) {
     UserFunctions.isBanned(userId, function(err, banned) {
         if (err) {
             console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else if (banned) {
             res.sendStatus(401);
@@ -247,7 +248,7 @@ exports.createThread = function(req, res) {
             ], function(err, answer, categoryName) {
                 if (err) {
                     console.log(err);
-                    err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                    err.code = utils.getValidHttpErrorCode(err);
                     res.status(err.code).send(err);
                 } else {
                     var locals = {
@@ -262,7 +263,7 @@ exports.createThread = function(req, res) {
                     mailer.sendOne('newForumThread', locals, function(err) {
                         if (err) {
                             console.log(err);
-                            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                            err.code = utils.getValidHttpErrorCode(err);
                             res.status(err.code).send(err);
                         } else {
                             res.status(200).json({
@@ -286,7 +287,7 @@ exports.createAnswer = function(req, res) {
     UserFunctions.isBanned(userId, function(err, banned) {
         if (err) {
             console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else if (banned) {
             res.sendStatus(401);
@@ -313,7 +314,7 @@ exports.createAnswer = function(req, res) {
             ], function(err, answer, thread, categoryName) {
                 if (err) {
                     console.log(err);
-                    err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                    err.code = utils.getValidHttpErrorCode(err);
                     res.status(err.code).send(err);
                 } else {
                     //enviar mail para soporte
@@ -347,7 +348,7 @@ exports.createAnswer = function(req, res) {
                         function(err) {
                             if (err) {
                                 console.log(err);
-                                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                                err.code = utils.getValidHttpErrorCode(err);
                                 res.status(err.code).send(err);
                             } else {
                                 res.status(200).send(answer._id);
@@ -372,7 +373,7 @@ exports.getForumIndex = function(req, res) {
     ], function(err, result) {
         if (err) {
             console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else {
             var categories = result[0],
@@ -409,7 +410,7 @@ exports.getCategory = function(req, res) {
     ], function(err, completedCategory) {
         if (err) {
             console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else {
             res.status(200).json(completedCategory);
@@ -428,7 +429,7 @@ exports.getThread = function(req, res) {
     ], function(err, results) {
         if (err) {
             console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else {
             if (results && results[0] && results[1].length > 0) {
@@ -440,7 +441,7 @@ exports.getThread = function(req, res) {
                     Thread.findByIdAndUpdate(thread._id, thread, function(err, thread) {
                         if (err) {
                             console.log(err);
-                            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                            err.code = utils.getValidHttpErrorCode(err);
                             res.status(err.code).send(err);
                         } else {
                             res.status(200).json({
@@ -480,7 +481,7 @@ exports.searchThreads = function(req, res) {
         function(err, result) {
             if (err) {
                 console.log(err);
-                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                err.code = utils.getValidHttpErrorCode(err);
                 res.status(err.code).send(err);
             } else {
                 res.status(200).json({
@@ -507,7 +508,7 @@ exports.moveThread = function(req, res) {
         }, function(err) {
             if (err) {
                 console.log(err);
-                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                err.code = utils.getValidHttpErrorCode(err);
                 res.status(err.code).send(err);
             } else {
                 res.sendStatus(200);
@@ -525,7 +526,7 @@ exports.updateThread = function(req, res) {
     Thread.findByIdAndUpdate(threadId, threadData, function(err) {
         if (err) {
             console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
@@ -541,7 +542,7 @@ exports.updateAnswer = function(req, res) {
     Answer.findById(answerId, function(err, answer) {
         if (err) {
             console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else {
             if (answer.isOwner(req.user._id)) {
@@ -549,7 +550,7 @@ exports.updateAnswer = function(req, res) {
                 answer.save(function(err) {
                     if (err) {
                         console.log(err);
-                        err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                        err.code = utils.getValidHttpErrorCode(err);
                         res.status(err.code).send(err);
                     } else {
                         res.sendStatus(200);
@@ -569,14 +570,14 @@ exports.destroyAnswer = function(req, res) {
     Answer.findById(req.params.id, function(err, answer) {
         if (err) {
             console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else {
             if (answer) {
                 answer.delete(function(err) {
                     if (err) {
                         console.log(err);
-                        err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                        err.code = utils.getValidHttpErrorCode(err);
                         res.status(err.code).send(err);
                     } else {
                         res.sendStatus(200);
@@ -607,7 +608,7 @@ exports.destroyThread = function(req, res) {
     ], function(err) {
         if (err) {
             console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
@@ -619,7 +620,7 @@ exports.createAllCategories = function(req, res) {
     Category.create(req.body, function(err) {
         if (err) {
             console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
@@ -632,7 +633,7 @@ exports.deleteAllCategories = function(req, res) {
         .exec(function(err, categories) {
             if (err) {
                 console.log(err);
-                err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+                err.code = utils.getValidHttpErrorCode(err);
                 res.status(err.code).send(err);
             } else {
                 async.map(categories, function(category, callBack) {
@@ -650,7 +651,7 @@ exports.createForceThread = function(req, res) {
     thread.save(req.body, function(err, thread) {
         if (err) {
             console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else {
             res.status(200).send(thread._id);
@@ -662,7 +663,7 @@ exports.createAllThreads = function(req, res) {
     Thread.create(req.body, function(err) {
         if (err) {
             console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
@@ -673,7 +674,7 @@ exports.createAllAnswers = function(req, res) {
     Answer.create(req.body, function(err) {
         if (err) {
             console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else {
             res.sendStatus(200);
@@ -686,7 +687,7 @@ exports.createForceAnswer = function(req, res) {
     answer.save(req.body, function(err, answer) {
         if (err) {
             console.log(err);
-            err.code = (err.code && String(err.code).match(/[1-5][0-5][0-9]/g)) ? parseInt(err.code) : 500;
+            err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else {
             res.status(200).send(answer._id);
