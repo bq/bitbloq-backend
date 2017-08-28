@@ -18,7 +18,7 @@ function clearProject(project) {
     delete project.timesAdded;
     delete project._acl;
     delete project.__v;
-    if (project.hardware && project.hardware.components) {
+    if (project && project.hardware && project.hardware.components) {
         for (var i = 0; i < project.hardware.components.length; i++) {
             delete project.hardware.components[i].$$hashKey;
         }
@@ -27,7 +27,7 @@ function clearProject(project) {
 }
 
 function getCountPublic(res, query) {
-    Project.count(query, function(err, counter) {
+    Project.count(query, function (err, counter) {
         if (err) {
             console.log(err);
             err.code = utils.getValidHttpErrorCode(err);
@@ -49,7 +49,7 @@ function completeQuery(params, next) {
     var queryUser = _.find(query.$or, 'creator');
 
     if (queryUser) {
-        UserFunctions.getUserIdsByName(queryUser.creator, function(err, users) {
+        UserFunctions.getUserIdsByName(queryUser.creator, function (err, users) {
             if (users) {
                 var userIds = _.map(users, '_id');
                 query.$or[1].creator = {
@@ -78,7 +78,7 @@ function getSearch(res, params) {
         .skip(parseInt(perPage * page))
         .sort(sortFilter)
         .populate('creator', 'username')
-        .exec(function(err, projects) {
+        .exec(function (err, projects) {
             if (err) {
                 console.log(err);
                 err.code = utils.getValidHttpErrorCode(err);
@@ -92,7 +92,7 @@ function getSearch(res, params) {
 function updateProjectAndReturn(res, project) {
     Project.findByIdAndUpdate(project.id, project)
         .populate('creator', 'username')
-        .exec(function(err, completedProject) {
+        .exec(function (err, completedProject) {
             if (err) {
                 console.log(err);
                 err.code = utils.getValidHttpErrorCode(err);
@@ -131,14 +131,14 @@ function returnProject(req, res, project) {
 /**
  * Create a new project
  */
-exports.create = function(req, res) {
+exports.create = function (req, res) {
     var response = {
         saved: [],
         notSaved: []
     };
     if (req.body.length > 0) {
-        async.map(req.body, function(project, callback) {
-            createOne(project, req.user._id, function(err, project) {
+        async.map(req.body, function (project, callback) {
+            createOne(project, req.user._id, function (err, project) {
                 if (err) {
                     console.log('err');
                     console.log(err);
@@ -149,13 +149,13 @@ exports.create = function(req, res) {
                     callback(null, project);
                 }
             });
-        }, function(err, projects) {
+        }, function (err, projects) {
             if (err) {
                 console.log(err);
                 err.code = utils.getValidHttpErrorCode(err);
                 res.status(err.code).send(err);
             } else {
-                _.forEach(projects, function(project) {
+                _.forEach(projects, function (project) {
                     if (project.notSaved) {
                         response.notSaved.push(project);
                     } else {
@@ -167,7 +167,7 @@ exports.create = function(req, res) {
 
         });
     } else {
-        createOne(req.body, req.user._id, function(err, project) {
+        createOne(req.body, req.user._id, function (err, project) {
             if (err) {
                 console.log(err);
                 err.code = utils.getValidHttpErrorCode(err);
@@ -190,14 +190,14 @@ function createOne(project, userId, next) {
 /**
  * Download a project (download times are incremented
  */
-exports.download = function(req, res) {
-    Project.findById(req.params.id, function(err, project) {
+exports.download = function (req, res) {
+    Project.findById(req.params.id, function (err, project) {
         if (!err) {
             if (project) {
                 if (req.user || project._acl.ALL) {
                     if (req.user && !project._acl['user:' + req.user._id]) {
                         project.addDownload();
-                        project.update(project, function(err) {
+                        project.update(project, function (err) {
                             if (err) {
                                 console.log(err);
                                 err.code = utils.getValidHttpErrorCode(err);
@@ -226,25 +226,25 @@ exports.download = function(req, res) {
 /**
  * Restore a project
  */
-exports.restore = function(req, res) {
+exports.restore = function (req, res) {
     if (req.user) {
         async.waterfall([
-            function(next) {
+            function (next) {
                 Project.aggregate([{
                     $match: {
                         _id: ObjectId(req.params.id)
                     }
                 }], next);
             },
-            function(project, next) {
+            function (project, next) {
                 if (project[0] && project[0]._acl['user:' + req.user._id] && project[0]._acl['user:' + req.user._id].permission === 'ADMIN') {
                     Project.update({
                         _id: req.params.id
                     }, {
-                        $set: {
-                            deleted: false
-                        }
-                    }, next);
+                            $set: {
+                                deleted: false
+                            }
+                        }, next);
                 } else {
                     next({
                         code: 401,
@@ -252,7 +252,7 @@ exports.restore = function(req, res) {
                     });
                 }
             }
-        ], function(err) {
+        ], function (err) {
             if (err) {
                 console.log(err);
                 err.code = utils.getValidHttpErrorCode(err);
@@ -270,7 +270,7 @@ exports.restore = function(req, res) {
 /**
  * Get trash projects
  */
-exports.getTrash = function(req, res) {
+exports.getTrash = function (req, res) {
     var userId = req.user._id,
         page = req.query.page || 0,
         perPage = (req.query.pageSize && (req.query.pageSize <= maxPerPage)) ? req.query.pageSize : maxPerPage,
@@ -288,16 +288,16 @@ exports.getTrash = function(req, res) {
 
     if (req.query.count === '*') {
         Project.aggregate([{
-                $match: query
-            }, {
-                $group: {
-                    _id: null,
-                    count: {
-                        $sum: 1
-                    }
+            $match: query
+        }, {
+            $group: {
+                _id: null,
+                count: {
+                    $sum: 1
                 }
-            }],
-            function(err, counter) {
+            }
+        }],
+            function (err, counter) {
                 if (err) {
                     console.log(err);
                     err.code = utils.getValidHttpErrorCode(err);
@@ -310,30 +310,30 @@ exports.getTrash = function(req, res) {
             });
     } else {
         Project.aggregate([{
-                    $match: query
-                },
-                // Sorting pipeline
-                {
-                    $sort: sortFilter
-                },
-                // Optionally limit results
-                {
-                    $skip: parseInt(perPage * page)
-                }, {
-                    $limit: parseInt(perPage)
-                },
-                // Select
-                {
-                    $project: {
-                        _id: 1,
-                        name: 1,
-                        creator: 1,
-                        updatedAt: 1,
-                        codeProject: 1
-                    }
-                }
-            ],
-            function(err, projects) {
+            $match: query
+        },
+        // Sorting pipeline
+        {
+            $sort: sortFilter
+        },
+        // Optionally limit results
+        {
+            $skip: parseInt(perPage * page)
+        }, {
+            $limit: parseInt(perPage)
+        },
+        // Select
+        {
+            $project: {
+                _id: 1,
+                name: 1,
+                creator: 1,
+                updatedAt: 1,
+                codeProject: 1
+            }
+        }
+        ],
+            function (err, projects) {
                 if (err) {
                     console.log(err);
                     err.code = utils.getValidHttpErrorCode(err);
@@ -348,7 +348,7 @@ exports.getTrash = function(req, res) {
 /**
  * Get a single project
  */
-exports.show = function(req, res) {
+exports.show = function (req, res) {
     var query;
     if (ObjectId.isValid(req.params.id)) {
         query = {
@@ -361,7 +361,7 @@ exports.show = function(req, res) {
     }
     Project.findOne(query)
         .populate('creator', 'username')
-        .exec(function(err, project) {
+        .exec(function (err, project) {
             if (err) {
                 console.log(err);
                 err.code = utils.getValidHttpErrorCode(err);
@@ -377,9 +377,9 @@ exports.show = function(req, res) {
 /**
  * Get public project list
  */
-exports.getPublished = function(req, res) {
+exports.getPublished = function (req, res) {
     if (req.query && !utils.isEmpty(req.query)) {
-        completeQuery(req.query, function(err, query) {
+        completeQuery(req.query, function (err, query) {
             if (err) {
                 console.log(err);
                 err.code = utils.getValidHttpErrorCode(err);
@@ -401,7 +401,7 @@ exports.getPublished = function(req, res) {
 /**
  * Get my projects
  */
-exports.me = function(req, res) {
+exports.me = function (req, res) {
     var userId = req.user._id,
         query = {},
         page = req.query.page || 0,
@@ -425,7 +425,7 @@ exports.me = function(req, res) {
         .limit(parseInt(pageSize))
         .skip(parseInt(pageSize * page))
         .sort(sortParams)
-        .exec(function(err, projects) {
+        .exec(function (err, projects) {
             if (err) {
                 console.log(err);
                 err.code = utils.getValidHttpErrorCode(err);
@@ -443,7 +443,7 @@ exports.me = function(req, res) {
 /**
  * Get project shared with me
  */
-exports.sharedWithMe = function(req, res) {
+exports.sharedWithMe = function (req, res) {
     var userId = req.user._id,
         query = {},
         page = req.query.page || 0,
@@ -468,7 +468,7 @@ exports.sharedWithMe = function(req, res) {
         .skip(parseInt(pageSize * page))
         .sort(sortParams)
         .populate('creator', 'username')
-        .exec(function(err, projects) {
+        .exec(function (err, projects) {
             if (err) {
                 console.log(err);
                 err.code = utils.getValidHttpErrorCode(err);
@@ -486,9 +486,9 @@ exports.sharedWithMe = function(req, res) {
 /**
  * Update my project
  */
-exports.update = function(req, res) {
+exports.update = function (req, res) {
     var projectId = req.params.id;
-    Project.findById(projectId, function(err, project) {
+    Project.findById(projectId, function (err, project) {
         if (err) {
             console.log(err);
             err.code = utils.getValidHttpErrorCode(err);
@@ -498,7 +498,7 @@ exports.update = function(req, res) {
                 var projectBody = clearProject(req.body);
                 project = _.extend(project, projectBody);
                 try {
-                    project.save(function(err) {
+                    project.save(function (err) {
                         if (err) {
                             console.log(err);
                             err.code = utils.getValidHttpErrorCode(err);
@@ -520,16 +520,16 @@ exports.update = function(req, res) {
 /**
  * Publish my project
  */
-exports.publish = function(req, res) {
+exports.publish = function (req, res) {
     var projectId = req.params.id,
         userId = req.user._id;
-    Project.findById(projectId, function(err, project) {
+    Project.findById(projectId, function (err, project) {
         if (err) {
             console.log(err);
             err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else {
-            if (project.isOwner(userId)) {
+            if (project && project.isOwner(userId)) {
                 Project.findByIdAndUpdate(projectId, {
                     '_acl.ALL': {
                         permission: 'READ',
@@ -537,7 +537,7 @@ exports.publish = function(req, res) {
                             date: new Date()
                         }
                     }
-                }, function(err) {
+                }, function (err) {
                     if (err) {
                         console.log(err);
                         res.sendStatus(err.code).send(err);
@@ -555,21 +555,21 @@ exports.publish = function(req, res) {
 /**
  * Privatize my project
  */
-exports.private = function(req, res) {
+exports.private = function (req, res) {
     var projectId = req.params.id,
         userId = req.user._id;
-    Project.findById(projectId, function(err, project) {
+    Project.findById(projectId, function (err, project) {
         if (err) {
             console.log(err);
             err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         } else {
-            if (project.isOwner(userId)) {
+            if (project && project.isOwner(userId)) {
                 Project.findByIdAndUpdate(projectId, {
                     $unset: {
                         '_acl.ALL': 1
                     }
-                }, function(err) {
+                }, function (err) {
                     if (err) {
                         console.log(err);
                         err.code = utils.getValidHttpErrorCode(err);
@@ -588,7 +588,7 @@ exports.private = function(req, res) {
 /**
  * Share my project with other users
  */
-exports.share = function(req, res) {
+exports.share = function (req, res) {
     var projectId = req.params.id,
         emails = req.body,
         response = {
@@ -596,63 +596,63 @@ exports.share = function(req, res) {
             users: []
         },
         userId = req.user._id;
-    Project.findById(projectId, function(err, project) {
+    Project.findById(projectId, function (err, project) {
         if (err) {
             console.log(err);
             err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err)
         } else {
-            if (project.isOwner(userId)) {
+            if (project && project.isOwner(userId)) {
                 project.resetShare();
-                async.map(emails, function(email, done) {
-                        email = email.toLowerCase();
-                        if (email === req.user.email) {
-                            done();
-                        } else {
-                            UserFunctions.getUserId(email, function(err, user) {
-                                if (user) {
-                                    project.share({
-                                        id: user,
-                                        email: email
-                                    });
+                async.map(emails, function (email, done) {
+                    email = email.toLowerCase();
+                    if (email === req.user.email) {
+                        done();
+                    } else {
+                        UserFunctions.getUserId(email, function (err, user) {
+                            if (user) {
+                                project.share({
+                                    id: user,
+                                    email: email
+                                });
 
-                                    var locals = {
-                                        email: email,
-                                        subject: req.user.username + ' ha compartido contigo un proyecto de Bitbloq',
-                                        username: req.user.username
-                                    };
+                                var locals = {
+                                    email: email,
+                                    subject: req.user.username + ' ha compartido contigo un proyecto de Bitbloq',
+                                    username: req.user.username
+                                };
 
-                                    if (project.codeproject) {
-                                        locals.projectUrl = config.client_domain + '#/login?init=/codeproject/' + projectId;
-                                    } else {
-                                        locals.projectUrl = config.client_domain + '#/login?init=/bloqsproject/' + projectId;
-                                    }
-
-                                    mailer.sendOne('shareProject', locals, function(err) {
-                                        if (err) {
-                                            console.log(err);
-                                            err.code = utils.getValidHttpErrorCode(err);
-                                            res.status(err.code).send(err);
-                                        } else {
-                                            res.status(200);
-                                        }
-                                    });
-                                    response.users.push(email);
-                                } else if (!err) {
-                                    response.noUsers.push(email);
+                                if (project.codeproject) {
+                                    locals.projectUrl = config.client_domain + '#/login?init=/codeproject/' + projectId;
+                                } else {
+                                    locals.projectUrl = config.client_domain + '#/login?init=/bloqsproject/' + projectId;
                                 }
-                                done(err);
-                            });
-                        }
-                    },
-                    function(err) {
+
+                                mailer.sendOne('shareProject', locals, function (err) {
+                                    if (err) {
+                                        console.log(err);
+                                        err.code = utils.getValidHttpErrorCode(err);
+                                        res.status(err.code).send(err);
+                                    } else {
+                                        res.status(200);
+                                    }
+                                });
+                                response.users.push(email);
+                            } else if (!err) {
+                                response.noUsers.push(email);
+                            }
+                            done(err);
+                        });
+                    }
+                },
+                    function (err) {
                         if (err) {
                             console.log(err);
                             err.code = utils.getValidHttpErrorCode(err);
                             res.status(err.code).send(err);
                         } else {
                             response.project = project;
-                            Project.findByIdAndUpdate(projectId, project, function(err) {
+                            Project.findByIdAndUpdate(projectId, project, function (err) {
                                 if (err) {
                                     console.log(err);
                                     err.code = utils.getValidHttpErrorCode(err);
@@ -673,20 +673,20 @@ exports.share = function(req, res) {
 /**
  * Clone a public project
  */
-exports.clone = function(req, res) {
+exports.clone = function (req, res) {
     var projectId = req.params.id,
         userId = req.user._id;
     async.waterfall([
         Project.findById.bind(Project, projectId),
-        function(project, next) {
-            if (project._acl['user:' + userId] && project._acl['user:' + userId].permission === 'ADMIN') {
+        function (project, next) {
+            if (project && project._acl['user:' + userId] && project._acl['user:' + userId].permission === 'ADMIN') {
                 next(null, project);
             } else {
                 project.addAdded();
                 Project.findByIdAndUpdate(projectId, project, next);
             }
         },
-        function(project, next) {
+        function (project, next) {
             var newProject = new Project({
                 creator: userId,
                 name: req.body.name || project.name,
@@ -705,12 +705,12 @@ exports.clone = function(req, res) {
 
             newProject.save(next);
         },
-        function(newProject, count, next) {
-            ImageFunctions.cloneImages(projectId, newProject._id, function(err) {
+        function (newProject, count, next) {
+            ImageFunctions.cloneImages(projectId, newProject._id, function (err) {
                 next(err, newProject);
             })
         }
-    ], function(err, newProject) {
+    ], function (err, newProject) {
         if (err) {
             console.log(err);
             err.code = utils.getValidHttpErrorCode(err);
@@ -724,12 +724,12 @@ exports.clone = function(req, res) {
 /**
  * Deletes a Project
  */
-exports.destroy = function(req, res) {
+exports.destroy = function (req, res) {
     var userId = req.user._id,
         projectId = req.params.id;
     async.waterfall([
         Project.findById.bind(Project, projectId),
-        function(project, next) {
+        function (project, next) {
             if (project) {
                 if (project.isOwner(userId)) {
                     project.delete(next);
@@ -747,7 +747,7 @@ exports.destroy = function(req, res) {
             }
         }
 
-    ], function(err) {
+    ], function (err) {
         if (err) {
             console.log(err);
             err.code = utils.getValidHttpErrorCode(err);
@@ -761,19 +761,19 @@ exports.destroy = function(req, res) {
 /**
  * Deletes a Project permanently
  */
-exports.destroyPermanent = function(req, res) {
+exports.destroyPermanent = function (req, res) {
     if (req.user) {
         var userId = req.user._id,
             projectId = req.params.id;
         async.waterfall([
-            function(next) {
+            function (next) {
                 Project.aggregate([{
                     $match: {
                         _id: ObjectId(projectId)
                     }
                 }], next);
             },
-            function(project, next) {
+            function (project, next) {
                 if (project && (project.length > 0)) {
                     if (project[0]._acl['user:' + userId] && project[0]._acl['user:' + userId].permission === 'ADMIN') {
                         //todo delete image
@@ -792,7 +792,7 @@ exports.destroyPermanent = function(req, res) {
                     });
                 }
             }
-        ], function(err) {
+        ], function (err) {
             if (err) {
                 console.log(err);
                 err.code = utils.getValidHttpErrorCode(err);
@@ -809,7 +809,7 @@ exports.destroyPermanent = function(req, res) {
 /**
  * Authentication callback
  */
-exports.authCallback = function(req, res) {
+exports.authCallback = function (req, res) {
     res.redirect('/');
 };
 var numRequests = 0,
@@ -818,13 +818,13 @@ var numRequests = 0,
     numRepeatedItems = 0,
     numItems = 0;
 
-exports.createAll = function(req, res) {
+exports.createAll = function (req, res) {
     numRequests++;
     console.log('numRequest', numRequests);
-    async.each(req.body, function(item, done) {
+    async.each(req.body, function (item, done) {
         Project.findOne({
             'corbelId': item.corbelId
-        }, function(err, response) {
+        }, function (err, response) {
             if (err) {
                 done(err);
             } else if (!response) {
@@ -836,7 +836,7 @@ exports.createAll = function(req, res) {
                 response.update(item, done);
             }
         });
-    }, function(err) {
+    }, function (err) {
         console.log('Finish request');
         console.log('numRequests:', numRequests, 'numRequestsOK:', numRequestsOK, 'numRequestsKO:', numRequestsKO);
         console.log('Items', numItems, 'Repeated', numRepeatedItems);
