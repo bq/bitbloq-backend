@@ -134,7 +134,7 @@ var UserSchema = new mongoose.Schema({
         }]
     },
     properties: {
-        hasCenterModeEnabled: {
+        hasImportProjectsEnabled: {
             type: Boolean,
             default: false
         }
@@ -206,7 +206,7 @@ UserSchema
                 'components': this.hardware.components
             },
             'properties': {
-                'hasCenterModeEnabled': this.properties.hasCenterModeEnabled
+                'hasImportProjectsEnabled': this.properties.hasImportProjectsEnabled
             }
         };
     });
