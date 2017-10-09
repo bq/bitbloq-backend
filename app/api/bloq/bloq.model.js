@@ -13,11 +13,12 @@ var BloqSchema = new mongoose.Schema({
     headerText: String,
     descriptionText: String,
     createDynamicContent: {},
+    suggestedBloqs: [],
     arduino: {},
     deleted: Boolean
 }, {
-    timestamps: true
-});
+        timestamps: true
+    });
 
 /**
  * Pre hook
@@ -46,7 +47,7 @@ BloqSchema.methods = {
      * @param {Function} next
      * @api public
      */
-    delete: function(next) {
+    delete: function (next) {
         this.deleted = true;
         this.save(next);
     }
