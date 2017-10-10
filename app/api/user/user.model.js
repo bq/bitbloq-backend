@@ -141,8 +141,8 @@ var UserSchema = new mongoose.Schema({
     },
     deleted: Boolean
 }, {
-    timestamps: true
-});
+        timestamps: true
+    });
 
 /**
  * Virtuals
@@ -151,7 +151,7 @@ var UserSchema = new mongoose.Schema({
 // Public profile information
 UserSchema
     .virtual('profile')
-    .get(function() {
+    .get(function () {
         return {
             'username': this.username,
             'role': this.role
@@ -161,7 +161,7 @@ UserSchema
 // Information for the owner
 UserSchema
     .virtual('owner')
-    .get(function() {
+    .get(function () {
         return {
             '_id': this._id,
             'firstName': this.firstName,
@@ -214,7 +214,7 @@ UserSchema
 // Non-sensitive info we'll be putting in the token
 UserSchema
     .virtual('token')
-    .get(function() {
+    .get(function () {
         return {
             '_id': this._id,
             'role': this.role
@@ -224,7 +224,7 @@ UserSchema
 // Public tutor information
 UserSchema
     .virtual('tutorProfile')
-    .get(function() {
+    .get(function () {
         return {
             'hasBeenValidated': this.hasBeenValidated,
             'tutor': this.tutor
@@ -238,19 +238,19 @@ UserSchema
 // Validate empty password if present
 UserSchema
     .path('password')
-    .validate(function(password) {
+    .validate(function (password) {
         return password.length;
     }, 'Password cannot be blank');
 
 // Validate email is not taken
 UserSchema
     .path('email')
-    .validate(function(value, respond) {
+    .validate(function (value, respond) {
         var self = this;
         var query = this.constructor.where({
             email: value
         });
-        return this.constructor.findOne(query, function(err, user) {
+        return this.constructor.findOne(query, function (err, user) {
             var result = false;
             if (!user || (user && self.id === user.id)) {
                 result = true;
@@ -262,12 +262,12 @@ UserSchema
 // Validate username is not taken
 UserSchema
     .path('username')
-    .validate(function(value, respond) {
+    .validate(function (value, respond) {
         var self = this;
 
         this.constructor.findOne({
             username: value
-        }, function(err, user) {
+        }, function (err, user) {
             var result = false;
             if (!user || (user && self.id === user.id)) {
                 result = true;
@@ -277,7 +277,7 @@ UserSchema
 
     }, 'The specified username is already in use.');
 
-var validatePresenceOf = function(value) {
+var validatePresenceOf = function (value) {
     return value && value.length;
 };
 
@@ -285,7 +285,7 @@ var validatePresenceOf = function(value) {
  * Pre hook
  */
 UserSchema
-    .pre('save', function(next) {
+    .pre('save', function (next) {
         // Handle new/update passwords
         if (this.isModified('password')) {
             if (!validatePresenceOf(this.password)) {
@@ -294,12 +294,12 @@ UserSchema
 
             // Make salt with a callback
             var _this = this;
-            this.makeSalt(function(saltErr, salt) {
+            this.makeSalt(function (saltErr, salt) {
                 if (saltErr) {
                     next(saltErr);
                 } else {
                     _this.salt = salt;
-                    _this.encryptPassword(_this.password, function(encryptErr, hashedPassword) {
+                    _this.encryptPassword(_this.password, function (encryptErr, hashedPassword) {
                         if (encryptErr) {
                             next(encryptErr);
                         }
@@ -315,7 +315,7 @@ UserSchema
     });
 
 UserSchema
-    .pre('validate', function(next) {
+    .pre('validate', function (next) {
         // Handle birthday
         if (this.isValidated()) {
             next();
@@ -328,7 +328,7 @@ UserSchema
     });
 
 UserSchema
-    .pre('validate', function(next) {
+    .pre('validate', function (next) {
         // Handle new/update role
         if (this.role !== 'user' && this.isModified('role')) {
             this.invalidate('role');
@@ -342,7 +342,7 @@ UserSchema
     });
 
 UserSchema
-    .pre('validate', function(next) {
+    .pre('validate', function (next) {
         // Handle new/update passwords
         if (this.isModified('bannedInForum')) {
             this.invalidate('bannedInForum');
@@ -356,7 +356,7 @@ UserSchema
     });
 
 UserSchema
-    .pre('validate', function(next) {
+    .pre('validate', function (next) {
         // Handle new/update passwords
         if (this.needValidation) {
             this.bannedInForum = true;
@@ -382,7 +382,7 @@ UserSchema.pre('count', findNotDeletedMiddleware);
  */
 UserSchema.methods = {
 
-    anonymize: function(anonText, next) {
+    anonymize: function (anonText, next) {
         this.firstName = 'anon';
         this.lastName = 'anon';
         this.email = 'anon@anon.com' + Date.now();
@@ -411,7 +411,7 @@ UserSchema.methods = {
         this.anonymous = anonText;
 
         var that = this;
-        ProjectFunctions.deleteAllByUser(this._id, function(err) {
+        ProjectFunctions.deleteAllByUser(this._id, function (err) {
             if (err) {
                 next(err);
             } else {
@@ -429,23 +429,33 @@ UserSchema.methods = {
      * @api public
      */
 
-    authenticate: function(password, callback) {
+    authenticate: function (password, callback) {
         if (!callback) {
-            return this.password === this.encryptPassword(password);
-        }
-
-        var _this = this;
-        this.encryptPassword(password, function(err, pwdGen) {
-            if (err) {
-                callback(err);
-            } else {
-                if (_this.password === pwdGen) {
-                    callback(null, true);
-                } else {
-                    callback(null, false);
-                }
+            var result = this.password === this.encryptPassword(password);
+            if (result && this.corbelHash) {
+                this.password = password;
+                this.corbelHash = false;
             }
-        });
+            return result;
+
+        } else {
+            var _this = this;
+            this.encryptPassword(password, function (err, pwdGen) {
+                if (err) {
+                    callback(err);
+                } else {
+                    if (_this.password === pwdGen) {
+                        if (this.corbelHash) {
+                            this.password = password;
+                            this.corbelHash = false;
+                        }
+                        callback(null, true);
+                    } else {
+                        callback(null, false);
+                    }
+                }
+            });
+        }
     },
 
     /**
@@ -454,7 +464,7 @@ UserSchema.methods = {
      * @param {Function} next
      * @api public
      */
-    delete: function(next) {
+    delete: function (next) {
         this.deleted = true;
         this.save(next);
     },
@@ -467,7 +477,7 @@ UserSchema.methods = {
      * @return {String}
      * @api public
      */
-    encryptPassword: function(password, callback) {
+    encryptPassword: function (password, callback) {
         if (!password || !this.salt) {
             return null;
         }
@@ -488,7 +498,7 @@ UserSchema.methods = {
                     .toString('base64');
             }
 
-            return crypto.pbkdf2(password, salt, defaultIterations, defaultKeyLength, function(err, key) {
+            return crypto.pbkdf2(password, salt, defaultIterations, defaultKeyLength, function (err, key) {
                 if (err) {
                     callback(err);
                 }
@@ -504,7 +514,7 @@ UserSchema.methods = {
      * @return {Boolean}
      * @api public
      */
-    isValidated: function() {
+    isValidated: function () {
         if (this.anonymous) {
             return false;
         } else {
@@ -531,7 +541,7 @@ UserSchema.methods = {
      * @return {String}
      * @api public
      */
-    makeSalt: function(byteSize, callback) {
+    makeSalt: function (byteSize, callback) {
         var defaultByteSize = 16;
 
         if (typeof arguments[0] === 'function') {
@@ -549,7 +559,7 @@ UserSchema.methods = {
             return crypto.randomBytes(byteSize).toString('base64');
         }
 
-        return crypto.randomBytes(byteSize, function(err, salt) {
+        return crypto.randomBytes(byteSize, function (err, salt) {
             if (err) {
                 callback(err);
             }
