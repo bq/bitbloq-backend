@@ -14,6 +14,7 @@ var BloqSchema = new mongoose.Schema({
     descriptionText: String,
     createDynamicContent: {},
     suggestedBloqs: [],
+    autoChildCreation: String,
     arduino: {},
     deleted: Boolean
 }, {
