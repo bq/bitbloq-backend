@@ -8,7 +8,7 @@ var errors = require('./components/errors/index');
 var express = require('express');
 var router = express.Router();
 
-module.exports = function(app) {
+module.exports = function (app) {
 
     // Insert routes below
     // router.use('/api/images', require('./api/image/'));
@@ -29,6 +29,8 @@ module.exports = function(app) {
     router.use('/kit', require('./api/hardware/kit/index'));
     router.use('/robot', require('./api/hardware/robot/index'));
     router.use('/hardware', require('./api/hardware/index'));
+    router.use('/notification', require('./api/notification/index'));
+
 
     // Set a prefix for all calls
     app.use('/bitbloq/v1', router);
