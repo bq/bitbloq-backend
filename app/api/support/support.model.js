@@ -27,21 +27,4 @@ var SupportSchema = new mongoose.Schema({
     ]
 });
 
-/**
- * Virtuals
- */
-
-// Public support information
-SupportSchema.virtual('support').get(function() {
-    return {
-        _id: this._id,
-        permalink: this.permalink,
-        title: this.title,
-        data: this.data,
-        extData: this.extData,
-        dontShowHomeButton: this.dontShowHomeButton,
-        next: this.next
-    };
-});
-
 module.exports = mongoose.model('Support', SupportSchema);
