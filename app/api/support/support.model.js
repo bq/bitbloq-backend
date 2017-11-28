@@ -6,9 +6,12 @@ var SupportSchema = new mongoose.Schema({
         type: String,
         unique: true
     },
-    title: String,
-    data: String,
-    extData: String,
+    title: { type: String, default: '' },
+    data:  { 
+      ext: { type: Boolean, default: false },
+      body: { type: String, default: '' },
+      scope: {}
+    },
     dontShowHomeButton: Boolean,
     next: [
         {

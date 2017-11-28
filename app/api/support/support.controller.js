@@ -58,6 +58,24 @@ exports.create = function(req, res) {
         }
       });
 };
+exports.massive = function(req, res) {
+  var errors = []
+  req.body.forEach(function(item) {
+    var card = new Support(item);
+    card.save(
+      function(err) {
+        if (err) {
+            errors.push({
+              item: card,
+              code: utils.getValidHttpErrorCode(err),
+              error: err
+            })
+        }
+      });
+   });
+   res.status(200).send(errors);
+};
+
 
 // PUT
 exports.update = function(req, res) {
