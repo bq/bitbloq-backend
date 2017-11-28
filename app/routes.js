@@ -29,6 +29,7 @@ module.exports = function(app) {
     router.use('/kit', require('./api/hardware/kit/index'));
     router.use('/robot', require('./api/hardware/robot/index'));
     router.use('/hardware', require('./api/hardware/index'));
+    router.use('/support', require('./api/support/index'));
 
     // Set a prefix for all calls
     app.use('/bitbloq/v1', router);

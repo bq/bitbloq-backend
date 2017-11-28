@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "start": "supervisor index.js",
-        "monitor": "nodemon ${SCRIPT:-app.js}",
+        "monitor": "nodemon ./app/${SCRIPT:-app.js}",
         "deploy": "gcloud preview app deploy app.yaml worker.yaml",
         "lint": "jshint --exclude-path=../.gitignore .",
         "mocha": "mocha test/index.js -t 30000",
