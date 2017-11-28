@@ -11,7 +11,6 @@ exports.getAll = function(req, res) {
         if (!err) {
             res.status(200).send(docs);
         } else {
-            console.log(err);
             err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         }
@@ -24,7 +23,6 @@ exports.show = function(req, res) {
         if (!err) {
             res.status(doc.length ? 200 : 404).send(doc);
         } else {
-            console.log(err);
             err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         }
@@ -37,7 +35,6 @@ exports.showPermalink = function(req, res) {
         if (!err) {
             res.status(doc.length ? 200 : 404).send(doc);
         } else {
-            console.log(err);
             err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         }
@@ -52,7 +49,6 @@ exports.create = function(req, res) {
         if (!err) {
             res.status(201).send(doc);
         } else {
-            console.log(err);
             err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         }
@@ -88,7 +84,6 @@ exports.update = function(req, res) {
         if (!err) {
             res.status(doc ? 200 : 404).send(doc);
         } else {
-            console.log(err);
             err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         }
@@ -105,7 +100,6 @@ exports.updatePermalink = function(req, res) {
         if (!err) {
             res.status(doc ? 200 : 404).send(doc);
         } else {
-            console.log(err);
             err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         }
@@ -120,7 +114,6 @@ exports.destroy = function(req, res) {
         if (!err) {
             res.status(doc ? 204 : 404).end();
         } else {
-            console.log(err);
             err.code = utils.getValidHttpErrorCode(err);
             res.status(err.code).send(err);
         }
