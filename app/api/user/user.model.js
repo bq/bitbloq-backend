@@ -1,4 +1,5 @@
 /* global Buffer */
+
 'use strict';
 
 var crypto = require('crypto'),
@@ -23,7 +24,7 @@ var UserSchema = new mongoose.Schema({
         type: String,
         lowercase: true,
         trim: true,
-        required: true
+        //required: true <- Unrequired after <14 fix
     },
     bannedInForum: {
         type: Boolean,
@@ -118,6 +119,11 @@ var UserSchema = new mongoose.Schema({
             result: Boolean
         }
     },
+    recoveryMail: {
+        type: String,
+        lowercase: true,
+        trim: true
+    },
     anonymous: String,
     hardware: {
         robots: [{
@@ -185,6 +191,7 @@ UserSchema
             'chromeapp': this.chromeapp,
             'seeBoardsUnderDevelopment': this.seeBoardsUnderDevelopment,
             'isTeacher': this.isTeacher,
+            'recoveryMail': this.recoveryMail,
             'language': this.language,
             'cookiePolicyAccepted': this.cookiePolicyAccepted,
             'hasBeenAskedIfTeacher': this.hasBeenAskedIfTeacher,
@@ -365,6 +372,7 @@ UserSchema
     });
 
 function findNotDeletedMiddleware(next) {
+    /*jshint validthis:true */
     this.where('deleted').in([false, undefined, null]);
     this.populate('hardware.robots');
     this.populate('hardware.boards');
@@ -376,6 +384,7 @@ UserSchema.pre('find', findNotDeletedMiddleware);
 UserSchema.pre('findOne', findNotDeletedMiddleware);
 UserSchema.pre('findOneAndUpdate', findNotDeletedMiddleware);
 UserSchema.pre('count', findNotDeletedMiddleware);
+
 
 /**
  * Methods
