@@ -234,7 +234,8 @@ UserSchema
     .get(function () {
         return {
             'hasBeenValidated': this.hasBeenValidated,
-            'tutor': this.tutor
+            'tutor': this.tutor,
+            'recoveryMail': this.recoveryMail
         };
     });
 
