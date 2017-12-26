@@ -258,13 +258,17 @@ UserSchema
         var query = this.constructor.where({
             email: value
         });
-        return this.constructor.findOne(query, function (err, user) {
-            var result = false;
-            if (!user || (user && self.id === user.id)) {
-                result = true;
-            }
-            return respond(result);
-        });
+        if(self.needValidation){
+            return true; // u14: no email validation as is empty
+        } else {
+            return this.constructor.findOne(query, function (err, user) {
+                var result = false;
+                if (!user || (user && self.id === user.id)) {
+                    result = true;
+                }
+                return respond(result);
+            });
+        }
     }, 'The specified email address is already in use.');
 
 // Validate username is not taken

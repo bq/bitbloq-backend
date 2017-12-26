@@ -53,12 +53,12 @@ exports.create = function(req, res) {
         if (req.body.needValidation) { req.body.tutor = null; }
         var newUser = new User(req.body);
         newUser.role = 'user';
-        res.sendStatus(400);
         newUser.save(function(err, user) {
             if (err) {
                 console.log(err);
                 res.status(409).send(err);
             } else {
+                console.log(user);
                 if (user) {
                     if (newUser.needValidation) {
                         user.tutor = tutor;
