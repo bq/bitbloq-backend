@@ -92,6 +92,7 @@ exports.create = function(req, res) {
 exports.authorizeUser = function(req, res) {
     var tutorToken = req.body.token,
         userData = req.body.userData;
+    console.log(userData);
     async.waterfall(
         [
             AuthorizationToken.findOne.bind(AuthorizationToken, {
@@ -109,13 +110,9 @@ exports.authorizeUser = function(req, res) {
             },
             function(user, next) {
                 if (user) {
-                    if (!userData.tutor.validation.result) {
-                        user.anonymize('rejectByTutor', next);
-                    } else {
-                        userData.needValidation = false;
-                        userData.tutor.validation.date = Date.now();
-                        user.update(userData, next);
-                    }
+                    userData.needValidation = false;
+                    userData.tutor.validation.date = Date.now();
+                    user.update(userData, next);
                 } else {
                     next({
                         code: 404,
