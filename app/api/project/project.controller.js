@@ -681,9 +681,14 @@ exports.clone = function (req, res) {
         function (project, next) {
             if (project && project._acl['user:' + userId] && project._acl['user:' + userId].permission === 'ADMIN') {
                 next(null, project);
-            } else {
+            } else if (project) {
                 project.addAdded();
                 Project.findByIdAndUpdate(projectId, project, next);
+            } else {
+                console.log('Error 404 cloning that project', projectId, 'with this user', userId);
+                next({
+                    code: 404
+                });
             }
         },
         function (project, next) {

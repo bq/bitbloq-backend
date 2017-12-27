@@ -17,11 +17,12 @@ var BoardSchema = new mongoose.Schema({
     underDevelopment: Boolean,
     availableComponents: Array,
     integratedComponents: Array,
+    shields: Array,
     order: Number,
     deleted: Boolean
 }, {
-    timestamps: true
-});
+        timestamps: true
+    });
 
 /**
  * Pre hook
@@ -50,7 +51,7 @@ BoardSchema.methods = {
      * @param {Function} next
      * @api public
      */
-    delete: function(next) {
+    delete: function (next) {
         this.deleted = true;
         this.save(next);
     }

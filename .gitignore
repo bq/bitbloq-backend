@@ -3,6 +3,7 @@ dist/
 .tmp/
 *.log
 *~
+*.DS_Store
 
 # Editor File Ignore
 *.sublime-project
