@@ -38,4 +38,7 @@ router.put('/under14authorization', controller.authorizeUser);
 router.put('/:id/password', auth.isAuthenticated(), controller.changePassword);
 router.put('/:id/social', auth.isAuthenticated(), controller.turnToLocal);
 
+// PATCH
+router.patch('/under14authorization', auth.isAuthenticated(), controller.sendMailTutorAutorization);
+
 module.exports = router;

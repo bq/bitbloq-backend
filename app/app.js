@@ -10,7 +10,8 @@ var express = require('express'),
     mongoose = require('mongoose'),
     config = require('./res/config.js'),
     http = require('http'),
-    mailer = require('./components/mailer');
+    mailer = require('./components/mailer'),
+    compression = require('compression');
 
 // Connect to MongoDB
 mongoose.connect(config.mongo.uri, config.mongo.options);
@@ -22,6 +23,9 @@ mongoose.connection.on('error', function(err) {
 // Setup server
 var app = express(),
     server = http.createServer(app);
+
+// gzip
+app.use(compression());
 
 require('./express')(app);
 require('./routes')(app);

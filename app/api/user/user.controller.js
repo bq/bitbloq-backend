@@ -92,7 +92,6 @@ exports.create = function(req, res) {
 exports.authorizeUser = function(req, res) {
     var tutorToken = req.body.token,
         userData = req.body.userData;
-    console.log(userData);
     async.waterfall(
         [
             AuthorizationToken.findOne.bind(AuthorizationToken, {
@@ -139,6 +138,21 @@ exports.authorizeUser = function(req, res) {
             }
         }
     );
+};
+
+exports.sendMailTutorAutorization = function(req, res) {
+    var user = req.user;
+    user.tutor = req.body.tutor;
+    sendEmailTutorAuthorization(user, function(err) {
+        if (err) {
+            console.log(err);
+            err.code = utils.getValidHttpErrorCode(err);
+            res.status(err.code).send(err);
+        } else {
+            var tokenObject = generateToken(user);
+            res.status(200).send(tokenObject);
+        }
+    });
 };
 
 exports.getUser = function(req, res) {
