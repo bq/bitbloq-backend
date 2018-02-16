@@ -153,6 +153,9 @@ UserSchema
     .virtual('profile')
     .get(function () {
         return {
+            'firstName': this.firstName,
+            'lastName': this.lastName,
+            'email': this.email,
             'username': this.username,
             'role': this.role
         };
