@@ -1,10 +1,171 @@
 {
     "boards": [{
-        "uuid": "bqZUM",
+        "uuid": "bqZUM20",
         "mcu": "bt328",
         "vendorIds": ["0x403"],
         "productIds": ["0x6001"],
         "order": 1,
+        "showInToolbox": true,
+        "pinSize": {
+            "digital": {
+                "w": 9,
+                "h": 37
+            },
+            "analog": {
+                "w": 9,
+                "h": 37
+            },
+            "serial": {
+                "w": 15,
+                "h": 35
+            },
+            "i2c-4": {
+                "w": 9,
+                "h": 9
+            },
+            "i2c-5": {
+                "w": 9,
+                "h": 9
+            }
+        },
+        "pins": {
+            "digital": [{
+                "x": 0.435,
+                "y": 0.175,
+                "name": "13",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd00"
+            }, {
+                "x": 0.470,
+                "y": 0.175,
+                "name": "12",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd01"
+            }, {
+                "x": 0.507,
+                "y": 0.175,
+                "name": "11",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd02"
+            }, {
+                "x": 0.539,
+                "y": 0.175,
+                "name": "10",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd03"
+            }, {
+                "x": 0.575,
+                "y": 0.175,
+                "name": "9",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd04"
+            }, {
+                "x": 0.609,
+                "y": 0.175,
+                "name": "8",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd05"
+            }, {
+                "x": 0.662,
+                "y": 0.175,
+                "name": "7",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd06"
+            }, {
+                "x": 0.698,
+                "y": 0.175,
+                "name": "6",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd07"
+            }, {
+                "x": 0.733,
+                "y": 0.175,
+                "name": "5",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd08"
+            }, {
+                "x": 0.767,
+                "y": 0.175,
+                "name": "4",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd09"
+            }, {
+                "x": 0.802,
+                "y": 0.175,
+                "name": "3",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd10"
+            }, {
+                "x": 0.837,
+                "y": 0.175,
+                "name": "2",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd11"
+            }, {
+                "x": 0.871,
+                "y": 0.175,
+                "name": "1",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd12"
+            }, {
+                "x": 0.907,
+                "y": 0.175,
+                "name": "0",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd13"
+            }],
+            "analog": [{
+                "x": 0.844,
+                "y": 0.785,
+                "name": "A5",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53ba00"
+            }, {
+                "x": 0.81,
+                "y": 0.785,
+                "name": "A4",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53ba01"
+            }, {
+                "x": 0.775,
+                "y": 0.785,
+                "name": "A3",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53ba02"
+            }, {
+                "x": 0.741,
+                "y": 0.785,
+                "name": "A2",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53ba03"
+            }, {
+                "x": 0.705,
+                "y": 0.785,
+                "name": "A1",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53ba04"
+            }, {
+                "x": 0.67,
+                "y": 0.785,
+                "name": "A0",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53ba05"
+            }],
+            "serial": [{
+                "x": 0.078,
+                "y": 0.505,
+                "name": "serial",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bc05"
+            }],
+            "i2c-4": [{
+                "x": 0.81,
+                "y": 0.734,
+                "name": "A4",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53b201"
+            }, {
+                "x": 0.869,
+                "y": 0.913,
+                "name": "A4-H",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53b203"
+            }],
+            "i2c-5": [{
+                "x": 0.844,
+                "y": 0.734,
+                "name": "A5",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53b200"
+            }, {
+                "x": 0.903,
+                "y": 0.913,
+                "name": "A5-H",
+                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53b202"
+            }]
+        }
+    },{
+        "uuid": "bqZUM",
+        "mcu": "bt328",
+        "vendorIds": ["0x403"],
+        "productIds": ["0x6001"],
+        "order": 2,
         "showInToolbox": true,
         "pinSize": {
             "digital": {
@@ -166,7 +327,7 @@
         "vendorIds": ["0x2341"],
         "productIds": ["0x1"],
         "showInToolbox": true,
-        "order": 2,
+        "order": 3,
         "pinSize": {
             "digital": {
                 "w": 9,
@@ -327,7 +488,7 @@
         "vendorIds": ["0x2341"],
         "productIds": ["0x43"],
         "showInToolbox": true,
-        "order": 3,
+        "order": 4,
         "pinSize": {
             "digital": {
                 "w": 9,
@@ -479,7 +640,7 @@
         "vendorIds": ["0x1A86"],
         "productIds": ["0x7523"],
         "showInToolbox": false,
-        "order": 7,
+        "order": 8,
         "underDevelopment": false,
         "pinSize": {
             "yellow blue white": {
@@ -542,7 +703,7 @@
         "vendorIds": ["0x2341"],
         "productIds": ["0x0043"],
         "showInToolbox": false,
-        "order": 10,
+        "order": 11,
         "underDevelopment": false,
         "pinSize": {},
         "pins": {}
@@ -651,7 +812,7 @@
         "productIds": ["0x7523"],
         "manufacturer": "makeblock",
         "underDevelopment": false,
-        "order": 9,
+        "order": 10,
         "showInToolbox": false,
         "pinSize": {
             "red": {
@@ -747,7 +908,7 @@
         "mcu": "mega",
         "underDevelopment": false,
         "showInToolbox": true,
-        "order": 4,
+        "order": 5,
         "vendorIds": ["0x2341"],
         "productIds": ["0x10", "0x0042", "0x6001", "0x0010"],
         "pinSize": {
@@ -1149,7 +1310,7 @@
         "mcu": "leonardo",
         "underDevelopment": true,
         "showInToolbox": true,
-        "order": 5,
+        "order": 6,
         "vendorIds": ["0x2341"],
         "productIds": ["0x0036", "0x8036", "0x800c"],
         "pinSize": {
@@ -1301,7 +1462,7 @@
         "mcu": "nano",
         "underDevelopment": true,
         "showInToolbox": true,
-        "order": 6,
+        "order": 7,
         "vendorIds": ["0x2341"],
         "productIds": ["0x6001", "0x7523"],
         "pinSize": {
