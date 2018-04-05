@@ -932,5 +932,181 @@
                 }
             }
         }
+    }, {
+        "data": {
+            "uuid": "zumjunior_double_led",
+            "manufacturer": "bq-zumjunior",
+            "category": "zumjuniorDoubleLeds",
+            "width": 124,
+            "height": 125,
+            "pins": {
+                "ad": [
+                    "s"
+                ]
+            }
+        },
+        "included": {
+            "boards": {
+                "compatible": ["zumjunior"]
+            }
+        }
+    }, {
+        "data": {
+            "uuid": "zumjunior_slider",
+            "manufacturer": "bq-zumjunior",
+            "category": "zumjuniorSliders",
+            "width": 123,
+            "height": 125,
+            "pins": {
+                "ad": [
+                    "s"
+                ]
+            }
+        },
+        "included": {
+            "boards": {
+                "compatible": ["zumjunior"]
+            }
+        }
+    }, {
+        "data": {
+            "uuid": "zumjunior_button",
+            "manufacturer": "bq-zumjunior",
+            "category": "zumjuniorButtons",
+            "width": 124,
+            "height": 125,
+            "pins": {
+                "ad": [
+                    "s"
+                ]
+            }
+        },
+        "included": {
+            "boards": {
+                "compatible": ["zumjunior"]
+            }
+        }
+    }, {
+        "data": {
+            "uuid": "zumjunior_7segment",
+            "manufacturer": "bq-zumjunior",
+            "category": "zumjunior7segments",
+            "width": 124,
+            "height": 124,
+            "pins": {
+                "i2c": [
+                    "s"
+                ]
+            }
+        },
+        "included": {
+            "boards": {
+                "compatible": ["zumjunior"]
+            }
+        }
+    }, {
+        "data": {
+            "uuid": "zumjunior_sensors",
+            "manufacturer": "bq-zumjunior",
+            "category": "zumjuniorSensors",
+            "width": 123,
+            "height": 124,
+            "pins": {
+                "i2c": [
+                    "s"
+                ]
+            }
+        },
+        "included": {
+            "boards": {
+                "compatible": ["zumjunior"]
+            }
+        }
+    }, {
+        "data": {
+            "uuid": "zumjunior_servo",
+            "manufacturer": "bq-zumjunior",
+            "category": "zumjuniorServos",
+            "width": 120,
+            "height": 132,
+            "pins": {
+                "ad": [
+                    "s"
+                ]
+            }
+        },
+        "included": {
+            "boards": {
+                "compatible": ["zumjunior"]
+            }
+        }
+    }, {
+        "data": {
+            "uuid": "zumjunior_miniservo",
+            "manufacturer": "bq-zumjunior",
+            "category": "zumjuniorMiniservos",
+            "width": 88,
+            "height": 95,
+            "pins": {
+                "ad": [
+                    "s"
+                ]
+            }
+        },
+        "included": {
+            "boards": {
+                "compatible": ["zumjunior"]
+            }
+        }
+    }, {
+        "data": {
+            "uuid": "zumjunior_integrated_led",
+            "manufacturer": "bq-zumjunior",
+            "category": "zumjuniorIntegratedLeds",
+            "width": 0,
+            "height": 0,
+            "pins": {
+                "ad": [
+                    "s"
+                ]
+            }
+        },
+        "included": {
+            "boards": {
+                "integrated": {
+                    "zumjunior": [{
+                        "id": "zumjunior_integrated_led",
+                        "name": "default-var-name-zumjunior_integrated_led",
+                        "pin": {},
+                        "uid": "zumjunior_integrated_led"
+                    }]
+                }
+            }
+        }
+    }, {
+        "data": {
+            "uuid": "zumjunior_integrated_buzz",
+            "manufacturer": "bq-zumjunior",
+            "category": "zumjuniorIntegratedBuzzers",
+            "width": 0,
+            "height": 0,
+            "pins": {
+                "ad": [
+                    "s"
+                ]
+            }
+        },
+        "included": {
+            "boards": {
+                "integrated": {
+                    "zumjunior": [{
+                        "id": "zumjunior_integrated_buzz",
+                        "name": "default-var-name-zumjunior_integrated_buzz",
+                        "pin": {},
+                        "uid": "zumjunior_integrated_buzz"
+                    }]
+                }
+            }
+        }
     }]
 }

@@ -1,5 +1,58 @@
 {
     "boards": [{
+        "uuid": "zumjunior",
+        "mcu": "uno",
+        "manufacturer": "bq",
+        "vendorIds": ["0x4292"],
+        "productIds": ["0x60000"],
+        "showInToolbox": true,
+        "order": 0,
+        "underDevelopment": false,
+        "pinSize": {
+            "ad i2c": {
+                "w": 14,
+                "h": 14
+            },
+            "ad": {
+                "w": 14,
+                "h": 14
+            }
+        },
+        "pins": {
+            "ad i2c": [{
+                "x": 0.561,
+                "y": 0.028,
+                "name": "A",
+                "uid": "zumjunior-adi2c-A"
+            }, {
+                "x": 0.441,
+                "y": 0.028,
+                "name": "B",
+                "uid": "zumjunior-adi2c-B"
+            }],
+            "ad": [{
+                "x": 0.15,
+                "y": 0.431,
+                "name": "1",
+                "uid": "zumjunior-ad-1"
+            }, {
+                "x": 0.15,
+                "y": 0.571,
+                "name": "2",
+                "uid": "zumjunior-ad-2"
+            }, {
+                "x": 0.85,
+                "y": 0.571,
+                "name": "3",
+                "uid": "zumjunior-ad-3"
+            }, {
+                "x": 0.85,
+                "y": 0.431,
+                "name": "4",
+                "uid": "zumjunior-ad-4"
+            }]
+        }
+    }, {
         "uuid": "bqZUM20",
         "mcu": "bt328",
         "vendorIds": ["0x403"],
@@ -33,131 +86,131 @@
                 "x": 0.435,
                 "y": 0.175,
                 "name": "13",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd00"
+                "uid": "bqZUM20-digital-13"
             }, {
                 "x": 0.470,
                 "y": 0.175,
                 "name": "12",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd01"
+                "uid": "bqZUM20-digital-12"
             }, {
                 "x": 0.507,
                 "y": 0.175,
                 "name": "11",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd02"
+                "uid": "bqZUM20-digital-11"
             }, {
                 "x": 0.539,
                 "y": 0.175,
                 "name": "10",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd03"
+                "uid": "bqZUM20-digital-10"
             }, {
                 "x": 0.575,
                 "y": 0.175,
                 "name": "9",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd04"
+                "uid": "bqZUM20-digital-9"
             }, {
                 "x": 0.609,
                 "y": 0.175,
                 "name": "8",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd05"
+                "uid": "bqZUM20-digital-8"
             }, {
                 "x": 0.662,
                 "y": 0.175,
                 "name": "7",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd06"
+                "uid": "bqZUM20-digital-7"
             }, {
                 "x": 0.698,
                 "y": 0.175,
                 "name": "6",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd07"
+                "uid": "bqZUM20-digital-6"
             }, {
                 "x": 0.733,
                 "y": 0.175,
                 "name": "5",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd08"
+                "uid": "bqZUM20-digital-5"
             }, {
                 "x": 0.767,
                 "y": 0.175,
                 "name": "4",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd09"
+                "uid": "bqZUM20-digital-4"
             }, {
                 "x": 0.802,
                 "y": 0.175,
                 "name": "3",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd10"
+                "uid": "bqZUM20-digital-3"
             }, {
                 "x": 0.837,
                 "y": 0.175,
                 "name": "2",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd11"
+                "uid": "bqZUM20-digital-2"
             }, {
                 "x": 0.871,
                 "y": 0.175,
                 "name": "1",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd12"
+                "uid": "bqZUM20-digital-1"
             }, {
                 "x": 0.907,
                 "y": 0.175,
                 "name": "0",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bd13"
+                "uid": "bqZUM20-digital-0"
             }],
             "analog": [{
                 "x": 0.844,
                 "y": 0.785,
                 "name": "A5",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53ba00"
+                "uid": "bqZUM20-analog-A5"
             }, {
                 "x": 0.81,
                 "y": 0.785,
                 "name": "A4",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53ba01"
+                "uid": "bqZUM20-analog-A4"
             }, {
                 "x": 0.775,
                 "y": 0.785,
                 "name": "A3",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53ba02"
+                "uid": "bqZUM20-analog-A3"
             }, {
                 "x": 0.741,
                 "y": 0.785,
                 "name": "A2",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53ba03"
+                "uid": "bqZUM20-analog-A2"
             }, {
                 "x": 0.705,
                 "y": 0.785,
                 "name": "A1",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53ba04"
+                "uid": "bqZUM20-analog-A1"
             }, {
                 "x": 0.67,
                 "y": 0.785,
                 "name": "A0",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53ba05"
+                "uid": "bqZUM20-analog-A0"
             }],
             "serial": [{
                 "x": 0.078,
                 "y": 0.505,
                 "name": "serial",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53bc05"
+                "uid": "bqZUM20-serial"
             }],
             "i2c-4": [{
                 "x": 0.81,
                 "y": 0.734,
                 "name": "A4",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53b201"
+                "uid": "bqZUM20-i2c-a4"
             }, {
                 "x": 0.869,
                 "y": 0.913,
                 "name": "A4-H",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53b203"
+                "uid": "bqZUM20-i2c-a4-h"
             }],
             "i2c-5": [{
                 "x": 0.844,
                 "y": 0.734,
                 "name": "A5",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53b200"
+                "uid": "bqZUM20-i2c-a5"
             }, {
                 "x": 0.903,
                 "y": 0.913,
                 "name": "A5-H",
-                "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53b202"
+                "uid": "bqZUM20-i2c-a5-h"
             }]
         }
     },{
