@@ -604,10 +604,10 @@ exports.share = function (req, res) {
         } else {
             if (project && project.isOwner(userId)) {
                 project.resetShare();
-                async.map(emails, function (email, done) {
+                async.map(emails, function (email, next) {
                     email = email.toLowerCase();
                     if (email === req.user.email) {
-                        done();
+                        next();
                     } else {
                         UserFunctions.getUserId(email, function (err, user) {
                             if (user) {
@@ -627,21 +627,13 @@ exports.share = function (req, res) {
                                 } else {
                                     locals.projectUrl = config.client_domain + '#/login?init=/bloqsproject/' + projectId;
                                 }
-
-                                mailer.sendOne('shareProject', locals, function (err) {
-                                    if (err) {
-                                        console.log(err);
-                                        err.code = utils.getValidHttpErrorCode(err);
-                                        res.status(err.code).send(err);
-                                    } else {
-                                        res.status(200);
-                                    }
-                                });
                                 response.users.push(email);
+                                mailer.sendOne('shareProject', locals, next);
+
                             } else if (!err) {
                                 response.noUsers.push(email);
+                                next();
                             }
-                            done(err);
                         });
                     }
                 },
