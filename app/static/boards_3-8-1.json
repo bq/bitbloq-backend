@@ -1,7 +1,7 @@
 {
     "boards": [{
         "uuid": "zumjunior",
-        "mcu": "uno",
+        "mcu": "zumjunior",
         "manufacturer": "bq",
         "vendorIds": ["0x4292"],
         "productIds": ["0x60000"],
@@ -54,7 +54,7 @@
         }
     }, {
         "uuid": "bqZUM20",
-        "mcu": "bt328",
+        "mcu": "zumcore2",
         "vendorIds": ["0x403"],
         "productIds": ["0x6001"],
         "order": 1,
