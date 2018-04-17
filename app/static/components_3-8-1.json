@@ -368,7 +368,7 @@
                         "uid": "sp"
                     }]
                 },
-                "compatible": ["mcore", "meauriga", "meorion"]
+                "compatible": ["mcore", "meauriga", "meorion","zumjunior"]
             }
         }
     }, {
