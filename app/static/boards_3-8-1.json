@@ -16,6 +16,10 @@
             "ad": {
                 "w": 14,
                 "h": 14
+            },
+            "serial": {
+                "w": 14,
+                "h": 14
             }
         },
         "pins": {
@@ -50,6 +54,12 @@
                 "y": 0.431,
                 "name": "4",
                 "uid": "zumjunior-ad-4"
+            }],
+            "serial": [{
+				"x": 0.56,
+                "y": 0.98,
+                "name": "serial",
+                "uid": "zumjunior-serial"
             }]
         }
     }, {
