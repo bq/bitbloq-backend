@@ -36,6 +36,14 @@
         {
             "name": "Diego Segura",
             "email": "diego.segura@bq.com"
+        },
+        {
+            "name": "Alberto Valero",
+            "email": "alberto.valero@bq.com"
+        },
+        {
+            "name": "David García Paredes",
+            "email": "davidgparedes@gmail.com"
         }
     ],
     "license": "GPL-3.0",
