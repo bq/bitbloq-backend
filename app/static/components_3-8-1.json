@@ -1059,6 +1059,19 @@
             }
         }
     }, {
+      "data": {
+        "uuid": "neoRGBled",
+        "manufacturer": "standard",
+        "category": "rgbs",
+        "width": 67,
+        "height": 79,
+        "pins": {
+          "digital": [
+            "s"
+          ]
+        }
+      }
+    }, {
         "data": {
             "uuid": "zumjunior_integrated_led",
             "manufacturer": "bq-zumjunior",
