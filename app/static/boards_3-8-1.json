@@ -1,5 +1,5 @@
 {
-  "boards": [
+"boards": [
     {
       "uuid": "zumjunior",
       "mcu": "zumjunior",
@@ -851,6 +851,201 @@
       }
     },
     {
+      "uuid": "buildandcode",
+      "mcu": "uno",
+      "showInToolbox": true,
+      "order": 3,
+      "pinSize": {
+        "greymotor": {
+          "h": 41,
+          "w": 25
+        },
+        "serial": {
+          "h": 37,
+          "w": 25
+        },
+        "analog": {
+          "h": 40,
+          "w": 12
+        },
+        "digital": {
+          "h": 40,
+          "w": 12
+        }
+      },
+      "pins": {
+        "greymotor": [
+          {
+            "y": 0.448,
+            "x": 0.915,
+            "name": "AO",
+            "uid": "buildandcode-greymotor-00"
+          },
+          {
+            "y": 0.72,
+            "x": 0.915,
+            "name": "BO",
+            "uid": "buildandcode-greymotor-01"
+          }
+        ],
+        "serial": [
+          {
+            "uid": "buildandcode-serial-00",
+            "name": "serial",
+            "y": 0.783,
+            "x": 0.09
+          }
+        ],
+        "analog": [
+          {
+            "uid": "buildandcode-analog-00",
+            "name": "A0",
+            "y": 0.87,
+            "x": 0.4
+          },
+          {
+            "uid": "buildandcode-analog-01",
+            "name": "A1",
+            "y": 0.87,
+            "x": 0.435
+          },
+          {
+            "uid": "buildandcode-analog-02",
+            "name": "A2",
+            "y": 0.87,
+            "x": 0.467
+          },
+          {
+            "uid": "buildandcode-analog-03",
+            "name": "A3",
+            "y": 0.87,
+            "x": 0.5
+          },
+          {
+            "uid": "buildandcode-analog-04",
+            "name": "A4",
+            "y": 0.87,
+            "x": 0.535
+          },
+          {
+            "uid": "buildandcode-analog-05",
+            "name": "A5",
+            "y": 0.87,
+            "x": 0.568
+          }
+        ],
+        "digital": [
+          {
+            "uid": "buildandcode-digital-13",
+            "name": "13",
+            "y": 0.129,
+            "x": 0.39622
+          },
+          {
+            "uid": "buildandcode-digital-12",
+            "name": "12",
+            "y": 0.129,
+            "x": 0.43
+          },
+          {
+            "uid": "buildandcode-digital-11",
+            "name": "11",
+            "y": 0.129,
+            "x": 0.465
+          },
+          {
+            "uid": "buildandcode-digital-10",
+            "name": "10",
+            "y": 0.129,
+            "x": 0.4985
+          },
+          {
+            "uid": "buildandcode-digital-09",
+            "name": "9",
+            "y": 0.129,
+            "x": 0.532
+          },
+          {
+            "uid": "buildandcode-digital-08",
+            "name": "8",
+            "y": 0.129,
+            "x": 0.565
+          },
+          {
+            "uid": "buildandcode-digital-07",
+            "name": "7",
+            "y": 0.129,
+            "x": 0.599
+          },
+          {
+            "uid": "buildandcode-digital-06",
+            "name": "6",
+            "y": 0.129,
+            "x": 0.633
+          },
+          {
+            "uid": "buildandcode-digital-05",
+            "name": "5",
+            "y": 0.129,
+            "x": 0.666
+          },
+          {
+            "uid": "buildandcode-digital-04",
+            "name": "4",
+            "y": 0.129,
+            "x": 0.7
+          },
+          {
+            "uid": "buildandcode-digital-03",
+            "name": "3",
+            "y": 0.129,
+            "x": 0.735
+          },
+          {
+            "uid": "buildandcode-digital-02",
+            "name": "2",
+            "y": 0.129,
+            "x": 0.768
+          }
+        ]
+      },
+      "integratedComponents": [
+        
+      ],
+      "availableComponents": [
+        "drivegearmotor",
+        "led",
+        "bt",
+        "ldrs",
+        "RGBled",
+        "neoRGBled",
+        "encoder",
+        "irs",
+        "limitswitch",
+        "button",
+        "sound",
+        "rtc",
+        "irs2",
+        "servo",
+        "hts221",
+        "lcd",
+        "device",
+        "us",
+        "joystick",
+        "sp",
+        "buzz",
+        "buttons",
+        "pot",
+        "servocont"
+      ],
+      "productIds": [
+        "0x7523"
+      ],
+      "vendorIds": [
+        "0x1A86"
+      ]
+    },
+    {
       "uuid": "mcore",
       "mcu": "uno",
       "manufacturer": "makeblock",
@@ -942,10 +1137,10 @@
       "order": 11,
       "underDevelopment": false,
       "pinSize": {
-
+        
       },
       "pins": {
-
+        
       }
     },
     {
@@ -1862,201 +2057,6 @@
           }
         ]
       }
-    },
-    {
-      "uuid": "buildandcode",
-      "mcu": "uno",
-      "showInToolbox": true,
-      "order": 3,
-      "pinSize": {
-        "greymotor": {
-          "h": 41,
-          "w": 25
-        },
-        "serial": {
-          "h": 37,
-          "w": 25
-        },
-        "analog": {
-          "h": 40,
-          "w": 12
-        },
-        "digital": {
-          "h": 40,
-          "w": 12
-        }
-      },
-      "pins": {
-        "greymotor": [
-          {
-            "y": 0.448,
-            "x": 0.915,
-            "name": "AO",
-            "uid": "buildandcode-greymotor-00"
-          },
-          {
-            "y": 0.72,
-            "x": 0.915,
-            "name": "BO",
-            "uid": "buildandcode-greymotor-01"
-          }
-        ],
-        "serial": [
-          {
-            "uid": "buildandcode-serial-00",
-            "name": "serial",
-            "y": 0.783,
-            "x": 0.09
-          }
-        ],
-        "analog": [
-          {
-            "uid": "buildandcode-analog-00",
-            "name": "A0",
-            "y": 0.87,
-            "x": 0.4
-          },
-          {
-            "uid": "buildandcode-analog-01",
-            "name": "A1",
-            "y": 0.87,
-            "x": 0.435
-          },
-          {
-            "uid": "buildandcode-analog-02",
-            "name": "A2",
-            "y": 0.87,
-            "x": 0.467
-          },
-          {
-            "uid": "buildandcode-analog-03",
-            "name": "A3",
-            "y": 0.87,
-            "x": 0.5
-          },
-          {
-            "uid": "buildandcode-analog-04",
-            "name": "A4",
-            "y": 0.87,
-            "x": 0.535
-          },
-          {
-            "uid": "buildandcode-analog-05",
-            "name": "A5",
-            "y": 0.87,
-            "x": 0.568
-          }
-        ],
-        "digital": [
-          {
-            "uid": "buildandcode-digital-13",
-            "name": "13",
-            "y": 0.129,
-            "x": 0.39622
-          },
-          {
-            "uid": "buildandcode-digital-12",
-            "name": "12",
-            "y": 0.129,
-            "x": 0.43
-          },
-          {
-            "uid": "buildandcode-digital-11",
-            "name": "11",
-            "y": 0.129,
-            "x": 0.465
-          },
-          {
-            "uid": "buildandcode-digital-10",
-            "name": "10",
-            "y": 0.129,
-            "x": 0.4985
-          },
-          {
-            "uid": "buildandcode-digital-09",
-            "name": "9",
-            "y": 0.129,
-            "x": 0.532
-          },
-          {
-            "uid": "buildandcode-digital-08",
-            "name": "8",
-            "y": 0.129,
-            "x": 0.565
-          },
-          {
-            "uid": "buildandcode-digital-07",
-            "name": "7",
-            "y": 0.129,
-            "x": 0.599
-          },
-          {
-            "uid": "buildandcode-digital-06",
-            "name": "6",
-            "y": 0.129,
-            "x": 0.633
-          },
-          {
-            "uid": "buildandcode-digital-05",
-            "name": "5",
-            "y": 0.129,
-            "x": 0.666
-          },
-          {
-            "uid": "buildandcode-digital-04",
-            "name": "4",
-            "y": 0.129,
-            "x": 0.7
-          },
-          {
-            "uid": "buildandcode-digital-03",
-            "name": "3",
-            "y": 0.129,
-            "x": 0.735
-          },
-          {
-            "uid": "buildandcode-digital-02",
-            "name": "2",
-            "y": 0.129,
-            "x": 0.768
-          }
-        ]
-      },
-      "integratedComponents": [
-
-      ],
-      "availableComponents": [
-        "drivegearmotor",
-        "led",
-        "bt",
-        "ldrs",
-        "RGBled",
-        "neoRGBled",
-        "encoder",
-        "irs",
-        "limitswitch",
-        "button",
-        "sound",
-        "rtc",
-        "irs2",
-        "servo",
-        "hts221",
-        "lcd",
-        "device",
-        "us",
-        "joystick",
-        "sp",
-        "buzz",
-        "buttons",
-        "pot",
-        "servocont"
-      ],
-      "productIds": [
-        "0x7523"
-      ],
-      "vendorIds": [
-        "0x1A86"
-      ]
     },
     {
       "uuid": "ArduinoNano",
