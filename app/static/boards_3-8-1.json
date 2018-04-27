@@ -2,7 +2,7 @@
   {
     "uuid": "bqZUM",
     "mcu": "bt328",
-    "order": 1,
+    "order": 2,
     "showInToolbox": true,
     "pinSize": {
       "i2c-5": {
@@ -201,7 +201,7 @@
       }
     ],
     "availableComponents": [
-
+      
     ],
     "productIds": [
       "0x6001"
@@ -211,13 +211,223 @@
     ],
     "shields": [
       "echidna-bqZUM"
-    ]
+    ],
+    "__v": 0
+  },
+  {
+    "uuid": "FreaduinoUNO",
+    "mcu": "uno",
+    "shields": [
+      "echidna-FreaduinoUNO"
+    ],
+    "showInToolbox": true,
+    "order": 3,
+    "pinSize": {
+      "i2c-5": {
+        "h": 9,
+        "w": 9
+      },
+      "i2c-4": {
+        "h": 9,
+        "w": 9
+      },
+      "serial": {
+        "h": 37,
+        "w": 25
+      },
+      "analog": {
+        "h": 37,
+        "w": 9
+      },
+      "digital": {
+        "h": 37,
+        "w": 9
+      }
+    },
+    "pins": {
+      "i2c-5": [
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53f200",
+          "name": "A5",
+          "y": 0.734,
+          "x": 0.825
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53f202",
+          "name": "A5-H",
+          "y": 0.923,
+          "x": 0.913
+        }
+      ],
+      "i2c-4": [
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53f201",
+          "name": "A4",
+          "y": 0.734,
+          "x": 0.793
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53f203",
+          "name": "A4-H",
+          "y": 0.923,
+          "x": 0.879
+        }
+      ],
+      "serial": [
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fc05",
+          "name": "serial",
+          "y": 0.218,
+          "x": 0.058
+        }
+      ],
+      "analog": [
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fa00",
+          "name": "A0",
+          "y": 0.79,
+          "x": 0.661
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fa01",
+          "name": "A1",
+          "y": 0.79,
+          "x": 0.692
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fa02",
+          "name": "A2",
+          "y": 0.79,
+          "x": 0.728
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fa03",
+          "name": "A3",
+          "y": 0.79,
+          "x": 0.76
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fa04",
+          "name": "A4",
+          "y": 0.79,
+          "x": 0.793
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fa05",
+          "name": "A5",
+          "y": 0.79,
+          "x": 0.825
+        }
+      ],
+      "digital": [
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd00",
+          "name": "13",
+          "y": 0.172,
+          "x": 0.476
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd01",
+          "name": "12",
+          "y": 0.172,
+          "x": 0.507
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd02",
+          "name": "11",
+          "y": 0.172,
+          "x": 0.541
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd03",
+          "name": "10",
+          "y": 0.172,
+          "x": 0.575
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd04",
+          "name": "9",
+          "y": 0.172,
+          "x": 0.607
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd05",
+          "name": "8",
+          "y": 0.172,
+          "x": 0.639
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd06",
+          "name": "7",
+          "y": 0.172,
+          "x": 0.672
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd07",
+          "name": "6",
+          "y": 0.172,
+          "x": 0.702
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd08",
+          "name": "5",
+          "y": 0.172,
+          "x": 0.738
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd09",
+          "name": "4",
+          "y": 0.172,
+          "x": 0.77
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd10",
+          "name": "3",
+          "y": 0.172,
+          "x": 0.807
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd11",
+          "name": "2",
+          "y": 0.172,
+          "x": 0.838
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd12",
+          "name": "1",
+          "y": 0.172,
+          "x": 0.87
+        },
+        {
+          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd13",
+          "name": "0",
+          "y": 0.172,
+          "x": 0.904
+        }
+      ]
+    },
+    "integratedComponents": [
+      
+    ],
+    "availableComponents": [
+      
+    ],
+    "productIds": [
+      "0x1"
+    ],
+    "vendorIds": [
+      "0x2341"
+    ],
+    "__v": 0
   },
   {
     "uuid": "ArduinoUNO",
     "mcu": "uno",
     "showInToolbox": true,
-    "order": 3,
+    "order": 4,
+    "shields": [
+      "echidna-ArduinoUNO"
+    ],
     "pinSize": {
       "i2c-5": {
         "h": 9,
@@ -391,10 +601,10 @@
       ]
     },
     "integratedComponents": [
-
+      
     ],
     "availableComponents": [
-
+      
     ],
     "productIds": [
       "0x43"
@@ -402,16 +612,14 @@
     "vendorIds": [
       "0x2341"
     ],
-    "shields": [
-      "echidna-ArduinoUNO"
-    ]
+    "__v": 0
   },
   {
     "uuid": "ArduinoMEGA2560",
     "mcu": "mega",
     "underDevelopment": false,
     "showInToolbox": true,
-    "order": 4,
+    "order": 5,
     "pinSize": {
       "i2c-5": {
         "h": 9,
@@ -885,10 +1093,10 @@
       ]
     },
     "integratedComponents": [
-
+      
     ],
     "availableComponents": [
-
+      
     ],
     "productIds": [
       "0x10",
@@ -898,14 +1106,18 @@
     ],
     "vendorIds": [
       "0x2341"
+    ],
+    "__v": 1,
+    "shields": [
+      
     ]
   },
   {
-    "uuid": "ArduinoNano",
+  "uuid": "ArduinoNano",
     "mcu": "nano",
     "underDevelopment": true,
     "showInToolbox": true,
-    "order": 6,
+    "order": 7,
     "pinSize": {
       "i2c-5": {
         "h": 9,
@@ -1079,10 +1291,10 @@
       ]
     },
     "integratedComponents": [
-
+      
     ],
     "availableComponents": [
-
+      
     ],
     "productIds": [
       "0x6001",
@@ -1090,160 +1302,14 @@
     ],
     "vendorIds": [
       "0x2341"
-    ]
-  },
-  {
-    "uuid": "mcore",
-    "mcu": "uno",
-    "manufacturer": "makeblock",
-    "showInToolbox": false,
-    "order": 7,
-    "underDevelopment": false,
-    "pinSize": {
-      "wireless": {
-        "w": 11,
-        "h": 65
-      },
-      "serial": {
-        "h": 38,
-        "w": 38
-      },
-      "yellow blue black white": {
-        "h": 38,
-        "w": 37
-      },
-      "yellow blue white": {
-        "h": 38,
-        "w": 37
-      }
-    },
-    "pins": {
-      "wireless": [
-        {
-          "x": 0.109,
-          "y": 0.635,
-          "name": "wireless",
-          "uid": "mcore-wireless"
-        }
-      ],
-      "serial": [
-        {
-          "uid": "mcore-serial",
-          "name": "serial",
-          "y": 0.9,
-          "x": 0.35
-        }
-      ],
-      "yellow blue black white": [
-        {
-          "uid": "mcore-yellowBlueBlackWhite-3",
-          "name": "3",
-          "y": 0.9,
-          "x": 0.701
-        },
-        {
-          "uid": "mcore-yellowBlueBlackWhite-4",
-          "name": "4",
-          "y": 0.9,
-          "x": 0.57
-        }
-      ],
-      "yellow blue white": [
-        {
-          "uid": "mcore-yellowBlueWhite-1",
-          "name": "1",
-          "y": 0.171,
-          "x": 0.57
-        },
-        {
-          "uid": "mcore-yellowBlueWhite-2",
-          "name": "2",
-          "y": 0.171,
-          "x": 0.701
-        }
-      ]
-    },
-    "integratedComponents": [
-      {
-        "uid": "mkb-mcore-button",
-        "pin": {
-          "s": "A7"
-        },
-        "name": "default-var-name-mkb_integrated_analogPinButton",
-        "id": "mkb_integrated_analogPinButton"
-      },
-      {
-        "uid": "mkb-mcore-ldrs",
-        "pin": {
-          "s": 0
-        },
-        "name": "default-var-name-mkb_integrated_lightsensor",
-        "id": "mkb_integrated_lightsensor"
-      },
-      {
-        "uid": "mkb-mcore-RGBled-0",
-        "pin": {
-          "s": 0
-        },
-        "name": "default-var-name-mkb_integrated_rgb_both",
-        "id": "mkb_integrated_RGB"
-      },
-      {
-        "uid": "mkb-mcore-RGBled-1",
-        "pin": {
-          "s": 1
-        },
-        "name": "default-var-name-mkb_integrated_rgb_right",
-        "id": "mkb_integrated_RGB"
-      },
-      {
-        "uid": "mkb-mcore-RGBled-2",
-        "pin": {
-          "s": 2
-        },
-        "name": "default-var-name-mkb_integrated_rgb_left",
-        "id": "mkb_integrated_RGB"
-      },
-      {
-        "uid": "mkb-mcore-buzz",
-        "pin": {
-          "s": 8
-        },
-        "name": "default-var-name-mkb_integrated_buzz",
-        "id": "mkb_integrated_buzz"
-      }
     ],
-    "availableComponents": [
-      "mkb_infrared",
-      "mkb_lightsensor",
-      "mkb_joystick",
-      "mkb_bluetooth",
-      "mkb_linefollower",
-      "mkb_ultrasound",
-      "mkb_soundsensor",
-      "mkb_remote",
-      "mkb_4buttonKeyPad",
-      "mkb_motionSensor",
-      "mkb_pot",
-      "mkb_display7seg",
-      "mkb_ledmatrix",
-      "sp",
-      "mkb_fan",
-      "mkb_compass",
-      "mkb_RGBLed"
-    ],
-    "productIds": [
-      "0x7523"
-    ],
-    "vendorIds": [
-      "0x1A86"
-    ],
+    "__v": 1,
     "shields": [
-
+      
     ]
   },
   {
-    "uuid": "meauriga",
+   "uuid": "meauriga",
     "mcu": "mega",
     "manufacturer": "makeblock",
     "underDevelopment": false,
@@ -1486,16 +1552,18 @@
       }
     ],
     "availableComponents": [
-      "sp",
+      "mkb_infrared",
       "mkb_lightsensor",
-      "mkb_ultrasound",
       "mkb_linefollower",
-      "mkb_joystick",
-      "mkb_soundsensor",
+      "mkb_ultrasound",
+      "sp",
       "mkb_pot",
       "mkb_motionSensor",
-      "mkb_4buttonKeyPad",
+      "mkb_ledmatrix",
+      "mkb_soundsensor",
+      "mkb_joystick",
       "mkb_display7seg",
+      "mkb_4buttonKeyPad",
       "mkb_fan",
       "mkb_compass",
       "mkb_RGBLed"
@@ -1506,45 +1574,34 @@
     "vendorIds": [
       "0x1A86"
     ],
+    "__v": 0,
     "shields": [
-
+      
     ]
   },
   {
-    "uuid": "meorion",
+   "uuid": "mcore",
     "mcu": "uno",
     "manufacturer": "makeblock",
-    "underDevelopment": false,
-    "order": 9,
     "showInToolbox": false,
+    "order": 8,
+    "underDevelopment": false,
     "pinSize": {
       "wireless": {
         "w": 11,
         "h": 65
       },
       "serial": {
-        "h": 30,
-        "w": 22
+        "h": 38,
+        "w": 38
       },
       "yellow blue black white": {
-        "h": 50,
-        "w": 50
-      },
-      "yellow black white": {
-        "h": 50,
-        "w": 50
-      },
-      "yellow blue grey": {
-        "h": 50,
-        "w": 50
+        "h": 38,
+        "w": 37
       },
       "yellow blue white": {
-        "h": 50,
-        "w": 50
-      },
-      "red": {
-        "h": 50,
-        "w": 50
+        "h": 38,
+        "w": 37
       }
     },
     "pins": {
@@ -1553,90 +1610,111 @@
           "x": 0.109,
           "y": 0.635,
           "name": "wireless",
-          "uid": "morion-wireless"
+          "uid": "mcore-wireless"
         }
       ],
       "serial": [
         {
-          "uid": "morion-serial",
+          "uid": "mcore-serial",
           "name": "serial",
-          "y": 0.71,
-          "x": 0.1
-        }
-      ],
-      "yellow black white": [
-        {
-          "uid": "morion-yellowBlackWhite-7",
-          "name": "7",
-          "y": 0.885,
-          "x": 0.498
-        },
-        {
-          "uid": "morion-yellowBlackWhite-8",
-          "name": "8",
-          "y": 0.885,
-          "x": 0.34
+          "y": 0.9,
+          "x": 0.35
         }
       ],
       "yellow blue black white": [
         {
-          "uid": "morion-yellowBlueBlackWhite-6",
-          "name": "6",
-          "y": 0.885,
-          "x": 0.656
-        }
-      ],
-      "yellow blue grey": [
+          "uid": "mcore-yellowBlueBlackWhite-3",
+          "name": "3",
+          "y": 0.9,
+          "x": 0.701
+        },
         {
-          "uid": "morion-yellowBlueGrey-5",
-          "name": "5",
-          "y": 0.885,
-          "x": 0.81
+          "uid": "mcore-yellowBlueBlackWhite-4",
+          "name": "4",
+          "y": 0.9,
+          "x": 0.57
         }
       ],
       "yellow blue white": [
         {
-          "uid": "morion-yellowBlueWhite-3",
-          "name": "3",
-          "y": 0.1,
-          "x": 0.656
-        },
-        {
-          "uid": "morion-yellowBlueWhite-4",
-          "name": "4",
-          "y": 0.1,
-          "x": 0.81
-        }
-      ],
-      "red": [
-        {
-          "uid": "morion-red-1",
+          "uid": "mcore-yellowBlueWhite-1",
           "name": "1",
-          "y": 0.1,
-          "x": 0.34
+          "y": 0.171,
+          "x": 0.57
         },
         {
-          "uid": "morion-red-2",
+          "uid": "mcore-yellowBlueWhite-2",
           "name": "2",
-          "y": 0.1,
-          "x": 0.498
+          "y": 0.171,
+          "x": 0.701
         }
       ]
     },
     "integratedComponents": [
-
+      {
+        "uid": "mkb-mcore-button",
+        "pin": {
+          "s": "A7"
+        },
+        "name": "default-var-name-mkb_integrated_analogPinButton",
+        "id": "mkb_integrated_analogPinButton"
+      },
+      {
+        "uid": "mkb-mcore-ldrs",
+        "pin": {
+          "s": 0
+        },
+        "name": "default-var-name-mkb_integrated_lightsensor",
+        "id": "mkb_integrated_lightsensor"
+      },
+      {
+        "uid": "mkb-mcore-RGBled-0",
+        "pin": {
+          "s": 0
+        },
+        "name": "default-var-name-mkb_integrated_rgb_both",
+        "id": "mkb_integrated_RGB"
+      },
+      {
+        "uid": "mkb-mcore-RGBled-1",
+        "pin": {
+          "s": 1
+        },
+        "name": "default-var-name-mkb_integrated_rgb_right",
+        "id": "mkb_integrated_RGB"
+      },
+      {
+        "uid": "mkb-mcore-RGBled-2",
+        "pin": {
+          "s": 2
+        },
+        "name": "default-var-name-mkb_integrated_rgb_left",
+        "id": "mkb_integrated_RGB"
+      },
+      {
+        "uid": "mkb-mcore-buzz",
+        "pin": {
+          "s": 8
+        },
+        "name": "default-var-name-mkb_integrated_buzz",
+        "id": "mkb_integrated_buzz"
+      }
     ],
     "availableComponents": [
-      "sp",
+      "mkb_infrared",
       "mkb_lightsensor",
-      "mkb_ultrasound",
       "mkb_linefollower",
-      "mkb_joystick",
-      "mkb_soundsensor",
-      "mkb_pot",
-      "mkb_display7seg",
-      "mkb_motionSensor",
+      "mkb_ultrasound",
+      "sp",
       "mkb_4buttonKeyPad",
+      "mkb_remote",
+      "mkb_joystick",
+      "mkb_display7seg",
+      "mkb_ledmatrix",
+      "mkb_pot",
+      "mkb_bluetooth",
+      "mkb_motionSensor",
+      "mkb_soundsensor",
       "mkb_fan",
       "mkb_compass",
       "mkb_RGBLed"
@@ -1647,273 +1725,17 @@
     "vendorIds": [
       "0x1A86"
     ],
+    "__v": 0,
     "shields": [
-
+      
     ]
   },
   {
-    "uuid": "FreaduinoUNO",
-    "mcu": "uno",
-    "showInToolbox": true,
-    "order": 2,
-    "pinSize": {
-      "i2c-5": {
-        "h": 9,
-        "w": 9
-      },
-      "i2c-4": {
-        "h": 9,
-        "w": 9
-      },
-      "serial": {
-        "h": 37,
-        "w": 25
-      },
-      "analog": {
-        "h": 37,
-        "w": 9
-      },
-      "digital": {
-        "h": 37,
-        "w": 9
-      }
-    },
-    "pins": {
-      "i2c-5": [
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53f200",
-          "name": "A5",
-          "y": 0.734,
-          "x": 0.825
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53f202",
-          "name": "A5-H",
-          "y": 0.923,
-          "x": 0.913
-        }
-      ],
-      "i2c-4": [
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53f201",
-          "name": "A4",
-          "y": 0.734,
-          "x": 0.793
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53f203",
-          "name": "A4-H",
-          "y": 0.923,
-          "x": 0.879
-        }
-      ],
-      "serial": [
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fc05",
-          "name": "serial",
-          "y": 0.218,
-          "x": 0.058
-        }
-      ],
-      "analog": [
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fa00",
-          "name": "A0",
-          "y": 0.79,
-          "x": 0.661
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fa01",
-          "name": "A1",
-          "y": 0.79,
-          "x": 0.692
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fa02",
-          "name": "A2",
-          "y": 0.79,
-          "x": 0.728
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fa03",
-          "name": "A3",
-          "y": 0.79,
-          "x": 0.76
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fa04",
-          "name": "A4",
-          "y": 0.79,
-          "x": 0.793
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fa05",
-          "name": "A5",
-          "y": 0.79,
-          "x": 0.825
-        }
-      ],
-      "digital": [
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd00",
-          "name": "13",
-          "y": 0.172,
-          "x": 0.476
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd01",
-          "name": "12",
-          "y": 0.172,
-          "x": 0.507
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd02",
-          "name": "11",
-          "y": 0.172,
-          "x": 0.541
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd03",
-          "name": "10",
-          "y": 0.172,
-          "x": 0.575
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd04",
-          "name": "9",
-          "y": 0.172,
-          "x": 0.607
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd05",
-          "name": "8",
-          "y": 0.172,
-          "x": 0.639
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd06",
-          "name": "7",
-          "y": 0.172,
-          "x": 0.672
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd07",
-          "name": "6",
-          "y": 0.172,
-          "x": 0.702
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd08",
-          "name": "5",
-          "y": 0.172,
-          "x": 0.738
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd09",
-          "name": "4",
-          "y": 0.172,
-          "x": 0.77
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd10",
-          "name": "3",
-          "y": 0.172,
-          "x": 0.807
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd11",
-          "name": "2",
-          "y": 0.172,
-          "x": 0.838
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd12",
-          "name": "1",
-          "y": 0.172,
-          "x": 0.87
-        },
-        {
-          "uid": "6be0dd9d-2e52-4b7d-9dfc-c9edad53fd13",
-          "name": "0",
-          "y": 0.172,
-          "x": 0.904
-        }
-      ]
-    },
-    "integratedComponents": [
-
-    ],
-    "availableComponents": [
-
-    ],
-    "productIds": [
-      "0x1"
-    ],
-    "vendorIds": [
-      "0x2341"
-    ],
-    "shields": [
-      "echidna-FreaduinoUNO"
-    ]
-  },
-  {
-    "uuid": "freakscar",
-    "mcu": "uno",
-    "manufacturer": "elekfreaks",
-    "showInToolbox": false,
-    "order": 10,
-    "underDevelopment": false,
-    "integratedComponents": [
-      {
-        "uid": "sp",
-        "pin": {
-          "tx": 1,
-          "rx": 0
-        },
-        "name": "default-var-name-freakscar_sp",
-        "id": "sp"
-      },
-      {
-        "uid": "freakscar-remote",
-        "name": "default-var-name-freakscar_remote",
-        "id": "freakscar_integrated_remote"
-      },
-      {
-        "uid": "freakscar_integrated-ldrs-1",
-        "name": "default-var-name-freakscar_integrated_lightsensor_1",
-        "id": "freakscar_integrated_lightsensor"
-      },
-      {
-        "uid": "freakscar_integrated-ldrs-2",
-        "name": "default-var-name-freakscar_integrated_lightsensor_2",
-        "id": "freakscar_integrated_lightsensor"
-      }
-    ],
-    "availableComponents": [
-
-    ],
-    "productIds": [
-      "0x0043"
-    ],
-    "vendorIds": [
-      "0x2341"
-    ],
-    "pinSize": {
-
-    },
-    "pins": {
-
-    },
-    "shields": [
-
-    ]
-  },
-  {
-    "uuid": "ArduinoLeonardo",
+   "uuid": "ArduinoLeonardo",
     "mcu": "leonardo",
     "underDevelopment": true,
     "showInToolbox": true,
-    "order": 5,
+    "order": 6,
     "pinSize": {
       "i2c-5": {
         "h": 9,
@@ -2087,10 +1909,10 @@
       ]
     },
     "integratedComponents": [
-
+      
     ],
     "availableComponents": [
-
+      
     ],
     "productIds": [
       "0x0036",
@@ -2099,7 +1921,217 @@
     ],
     "vendorIds": [
       "0x2341"
+    ],
+    "__v": 1,
+    "shields": [
+      
     ]
+  },
+  {
+    "uuid": "meorion",
+    "mcu": "uno",
+    "manufacturer": "makeblock",
+    "underDevelopment": false,
+    "order": 10,
+    "showInToolbox": false,
+    "pinSize": {
+      "wireless": {
+        "w": 11,
+        "h": 65
+      },
+      "serial": {
+        "h": 30,
+        "w": 22
+      },
+      "yellow blue black white": {
+        "h": 50,
+        "w": 50
+      },
+      "yellow black white": {
+        "h": 50,
+        "w": 50
+      },
+      "yellow blue grey": {
+        "h": 50,
+        "w": 50
+      },
+      "yellow blue white": {
+        "h": 50,
+        "w": 50
+      },
+      "red": {
+        "h": 50,
+        "w": 50
+      }
+    },
+    "pins": {
+      "wireless": [
+        {
+          "x": 0.109,
+          "y": 0.635,
+          "name": "wireless",
+          "uid": "morion-wireless"
+        }
+      ],
+      "serial": [
+        {
+          "uid": "morion-serial",
+          "name": "serial",
+          "y": 0.71,
+          "x": 0.1
+        }
+      ],
+      "yellow black white": [
+        {
+          "uid": "morion-yellowBlackWhite-7",
+          "name": "7",
+          "y": 0.885,
+          "x": 0.498
+        },
+        {
+          "uid": "morion-yellowBlackWhite-8",
+          "name": "8",
+          "y": 0.885,
+          "x": 0.34
+        }
+      ],
+      "yellow blue black white": [
+        {
+          "uid": "morion-yellowBlueBlackWhite-6",
+          "name": "6",
+          "y": 0.885,
+          "x": 0.656
+        }
+      ],
+      "yellow blue grey": [
+        {
+          "uid": "morion-yellowBlueGrey-5",
+          "name": "5",
+          "y": 0.885,
+          "x": 0.81
+        }
+      ],
+      "yellow blue white": [
+        {
+          "uid": "morion-yellowBlueWhite-3",
+          "name": "3",
+          "y": 0.1,
+          "x": 0.656
+        },
+        {
+          "uid": "morion-yellowBlueWhite-4",
+          "name": "4",
+          "y": 0.1,
+          "x": 0.81
+        }
+      ],
+      "red": [
+        {
+          "uid": "morion-red-1",
+          "name": "1",
+          "y": 0.1,
+          "x": 0.34
+        },
+        {
+          "uid": "morion-red-2",
+          "name": "2",
+          "y": 0.1,
+          "x": 0.498
+        }
+      ]
+    },
+    "integratedComponents": [
+      
+    ],
+    "availableComponents": [
+      "mkb_infrared",
+      "mkb_lightsensor",
+      "mkb_linefollower",
+      "mkb_ultrasound",
+      "sp",
+      "mkb_soundsensor",
+      "mkb_joystick",
+      "mkb_pot",
+      "mkb_display7seg",
+      "mkb_ledmatrix",
+      "mkb_4buttonKeyPad",
+      "mkb_motionSensor",
+      "mkb_fan",
+      "mkb_compass",
+      "mkb_RGBLed"
+    ],
+    "productIds": [
+      "0x7523"
+    ],
+    "vendorIds": [
+      "0x1A86"
+    ],
+    "__v": 0,
+    "shields": [
+      
+    ]
+  },
+  {
+    "uuid": "freakscar",
+    "mcu": "uno",
+    "manufacturer": "elekfreaks",
+    "showInToolbox": false,
+    "order": 11,
+    "underDevelopment": false,
+    "integratedComponents": [
+      {
+        "id": "sp",
+        "name": "default-var-name-freakscar_sp",
+        "pin": {
+          "rx": 0,
+          "tx": 1
+        },
+        "uid": "sp"
+      },
+      {
+        "id": "freakscar_integrated_lightsensor",
+        "name": "default-var-name-freakscar_integrated_lightsensor_1",
+        "pin": {
+          
+        },
+        "uid": "freakscar_integrated-ldrs-1"
+      },
+      {
+        "id": "freakscar_integrated_lightsensor",
+        "name": "default-var-name-freakscar_integrated_lightsensor_2",
+        "pin": {
+          
+        },
+        "uid": "freakscar_integrated-ldrs-2"
+      },
+      {
+        "id": "freakscar_integrated_remote",
+        "name": "default-var-name-freakscar_remote",
+        "pin": {
+          
+        },
+        "uid": "freakscar-remote"
+      }
+    ],
+    "availableComponents": [
+      
+    ],
+    "productIds": [
+      "0x0043"
+    ],
+    "vendorIds": [
+      "0x2341"
+    ],
+    "__v": 0,
+    "shields": [
+      
+    ],
+    "pinSize": {
+      
+    },
+    "pins": {
+      
+    }
   },
   {
     "uuid": "buildandcode",
@@ -2261,7 +2293,7 @@
       ]
     },
     "integratedComponents": [
-
+      
     ],
     "availableComponents": [
       "drivegearmotor",
@@ -2295,8 +2327,9 @@
     "vendorIds": [
       "0x1A86"
     ],
+    "__v": 1,
     "shields": [
-
+      
     ]
   },
   {
@@ -2399,10 +2432,10 @@
       ]
     },
     "shields": [
-
+      
     ],
     "integratedComponents": [
-
+      
     ],
     "availableComponents": [
       "bt",
@@ -2425,7 +2458,8 @@
     ],
     "vendorIds": [
       "0x403"
-    ]
+    ],
+    "__v": 0
   },
   {
     "uuid": "echidna-ArduinoUNO",
@@ -2527,10 +2561,10 @@
       ]
     },
     "shields": [
-
+      
     ],
     "integratedComponents": [
-
+      
     ],
     "availableComponents": [
       "bt",
@@ -2553,10 +2587,11 @@
     ],
     "vendorIds": [
       "0x2341"
-    ]
+    ],
+    "__v": 0
   },
   {
-    "uuid": "echidna-FreaduinoUNO",
+   "uuid": "echidna-FreaduinoUNO",
     "mcu": "uno",
     "showInToolbox": false,
     "order": 3,
@@ -2655,10 +2690,10 @@
       ]
     },
     "shields": [
-
+      
     ],
     "integratedComponents": [
-
+      
     ],
     "availableComponents": [
       "bt",
@@ -2681,10 +2716,11 @@
     ],
     "vendorIds": [
       "0x2341"
-    ]
+    ],
+    "__v": 0
   },
   {
-    "uuid": "zumjunior",
+   "uuid": "zumjunior",
     "mcu": "zumjunior",
     "manufacturer": "bq",
     "showInToolbox": true,
@@ -2755,14 +2791,14 @@
       ]
     },
     "shields": [
-
+      
     ],
     "integratedComponents": [
       {
         "id": "zumjunior_integrated_led",
         "name": "default-var-name-zumjunior_integrated_led",
         "pin": {
-
+          
         },
         "uid": "zumjunior_integrated_led"
       },
@@ -2770,19 +2806,19 @@
         "id": "zumjunior_integrated_buzz",
         "name": "default-var-name-zumjunior_integrated_buzz",
         "pin": {
-
+          
         },
         "uid": "zumjunior_integrated_buzz"
       }
     ],
     "availableComponents": [
-      "zumjunior_sensors",
+      "zumjunior_slider",
       "zumjunior_7segment",
+      "zumjunior_sensors",
+      "zumjunior_button",
+      "zumjunior_miniservo",
       "zumjunior_double_led",
       "zumjunior_servo",
-      "zumjunior_slider",
-      "zumjunior_miniservo",
-      "zumjunior_button",
       "sp"
     ],
     "productIds": [
@@ -2790,10 +2826,11 @@
     ],
     "vendorIds": [
       "0x4292"
-    ]
+    ],
+    "__v": 0
   },
   {
-    "uuid": "bqZUM20",
+   "uuid": "bqZUM20",
     "mcu": "zumcore2",
     "order": 1,
     "showInToolbox": true,
@@ -2861,140 +2898,150 @@
           "uid": "bqZUM20-analog-A5",
           "name": "A5",
           "y": 0.785,
-          "x": 0.844
+          "x": 0.835
         },
         {
           "uid": "bqZUM20-analog-A4",
           "name": "A4",
           "y": 0.785,
-          "x": 0.81
+          "x": 0.8024
         },
         {
           "uid": "bqZUM20-analog-A3",
           "name": "A3",
           "y": 0.785,
-          "x": 0.775
+          "x": 0.7698
         },
         {
           "uid": "bqZUM20-analog-A2",
           "name": "A2",
           "y": 0.785,
-          "x": 0.741
+          "x": 0.7372
         },
         {
           "uid": "bqZUM20-analog-A1",
           "name": "A1",
           "y": 0.785,
-          "x": 0.705
+          "x": 0.7045
         },
         {
           "uid": "bqZUM20-analog-A0",
           "name": "A0",
           "y": 0.785,
-          "x": 0.67
+          "x": 0.672
         }
       ],
       "digital": [
         {
+          "uid": "bqZUM20-digital-23",
+          "name": "23",
+          "y": 0.211,
+          "x": 0.381
+        },
+        {
+          "uid": "bqZUM20-digital-22",
+          "name": "22",
+          "y": 0.211,
+          "x": 0.4136
+        },
+        {
           "uid": "bqZUM20-digital-13",
           "name": "13",
-          "y": 0.175,
-          "x": 0.435
+          "y": 0.211,
+          "x": 0.4462
         },
         {
           "uid": "bqZUM20-digital-12",
           "name": "12",
-          "y": 0.175,
-          "x": 0.47
+          "y": 0.211,
+          "x": 0.4788
         },
         {
           "uid": "bqZUM20-digital-11",
           "name": "11",
-          "y": 0.175,
-          "x": 0.507
+          "y": 0.211,
+          "x": 0.5114
         },
         {
           "uid": "bqZUM20-digital-10",
           "name": "10",
-          "y": 0.175,
-          "x": 0.539
+          "y": 0.211,
+          "x": 0.544
         },
         {
           "uid": "bqZUM20-digital-9",
           "name": "9",
-          "y": 0.175,
-          "x": 0.575
+          "y": 0.211,
+          "x": 0.5766
         },
         {
           "uid": "bqZUM20-digital-8",
           "name": "8",
-          "y": 0.175,
-          "x": 0.609
+          "y": 0.211,
+          "x": 0.6092
         },
         {
           "uid": "bqZUM20-digital-7",
           "name": "7",
-          "y": 0.175,
-          "x": 0.662
+          "y": 0.211,
+          "x": 0.656
         },
         {
           "uid": "bqZUM20-digital-6",
           "name": "6",
-          "y": 0.175,
-          "x": 0.698
+          "y": 0.211,
+          "x": 0.6886
         },
         {
           "uid": "bqZUM20-digital-5",
           "name": "5",
-          "y": 0.175,
-          "x": 0.733
+          "y": 0.211,
+          "x": 0.7212
         },
         {
           "uid": "bqZUM20-digital-4",
           "name": "4",
-          "y": 0.175,
-          "x": 0.767
+          "y": 0.211,
+          "x": 0.7538
         },
         {
           "uid": "bqZUM20-digital-3",
           "name": "3",
-          "y": 0.175,
-          "x": 0.802
+          "y": 0.211,
+          "x": 0.7864
         },
         {
           "uid": "bqZUM20-digital-2",
           "name": "2",
-          "y": 0.175,
-          "x": 0.837
-        },
-        {
-          "uid": "bqZUM20-digital-1",
-          "name": "1",
-          "y": 0.175,
-          "x": 0.871
-        },
-        {
-          "uid": "bqZUM20-digital-0",
-          "name": "0",
-          "y": 0.175,
-          "x": 0.907
+          "y": 0.211,
+          "x": 0.819
         }
       ]
     },
     "shields": [
-
+      
     ],
     "integratedComponents": [
-
+      {
+        "uid": "bq-bqzum20-bt",
+        "baudRate": "115200",
+        "pin": {
+          "tx": "1",
+          "rx": "0"
+        },
+        "name": "default-var-name-standard_integrated_bt",
+        "id": "bt"
+      }
     ],
     "availableComponents": [
-
+      
     ],
     "productIds": [
       "0x6001"
     ],
     "vendorIds": [
       "0x403"
-    ]
+    ],
+    "__v": 1
   }
 ]
