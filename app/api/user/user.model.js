@@ -388,7 +388,7 @@ UserSchema.methods = {
         this.email = 'anon@anon.com' + Date.now();
         this.username = 'anon' + Date.now();
         this.password = Date.now() * Math.random();
-        this.bannedInForum = true;
+        this.bannedInForum = false;
         this.needValidation = false;
         this.tutor = {
             dni: '',
