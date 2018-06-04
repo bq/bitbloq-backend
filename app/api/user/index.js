@@ -28,6 +28,7 @@ router.get('/', auth.hasRole('admin'), controller.index);
 router.post('/social', auth.getUser(), controller.socialLogin);
 router.post('/forgot', controller.emailToken);
 router.post('/all', auth.hasRole('admin'), controller.createAll);
+router.post('/deleteMyAccount', auth.isAuthenticated(), controller.deleteMyAccount);
 router.post('/', controller.create);
 
 // PUT

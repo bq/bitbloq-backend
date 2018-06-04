@@ -575,6 +575,41 @@ exports.destroy = function(req, res) {
 };
 
 /**
+ * Deletes logged user account
+ */
+exports.deleteMyAccount = function(req, res) {
+    var userId = req.user._id;
+    var email = String(req.body.email);
+    var password = String(req.body.password);
+
+    async.waterfall(
+        [
+            function(callback) {
+                User.findById(userId, callback);
+            },
+
+            function(user, callback) {
+                if (user.email !== email) {
+                    res.status(400).send('wrongEmail');
+                } else if (!user.authenticate(password)) {
+                    res.status(400).send('wrongPassword');
+                } else {
+                    user.anonymize('requestByUser', callback);
+                }
+            }
+        ],
+        function(err) {
+            if (err) {
+                err.code = utils.getValidHttpErrorCode(err);
+                res.status(err.code).send(err);
+            } else {
+                res.sendStatus(200);
+            }
+        }
+    );
+};
+
+/**
  * Give password to a social user
  */
 exports.turnToLocal = function(req, res) {
