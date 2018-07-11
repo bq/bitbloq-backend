@@ -45,6 +45,21 @@
         }
     }, {
         "data": {
+            "uuid": "us3",
+            "manufacturer": "standard",
+            "category": "sensors",
+            "type": "US",
+            "width": 120,
+            "height": 79,
+            "dataReturnType": "float",
+            "pins": {
+                "digital": [
+                    "s"
+                ]
+            }
+        }
+    }, {
+        "data": {
             "uuid": "button",
             "manufacturer": "standard",
             "category": "sensors",
