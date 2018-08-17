@@ -324,6 +324,26 @@
         }
     }, {
         "data": {
+            "uuid": "lcdebotics",
+            "manufacturer": "standard",
+            "category": "lcds",
+            "width": 170,
+            "height": 93,
+            "pin": {
+                "sda": "a4",
+                "scl": "a5"
+            },
+            "pins": {
+                "i2c-4": [
+                    "sda"
+                ],
+                "i2c-5": [
+                    "scl"
+                ]
+            }
+        }
+    }, {
+        "data": {
             "uuid": "bt",
             "manufacturer": "standard",
             "category": "serialElements",
