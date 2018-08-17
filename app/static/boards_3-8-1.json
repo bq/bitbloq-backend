@@ -2139,6 +2139,14 @@
     "showInToolbox": true,
     "order": 3,
     "pinSize": {
+      "i2c-5": {
+        "h": 9,
+        "w": 9
+      },
+      "i2c-4": {
+        "h": 9,
+        "w": 9
+      },
       "greymotor": {
         "h": 41,
         "w": 25
@@ -2157,6 +2165,22 @@
       }
     },
     "pins": {
+      "i2c-5": [
+        {
+          "uid": "buidandcode-i2c5",
+          "name": "A5",
+          "y": 0.82,
+          "x": 0.568
+        },
+      ],
+      "i2c-4": [
+        {
+          "uid": "buidandcode-i2c4",
+          "name": "A4",
+          "y": 0.82,
+          "x": 0.535
+        }
+      ],
       "greymotor": [
         {
           "y": 0.448,
@@ -2311,7 +2335,8 @@
       "irs2",
       "servo",
       "hts221",
-      "lcd",
+      "lcdebotics",
+      "lcdgeneric",
       "device",
       "us",
       "joystick",

@@ -45,6 +45,21 @@
         }
     }, {
         "data": {
+            "uuid": "us3",
+            "manufacturer": "standard",
+            "category": "sensors",
+            "type": "US",
+            "width": 120,
+            "height": 79,
+            "dataReturnType": "float",
+            "pins": {
+                "digital": [
+                    "s"
+                ]
+            }
+        }
+    }, {
+        "data": {
             "uuid": "button",
             "manufacturer": "standard",
             "category": "sensors",
@@ -290,6 +305,26 @@
     }, {
         "data": {
             "uuid": "lcd",
+            "manufacturer": "standard",
+            "category": "lcds",
+            "width": 170,
+            "height": 93,
+            "pin": {
+                "sda": "a4",
+                "scl": "a5"
+            },
+            "pins": {
+                "i2c-4": [
+                    "sda"
+                ],
+                "i2c-5": [
+                    "scl"
+                ]
+            }
+        }
+    }, {
+        "data": {
+            "uuid": "lcdebotics",
             "manufacturer": "standard",
             "category": "lcds",
             "width": 170,
