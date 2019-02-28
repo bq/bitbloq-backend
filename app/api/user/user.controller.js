@@ -214,9 +214,6 @@ function findUserBySocialNetwork(provider, token, next) {
                     'message': 'literal'
                 });
             } else {
-                if (provider === 'google' && userSocial.emails) {
-                    userSocial.email = userSocial.emails[0].value;
-                }
                 User.findOne({
                     $or: [{
                         'social.facebook.id': userSocial.id
@@ -259,8 +256,8 @@ function generateSocialUser(provider, user) {
 
     switch (provider) {
         case 'google':
-            userData.firstName = user.name.givenName;
-            userData.lastName = user.name.familyName;
+            userData.firstName = user.given_name;
+            userData.lastName = user.family_name;
             userData.social.google.id = user.id;
             userData.social.google.ageRange = user.ageRange;
             break;
@@ -277,7 +274,7 @@ function generateSocialUser(provider, user) {
 function getSocialAvatar(provider, user, callback) {
     switch (provider) {
         case 'google':
-            callback(null, user.image.url.split('?')[0]);
+            callback(null, user.picture);
             break;
         case 'facebook':
             UserFunctions.getFacebookAvatar(user.id, function(err, response) {

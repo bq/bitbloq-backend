@@ -128,7 +128,7 @@ exports.getAllUsersByEmails = function(emails, next) {
 exports.getSocialProfile = function(provider, token, next) {
     switch (provider) {
         case 'google':
-            request('https://www.googleapis.com/plus/v1/people/me?access_token=' + token, next);
+            request('https://www.googleapis.com/userinfo/v2/me?access_token=' + token, next);
             break;
         case 'facebook':
             request('https://graph.facebook.com/me?fields=id,name,first_name,email,last_name,age_range&access_token=' + token, next);
